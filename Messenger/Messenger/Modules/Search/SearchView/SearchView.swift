@@ -107,6 +107,7 @@ private extension SearchView {
     
     func setupSearchBarAppearance() {
         searchBar.searchTextField.autocapitalizationType = .none
+        searchBar.placeholder = "Enter user name"
         searchBar.becomeFirstResponder()
     }
     
