@@ -113,7 +113,7 @@ private extension SearchView {
     func setupTableViewAppearance() {
         tableView.tableFooterView = UIView()
         
-        tableView.register(ChatsCell.self, forCellReuseIdentifier: ChatsCell.reuseIdentifier)
+        tableView.register(UserCell.self, forCellReuseIdentifier: UserCell.reuseIdentifier)
     }
 }
 

@@ -6,16 +6,16 @@
 //
 
 protocol ISearchPresenter: AnyObject {
-    var companionsCount: Int { get }
+    var usersCount: Int { get }
     
-    func companion(forRowAt index: Int) -> SearchCompanion?
+    func user(forRowAt index: Int) -> SearchUser?
     
     func didChangeText(_ text: String)
-    func didSelectCompanionAt(index: Int)
+    func didSelectUserAt(index: Int)
 }
 
 protocol ISearchPresenterDelegate: AnyObject {
-    func iSearchPresenter(_ searchPresenter: ISearchPresenter, didSelectCompanion companion: SearchCompanion)
+    func iSearchPresenter(_ searchPresenter: ISearchPresenter, didSelectUser user: SearchUser)
 }
 
 final class SearchPresenter {
@@ -25,31 +25,30 @@ final class SearchPresenter {
     var interactor: ISearchInteractor?
     var router: ISearchRouter?
     
-    var userIdentifier: String?
     weak var delegate: ISearchPresenterDelegate?
     
-    private var companions: [SearchCompanion]?
+    private var users: [SearchUser]?
 }
 
 // MARK: - ISearchPresenter
 
 extension SearchPresenter: ISearchPresenter {
-    var companionsCount: Int {
-        return companions?.count ?? 0
+    var usersCount: Int {
+        return users?.count ?? 0
     }
     
-    func companion(forRowAt index: Int) -> SearchCompanion? {
-        return companions?[index]
+    func user(forRowAt index: Int) -> SearchUser? {
+        return users?[index]
     }
     
     func didChangeText(_ text: String) {
-        search(by: text.lowercased())
+        search(by: text)
     }
     
-    func didSelectCompanionAt(index: Int) {
-        if let companion = companions?[index] {
+    func didSelectUserAt(index: Int) {
+        if let user = users?[index] {
             router?.closeSearchViewController()
-            delegate?.iSearchPresenter(self, didSelectCompanion: companion)
+            delegate?.iSearchPresenter(self, didSelectUser: user)
         }
     }
 }
@@ -58,16 +57,14 @@ extension SearchPresenter: ISearchPresenter {
 
 private extension SearchPresenter {
     func search(by name: String) {
-        companions?.removeAll()
+        users?.removeAll()
         
         viewController?.noResultLabelIsHidden = true
        
         if !name.isEmpty {
             viewController?.activityIndicatorViewIsHidden = false
-            
-            if let userIdentifier = userIdentifier {
-                interactor?.searchCompanions(to: userIdentifier, by: name)
-            }
+    
+            interactor?.fetchUsers(by: name)
         } else {
             viewController?.reloadData()
         }
@@ -77,15 +74,15 @@ private extension SearchPresenter {
 // MARK: - ISearchInteractorOutput
 
 extension SearchPresenter: ISearchInteractorOutput {
-    func receiveCompanions(_ companions: [SearchCompanion]?) {
-        self.companions = companions
+    func fetchUsersSuccess(_ users: [SearchUser]) {
+        self.users = users
         
         viewController?.activityIndicatorViewIsHidden = true
-           
-        if companions == nil {
-            viewController?.noResultLabelIsHidden = false
-        }
-        
         viewController?.reloadData()
+    }
+    
+    func fetchUsersFail() {
+        viewController?.activityIndicatorViewIsHidden = true
+        viewController?.noResultLabelIsHidden = false
     }
 }

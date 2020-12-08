@@ -92,17 +92,17 @@ extension SearchViewController: UISearchBarDelegate {
 
 extension SearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter?.companionsCount ?? 0
+        return presenter?.usersCount ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatsCell.reuseIdentifier,
-                                                       for: indexPath) as? ChatsCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.reuseIdentifier,
+                                                       for: indexPath) as? UserCell else {
             return UITableViewCell()
         }
         
-        if let companion = presenter?.companion(forRowAt: indexPath.row) {
-            cell.configure(with: companion)
+        if let user = presenter?.user(forRowAt: indexPath.row) {
+            cell.configure(with: user)
         }
         
         return cell
@@ -113,6 +113,6 @@ extension SearchViewController: UITableViewDataSource {
 
 extension SearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        presenter?.didSelectCompanionAt(index: indexPath.row)
+        presenter?.didSelectUserAt(index: indexPath.row)
     }
 }

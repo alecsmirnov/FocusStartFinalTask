@@ -8,11 +8,12 @@
 import Dispatch
 
 protocol ISearchInteractor: AnyObject {
-    func searchCompanions(to userIdentifier: String, by name: String)
+    func fetchUsers(by name: String)
 }
 
 protocol ISearchInteractorOutput: AnyObject {
-    func receiveCompanions(_ companions: [SearchCompanion]?)
+    func fetchUsersSuccess(_ users: [SearchUser])
+    func fetchUsersFail()
 }
 
 final class SearchInteractor {
@@ -22,14 +23,23 @@ final class SearchInteractor {
 // MARK: - ISearchInteractor
 
 extension SearchInteractor: ISearchInteractor {
-    func searchCompanions(to userIdentifier: String, by name: String) {
+    func fetchUsers(by name: String) {
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
+        
         FirebaseDatabaseService.getUsers(by: name, key: .name) { users in
-            guard let users = users else {
-                self.presenter?.receiveCompanions(nil)
+            guard let users = users?.filter({ $0.key != userIdentifier }), !users.isEmpty else {
+                self.presenter?.fetchUsersFail()
 
                 return
             }
+            
+            let searchUsers = users.map { identifier, user in
+                return SearchUser(identifier: identifier, firstName: user.firstName, lastName: user.lastName)
+            }
 
+            self.presenter?.fetchUsersSuccess(searchUsers)
+            
+            /*
             FirebaseDatabaseService.getCompanions(to: userIdentifier) { companions in
                 guard let companions = companions else {
                     let searchCompanions = users.map { firebaseUser -> SearchCompanion in
@@ -78,6 +88,7 @@ extension SearchInteractor: ISearchInteractor {
                     self.presenter?.receiveCompanions(searchCompanions)
                 }
             }
+            */
         }
     }
 }

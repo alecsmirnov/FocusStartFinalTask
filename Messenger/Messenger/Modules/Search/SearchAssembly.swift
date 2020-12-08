@@ -6,8 +6,7 @@
 //
 
 enum SearchAssembly {
-    static func createSearchViewController(identifier: String,
-                                           delegate: ISearchPresenterDelegate? = nil) -> SearchViewController {
+    static func createSearchViewController(delegate: ISearchPresenterDelegate? = nil) -> SearchViewController {
         let viewController = SearchViewController()
         
         let interactor = SearchInteractor()
@@ -22,7 +21,6 @@ enum SearchAssembly {
         presenter.interactor = interactor
         presenter.router = router
         
-        presenter.userIdentifier = identifier
         presenter.delegate = delegate
         
         return viewController
