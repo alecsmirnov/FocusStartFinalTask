@@ -1,5 +1,5 @@
 //
-//  ChatsCell.swift
+//  ChatCell.swift
 //  Messenger
 //
 //  Created by Admin on 25.11.2020.
@@ -9,14 +9,10 @@ import UIKit
 
 protocol IChatsCell: AnyObject {}
 
-final class ChatsCell: UITableViewCell {
+final class ChatCell: UITableViewCell {
     // MARK: Properties
     
     static let reuseIdentifier = String(describing: self)
-    
-    private enum Constants {
-        static let defaultImageName = "person.crop.circle"
-    }
     
     private enum Metrics {
         static let cellContentTopSpace: CGFloat = 16
@@ -71,34 +67,25 @@ final class ChatsCell: UITableViewCell {
     }
 }
 
-// MARK: - IChatsCell
+// MARK: - IChatCell
 
-extension ChatsCell: IChatsCell {}
+extension ChatCell: IChatsCell {}
 
 // MARK: - Public Methods
 
-extension ChatsCell {    
-    func configure(with companion: SearchCompanion) {
-        nameLabel.text = "\(companion.firstName) \(companion.lastName ?? "")"
-        
-        if let storedDate = companion.chat?.latestMessages.date,
-           let date = DateConverter.stringToDate(storedDate) {
-            timestampLabel.text = DateConverter.dateToChatLatestMessageString(date)
-        }
-        
-        if companion.profilePhotoURL == nil {
-            profilePhotoImageView.image = UIImage(systemName: Constants.defaultImageName)
-        }
-    }
-    
+extension ChatCell {
     func configure(withFirstName firstName: String, lastName: String?) {
         nameLabel.text = "\(firstName) \(lastName ?? "")"
+    }
+    
+    func configure(withText text: String) {
+        textLabel?.text = text
     }
 }
 
 // MARK: - Draw
 
-private extension ChatsCell {
+private extension ChatCell {
     func drawProfilePhotoImageView() {
         profilePhotoImageView.layer.cornerRadius = profilePhotoImageView.frame.size.height / 2
         profilePhotoImageView.clipsToBounds = true
@@ -107,7 +94,7 @@ private extension ChatsCell {
 
 // MARK: - Appearance
 
-private extension ChatsCell {
+private extension ChatCell {
     func setupAppearance() {
         setupProfilePhotoImageViewAppearance()
         setupNameLabelAppearance()
@@ -119,11 +106,13 @@ private extension ChatsCell {
     
     func setupProfilePhotoImageViewAppearance() {
         profilePhotoImageView.contentMode = .scaleAspectFill
+        profilePhotoImageView.backgroundColor = .systemGray3
     }
     
     func setupNameLabelAppearance() {
         nameLabel.font = .boldSystemFont(ofSize: Metrics.nameLabelFontSize)
         nameLabel.numberOfLines = 1
+        nameLabel.text = " "
     }
     
     func setupTimestampLabelAppearance() {
@@ -135,6 +124,7 @@ private extension ChatsCell {
     func setupMessageLabelAppearance() {
         messageLabel.font = .systemFont(ofSize: Metrics.messageLabelFontSize)
         messageLabel.numberOfLines = 1
+        messageLabel.text = " "
     }
     
     func setupSeparatorAppearance() {
@@ -145,7 +135,7 @@ private extension ChatsCell {
 
 // MARK: - Layout
 
-private extension ChatsCell {
+private extension ChatCell {
     func setupLayout() {
         setupSubviews()
         

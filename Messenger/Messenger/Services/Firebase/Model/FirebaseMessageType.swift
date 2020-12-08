@@ -7,6 +7,11 @@
 
 enum FirebaseMessageType {
     case text(String)
+//    case photo
+//    case video
+//    case audio
+//    case location
+//    case emoji(String)
 }
 
 // MARK: - Codable

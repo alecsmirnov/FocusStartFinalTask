@@ -12,8 +12,8 @@ struct FirebaseUser {
     let email: String
     let profilePhotoURL: String?
     
-    let queryableName: String
-    let queryableUsername: String?
+    private let queryableName: String
+    private let queryableUsername: String?
     
     init(firstName: String, lastName: String?, userName: String?, email: String, profilePhotoURL: String?) {
         self.firstName = firstName
