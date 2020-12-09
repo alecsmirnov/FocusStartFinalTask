@@ -1,11 +1,11 @@
 //
-//  FirebaseUser.swift
+//  UsersValue.swift
 //  Messenger
 //
 //  Created by Admin on 24.11.2020.
 //
 
-struct FirebaseUser {
+struct UsersValue {
     // MARK: Properties
     
     let firstName: String
@@ -33,7 +33,7 @@ struct FirebaseUser {
 
 // MARK: - Codable
 
-extension FirebaseUser: Codable {
+extension UsersValue: Codable {
     private enum CodingKeys: String, CodingKey {
         case firstName = "first_name"
         case lastName = "last_name"
@@ -48,8 +48,8 @@ extension FirebaseUser: Codable {
 
 // MARK: - Equatable
 
-extension FirebaseUser: Equatable {
-    static func ==(lhs: FirebaseUser, rhs: FirebaseUser) -> Bool {
+extension UsersValue: Equatable {
+    static func ==(lhs: UsersValue, rhs: UsersValue) -> Bool {
         return lhs.email == rhs.email
     }
 }

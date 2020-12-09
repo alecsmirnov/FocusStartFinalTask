@@ -12,14 +12,14 @@ struct UsersChatsValue {
     
     let userIdentifier: String
     
-    private let creationTimestamp: String
+    private let creationTimestamp: TimeInterval
     
     // MARK: Initialization
     
     init(userIdentifier: String) {
         self.userIdentifier = userIdentifier
         
-        creationTimestamp = Date().timeIntervalSince1970.description
+        creationTimestamp = Date().timeIntervalSince1970
     }
 }
 
@@ -27,7 +27,7 @@ struct UsersChatsValue {
 
 extension UsersChatsValue: Codable {
     private enum CodingKeys: String, CodingKey {
-        case creationTimestamp = "creation_timestamp"
         case userIdentifier = "user_identifier"
+        case creationTimestamp = "creation_timestamp"
     }
 }

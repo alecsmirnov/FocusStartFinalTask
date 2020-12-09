@@ -9,6 +9,6 @@ struct FirebaseChat {
     let chatIdentifier: String
     let userIdentifier: String
     
-    var user: FirebaseUser
-    var latestMessage: FirebaseMessage
+    var user: UsersValue
+    var latestMessage: ChatsMessagesValue
 }

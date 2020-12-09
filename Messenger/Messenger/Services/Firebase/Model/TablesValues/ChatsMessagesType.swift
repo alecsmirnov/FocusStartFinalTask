@@ -1,11 +1,11 @@
 //
-//  FirebaseMessageType.swift
+//  ChatsMessagesType.swift
 //  Messenger
 //
 //  Created by Admin on 26.11.2020.
 //
 
-enum FirebaseMessageType {
+enum ChatsMessagesType {
     case text(String)
 //    case photo
 //    case video
@@ -16,7 +16,7 @@ enum FirebaseMessageType {
 
 // MARK: - Codable
 
-extension FirebaseMessageType: Codable {
+extension ChatsMessagesType: Codable {
     private enum CodingKeys: String, CodingKey {
         case text
     }
