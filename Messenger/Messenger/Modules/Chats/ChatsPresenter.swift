@@ -11,7 +11,7 @@ protocol IChatsPresenter: AnyObject {
     func viewDidLoad()
     func viewWillAppear()
     
-    func chat(forRowAt index: Int) -> Chat?
+    func chat(forRowAt index: Int) -> FirebaseChat?
     
     func didPressMenuButton()
     func didSelectChatAt(index: Int)
@@ -25,7 +25,7 @@ final class ChatsPresenter {
     var interactor: IChatsInteractor?
     var router: IChatsRouter?
     
-    private var chats: [Chat]?
+    private var chats: [FirebaseChat]?
 }
 
 // MARK: - IChatsPresenter
@@ -43,7 +43,7 @@ extension ChatsPresenter: IChatsPresenter {
         return chats?.count ?? 0
     }
     
-    func chat(forRowAt index: Int) -> Chat? {
+    func chat(forRowAt index: Int) -> FirebaseChat? {
         return chats?[index]
     }
     
@@ -63,7 +63,7 @@ extension ChatsPresenter: IChatsPresenter {
 // MARK: - IChatsInteractorOutput
 
 extension ChatsPresenter: IChatsInteractorOutput {
-    func fetchChatsSuccess(_ chats: [Chat]) {
+    func fetchChatsSuccess(_ chats: [FirebaseChat]) {
         self.chats = chats
         
         print("success")
@@ -74,9 +74,39 @@ extension ChatsPresenter: IChatsInteractorOutput {
         
     }
     
-    func updateChatMessage(_ message: FirebaseMessage, chatIdentifier: String) {
-        if let firstIndex = chats?.firstIndex(where: { $0.chatIdentifier == chatIdentifier }) {
-            chats?[firstIndex].latestMessage = message
+    func addChat(_ chat: FirebaseChat) {
+        print("add")
+        
+        chats?.append(chat)
+        
+        viewController?.reloadData()
+    }
+    
+    func removeChat(_ chatIdentifier: String) {
+        print("remove")
+        
+        if let index = chats?.firstIndex(where: { $0.chatIdentifier == chatIdentifier }) {
+            chats?.remove(at: index)
+            
+            viewController?.reloadData()
+        }
+    }
+    
+    func updateUser(_ user: UsersValue, userIdentifier: String) {
+        print("update user")
+        
+        if let index = chats?.firstIndex(where: { $0.userIdentifier == userIdentifier }) {
+            chats?[index].user = user
+            
+            viewController?.reloadData()
+        }
+    }
+    
+    func updateChatMessage(_ message: ChatsMessagesValue, chatIdentifier: String) {
+        print("update message")
+        
+        if let index = chats?.firstIndex(where: { $0.chatIdentifier == chatIdentifier }) {
+            chats?[index].latestMessage = message
             
             viewController?.reloadData()
         }

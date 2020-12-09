@@ -79,7 +79,7 @@ extension ChatCell {
     }
     
     func configure(withText text: String) {
-        textLabel?.text = text
+        messageLabel.text = text
     }
 }
 
