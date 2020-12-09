@@ -6,6 +6,8 @@
 //
 
 struct FirebaseUser {
+    // MARK: Properties
+    
     let firstName: String
     let lastName: String?
     let userName: String?
@@ -14,6 +16,8 @@ struct FirebaseUser {
     
     private let queryableName: String
     private let queryableUsername: String?
+    
+    // MARK: Initialization
     
     init(firstName: String, lastName: String?, userName: String?, email: String, profilePhotoURL: String?) {
         self.firstName = firstName
@@ -39,7 +43,6 @@ extension FirebaseUser: Codable {
         
         case queryableName = "queryable_name"
         case queryableUsername = "queryable_user_name"
-
     }
 }
 

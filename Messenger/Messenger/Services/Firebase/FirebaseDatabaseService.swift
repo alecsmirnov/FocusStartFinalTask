@@ -13,7 +13,7 @@ enum FirebaseDatabaseStructure {
     typealias MessageIdentifier = String
     
     typealias Users         = [UserIdentifier: FirebaseUser]
-    typealias UsersChats    = [UserIdentifier: [ChatIdentifier: UserIdentifier]]
+    typealias UsersChats    = [UserIdentifier: [ChatIdentifier: FirebaseUserChat]]
     typealias Chats         = [ChatIdentifier: MessageIdentifier]
     typealias ChatsMessages = [ChatIdentifier: FirebaseMessage]
 }
@@ -21,11 +21,12 @@ enum FirebaseDatabaseStructure {
 enum FirebaseDatabaseService {
     // MARK: Completions
     
-    typealias UsersReceivedCompletion = (FirebaseDatabaseStructure.Users?) -> Void
+    typealias FetchUsersCompletion = (FirebaseDatabaseStructure.Users?) -> Void
     typealias UserExistCompletion = (Bool) -> Void
     
     typealias SendMessageCompletion = (SendError?) -> Void
-    typealias FetchChatsCompletion = ([Chat]?, FetchError?) -> Void
+    typealias FetchChatsCompletion = ([FirebaseChat]?, FetchError?) -> Void
+    typealias FetchChatCompletion = (FirebaseChat?, FetchError?) -> Void
     typealias FetchMessageCompletion = (FirebaseDatabaseStructure.ChatsMessages?) -> Void
     
     // MARK: Properties
@@ -58,6 +59,10 @@ enum FirebaseDatabaseService {
         static let chats = "chats"
         static let chatsMessages = "chats_messages"
         static let usersChats = "users_chats"
+        
+        enum ChatsMessages {
+            static let creationTimestamp = "creation_timestamp"
+        }
     }
     
     static private let databaseReference = Database.database().reference()
@@ -72,7 +77,7 @@ extension FirebaseDatabaseService {
         }
     }
     
-    static func getUsers(by parameter: String, key: SearchKey, completion: @escaping UsersReceivedCompletion) {
+    static func fetchUsers(by parameter: String, key: SearchKey, completion: @escaping FetchUsersCompletion) {
         let queryableParameter = parameter.lowercased()
         
         databaseReference.child(Tables.users)
@@ -91,7 +96,7 @@ extension FirebaseDatabaseService {
     }
     
     static func isUserExist(withEmail email: String, completion: @escaping UserExistCompletion) {
-        getUsers(by: email, key: .email) { users in
+        fetchUsers(by: email, key: .email) { users in
             guard let isEmpty = users?.isEmpty, !isEmpty else {
                 completion(false)
                 
@@ -101,18 +106,6 @@ extension FirebaseDatabaseService {
             completion(true)
         }
     }
-    
-//    static func observeUser(withIdentifier identifier: String, completion: @escaping UsersReceivedCompletion) {
-//        databaseReference.child(Paths.users).child(identifier).observe(.value) { snapshot in
-//            guard let value = snapshot.value as? [String: Any] else {
-//                completion(nil)
-//
-//                return
-//            }
-//
-//            completion(dictionaryToDecodable(value, type: [Identifier: FirebaseUser].self))
-//        }
-//    }
 }
 
 // MARK: - Methods For Work With Chats
@@ -139,16 +132,21 @@ extension FirebaseDatabaseService {
                     let chatIdentifier = getChatIdentifier(userIdentifier1: message.senderIdentifier,
                                                            userIdentifier2: userIdentifier)
                                     
-                    if !snapshot.hasChild(userIdentifier) {
+                    if !snapshot.hasChild(chatIdentifier) {
+                        let userRecord = encodableToDictionary(FirebaseUserChat(userIdentifier: userIdentifier))
+                        let senderRecord = encodableToDictionary(
+                            FirebaseUserChat(userIdentifier: message.senderIdentifier)
+                        )
+                        
                         databaseReference.child(Tables.usersChats)
                                          .child(message.senderIdentifier)
                                          .child(chatIdentifier)
-                                         .setValue(userIdentifier)
+                                         .setValue(userRecord)
                         
                         databaseReference.child(Tables.usersChats)
                                          .child(userIdentifier)
                                          .child(chatIdentifier)
-                                         .setValue(message.senderIdentifier)
+                                         .setValue(senderRecord)
                     }
                                     
                     add(message: message, to: chatIdentifier)
@@ -159,19 +157,23 @@ extension FirebaseDatabaseService {
     
     static func fetchChats(for identifier: String, completion: @escaping FetchChatsCompletion) {
         databaseReference.child(Tables.usersChats).child(identifier).observeSingleEvent(of: .value) { snapshot in
-            guard let userChats = snapshot.value as? [String: String] else {
+            guard let value = snapshot.value as? [String: Any] else {
                 completion(nil, .chatNotFound)
                 
                 return
             }
-            
+
             let dispatchGroup = DispatchGroup()
-            var chats = [Chat]()
+            var chats = [FirebaseChat]()
             
-            userChats.forEach { chatIdentifier, userIdentifier in
+            let userChats = dictionaryToDecodable(value, type: [String: FirebaseUserChat].self)
+            
+            userChats.forEach { chatIdentifier, chat in
                 dispatchGroup.enter()
                 
-                databaseReference.child(Tables.users).child(userIdentifier).observeSingleEvent(of: .value) { snapshot in
+                databaseReference.child(Tables.users)
+                                 .child(chat.userIdentifier)
+                                 .observeSingleEvent(of: .value) { snapshot in
                     guard let value = snapshot.value as? [String: Any] else {
                         completion(nil, .userNotFound)
                         
@@ -200,10 +202,10 @@ extension FirebaseDatabaseService {
                             }
                                             
                             let latestMessage = dictionaryToDecodable(value, type: FirebaseMessage.self)
-                            let chat = Chat(chatIdentifier: chatIdentifier,
-                                            userIdentifier: userIdentifier,
-                                            user: user,
-                                            latestMessage: latestMessage)
+                            let chat = FirebaseChat(chatIdentifier: chatIdentifier,
+                                                    userIdentifier: chat.userIdentifier,
+                                                    user: user,
+                                                    latestMessage: latestMessage)
                                             
                             chats.append(chat)
                                             
@@ -219,13 +221,75 @@ extension FirebaseDatabaseService {
         }
     }
     
-    static func observeChats(for userIdentifier: String) {
-        
+    static func observeAddedChats(for identifier: String, completion: @escaping FetchChatCompletion) {
+        let currentTimestamp = Date().timeIntervalSince1970.description
+
+        databaseReference.child(Tables.usersChats)
+                         .child(identifier)
+                         .queryOrdered(byChild: Tables.ChatsMessages.creationTimestamp)
+                         .queryStarting(atValue: currentTimestamp)
+                         .observe(.childAdded) { snapshot in
+            guard let value = snapshot.value as? [String: Any] else {
+                completion(nil, .chatNotFound)
+                
+                return
+            }
+            
+            let chatIdentifier = snapshot.key
+            let userIdentifier = dictionaryToDecodable(value, type: FirebaseUserChat.self).userIdentifier
+            
+            databaseReference.child(Tables.users)
+                             .child(userIdentifier)
+                             .observeSingleEvent(of: .value) { snapshot in
+                guard let value = snapshot.value as? [String: Any] else {
+                    completion(nil, .userNotFound)
+                    
+                    return
+                }
+                                
+                let user = dictionaryToDecodable(value, type: FirebaseUser.self)
+                
+                databaseReference.child(Tables.chats)
+                                 .child(chatIdentifier)
+                                 .observeSingleEvent(of: .value) { snapshot in
+                    guard let latestMessageIdentifier = snapshot.value as? String else {
+                        completion(nil, .latestMessageNotFound)
+                        
+                        return
+                    }
+                                    
+                    databaseReference.child(Tables.chatsMessages)
+                                     .child(chatIdentifier)
+                                     .child(latestMessageIdentifier)
+                                     .observeSingleEvent(of: .value) { snapshot in
+                        guard let value = snapshot.value as? [String: Any] else {
+                            completion(nil, .messageNotFound)
+                            
+                            return
+                        }
+                                        
+                        let latestMessage = dictionaryToDecodable(value, type: FirebaseMessage.self)
+                        let chat = FirebaseChat(chatIdentifier: chatIdentifier,
+                                                userIdentifier: userIdentifier,
+                                                user: user,
+                                                latestMessage: latestMessage)
+                                        
+                        completion(chat, nil)
+                    }
+                }
+            }
+        }
+    }
+    
+    static func observeRemovedChats(for identifier: String, completion: @escaping (String) -> Void) {
+        databaseReference.child(Tables.usersChats).child(identifier).observe(.childRemoved) { snapshot in
+            completion(snapshot.key)
+        }
     }
     
     static func observeChatsMessages(for identifier: String, completion: @escaping FetchMessageCompletion) {
         databaseReference.child(Tables.usersChats).child(identifier).observeSingleEvent(of: .value) { snapshot in
-            guard let userChats = snapshot.value as? [String: String] else {
+            guard let userChats = snapshot.value as? [String: Any] else {
                 completion(nil)
                 
                 return
@@ -249,6 +313,32 @@ extension FirebaseDatabaseService {
                                         
                         completion([chatIdentifier: latestMessage])
                     }
+                }
+            }
+        }
+    }
+    
+    static func observeUsersChange(for identifier: String, completion: @escaping FetchUsersCompletion) {
+        databaseReference.child(Tables.usersChats).child(identifier).observeSingleEvent(of: .value) { snapshot in
+            guard let value = snapshot.value as? [String: Any] else {
+                completion(nil)
+                
+                return
+            }
+            
+            let userChats = dictionaryToDecodable(value, type: [String: FirebaseUserChat].self)
+        
+            userChats.forEach { chatIdentifier, userChat in
+                databaseReference.child(Tables.users).child(userChat.userIdentifier).observe(.value) { snapshot in
+                    guard let value = snapshot.value as? [String: Any] else {
+                        completion(nil)
+                        
+                        return
+                    }
+                    
+                    let firebaseUser = dictionaryToDecodable(value, type: FirebaseUser.self)
+                    
+                    completion([userChat.userIdentifier: firebaseUser])
                 }
             }
         }
