@@ -13,6 +13,9 @@ protocol ILoginView: AnyObject {
 
     var emailText: String? { get }
     var passwordText: String? { get }
+    
+    func showSpinnerView()
+    func hideSpinnerView()
 }
 
 final class LoginView: UIView {
@@ -23,6 +26,7 @@ final class LoginView: UIView {
     
     // MARK: Subviews
     
+    private let spinnerView = SpinnerView()
     private let containerView = UIView()
     
     private let emailTextField = UITextField()
@@ -58,6 +62,14 @@ extension LoginView: ILoginView {
     
     var passwordText: String? {
         return passwordTextField.text
+    }
+    
+    func showSpinnerView() {
+        spinnerView.show()
+    }
+    
+    func hideSpinnerView() {
+        spinnerView.hide()
     }
 }
 
@@ -97,27 +109,27 @@ private extension LoginView {
     
     func setupSignInButtonAppearance() {
         signInButton.setTitle("Sign in", for: .normal)
-        signInButton.setTitleColor(Colors.buttonTitle, for: .normal)
-        signInButton.backgroundColor = Colors.buttonBackground
+        signInButton.setTitleColor(LoginRegistrationColors.buttonTitle, for: .normal)
+        signInButton.backgroundColor = LoginRegistrationColors.buttonBackground
         signInButton.clipsToBounds = true
         signInButton.sizeToFit()
         
-        signInButton.layer.borderWidth = Metrics.borderWidth
-        signInButton.layer.cornerRadius = Metrics.cornerRadius
+        signInButton.layer.borderWidth = LoginRegistrationMetrics.borderWidth
+        signInButton.layer.cornerRadius = LoginRegistrationMetrics.cornerRadius
         
         signInButton.addTarget(self, action: #selector(didPressSignInButton), for: .touchUpInside)
     }
     
     func setupPromptLabelAppearance() {
         promptLabel.text = "Don't have an account?"
-        promptLabel.font = .systemFont(ofSize: Metrics.promptFontSize)
+        promptLabel.font = .systemFont(ofSize: LoginRegistrationMetrics.promptFontSize)
         promptLabel.sizeToFit()
     }
     
     func setupSignUpButtonAppearance() {
         signUpButton.setTitle("Sign up", for: .normal)
-        signUpButton.setTitleColor(Colors.link, for: .normal)
-        signUpButton.titleLabel?.font = .boldSystemFont(ofSize: Metrics.promptFontSize)
+        signUpButton.setTitleColor(LoginRegistrationColors.link, for: .normal)
+        signUpButton.titleLabel?.font = .boldSystemFont(ofSize: LoginRegistrationMetrics.promptFontSize)
         signUpButton.sizeToFit()
         
         signUpButton.addTarget(self, action: #selector(didPressSignUpButton), for: .touchUpInside)
@@ -156,6 +168,7 @@ private extension LoginView {
     
     func setupSubviews() {
         addSubview(containerView)
+        addSubview(spinnerView)
         
         containerView.addSubview(emailTextField)
         containerView.addSubview(passwordTextField)
@@ -172,9 +185,9 @@ private extension LoginView {
         
         NSLayoutConstraint.activate([
             containerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor,
-                                                   constant: Metrics.horizontalSpace),
+                                                   constant: LoginRegistrationMetrics.horizontalSpace),
             containerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
-                                                    constant: -Metrics.horizontalSpace),
+                                                    constant: -LoginRegistrationMetrics.horizontalSpace),
             containerView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
         ])
     }
@@ -194,7 +207,7 @@ private extension LoginView {
         
         NSLayoutConstraint.activate([
             passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor,
-                                                   constant: Metrics.verticalSpace),
+                                                   constant: LoginRegistrationMetrics.verticalSpace),
             passwordTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             passwordTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
         ])
@@ -204,10 +217,11 @@ private extension LoginView {
         signInButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            signInButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: Metrics.verticalSpace),
+            signInButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor,
+                                              constant: LoginRegistrationMetrics.verticalSpace),
             signInButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             signInButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            signInButton.heightAnchor.constraint(equalToConstant: Metrics.buttonHeight),
+            signInButton.heightAnchor.constraint(equalToConstant: LoginRegistrationMetrics.buttonHeight),
         ])
     }
     
@@ -215,7 +229,8 @@ private extension LoginView {
         signUpView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            signUpView.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: Metrics.signInVerticalSpace),
+            signUpView.topAnchor.constraint(equalTo: signInButton.bottomAnchor,
+                                            constant: LoginRegistrationMetrics.signInVerticalSpace),
             signUpView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
             signUpView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
         ])
@@ -229,7 +244,7 @@ private extension LoginView {
             promptLabel.bottomAnchor.constraint(equalTo: signUpView.bottomAnchor),
             promptLabel.leadingAnchor.constraint(equalTo: signUpView.leadingAnchor),
             promptLabel.trailingAnchor.constraint(equalTo: signUpButton.leadingAnchor,
-                                                  constant: -Metrics.signInHorizontalSpace),
+                                                  constant: -LoginRegistrationMetrics.signInHorizontalSpace),
         ])
     }
     
@@ -240,7 +255,7 @@ private extension LoginView {
             signUpButton.topAnchor.constraint(equalTo: signUpView.topAnchor),
             signUpButton.bottomAnchor.constraint(equalTo: signUpView.bottomAnchor),
             signUpButton.leadingAnchor.constraint(equalTo: promptLabel.trailingAnchor,
-                                                  constant: Metrics.signInHorizontalSpace),
+                                                  constant: LoginRegistrationMetrics.signInHorizontalSpace),
             signUpButton.trailingAnchor.constraint(equalTo: signUpView.trailingAnchor),
         ])
     }

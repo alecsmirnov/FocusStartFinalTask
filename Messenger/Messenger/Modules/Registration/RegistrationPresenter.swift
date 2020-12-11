@@ -6,7 +6,8 @@
 //
 
 protocol IRegistrationPresenter: AnyObject {
-    func viewDidLoad(view: IRegistrationView)
+    func didPressSignUpButton(firstName: String?, lastName: String?, email: String?, password: String?)
+    func didPressSignInButton()
 }
 
 final class RegistrationPresenter {
@@ -22,37 +23,14 @@ final class RegistrationPresenter {
 // MARK: - IRegistrationPresenter
 
 extension RegistrationPresenter: IRegistrationPresenter {
-    func viewDidLoad(view: IRegistrationView) {
-        setupViewActions(view: view)
-    }
-}
-
-// MARK: - Private Methods
-
-private extension RegistrationPresenter {
-    func setupViewActions(view: IRegistrationView) {
-        view.signUpButtonAction = { [weak self] in
-            self?.signUpButtonAction(view: view)
-        }
-        
-        view.signInButtonAction = { [weak self] in
-            self?.signInButtonAction()
-        }
-    }
-}
-
-// MARK: - View Actions
-
-private extension RegistrationPresenter {
-    func signUpButtonAction(view: IRegistrationView) {
-        guard let firstName = view.firstNameText, !firstName.isEmpty,
-              let lastName = view.lastNameText,
-              let email = view.emailText,         !email.isEmpty,
-              let password = view.passwordText,   !password.isEmpty else {
+    func didPressSignUpButton(firstName: String?, lastName: String?, email: String?, password: String?) {
+        guard let firstName = firstName, !firstName.isEmpty,
+              let lastName = lastName,
+              let email = email,         !email.isEmpty,
+              let password = password,   !password.isEmpty else {
             LoggingService.log(category: .registration, layer: .view, type: .alert, with: "empty registration fields")
             
-            viewController?.showAlert(title: "Required fields are empty",
-                                      message: "Please enter First name, Email and Password")
+            viewController?.showEmptyFieldsAlert()
             
             return
         }
@@ -62,11 +40,11 @@ private extension RegistrationPresenter {
         
         let user = RegistrationData(firstName: firstName, lastName: lastName, email: email, password: password)
         
-        viewController?.activityIndicator = true
-        interactor?.signUp(withUser: user)
+        viewController?.showSpinnerView()
+        interactor?.signUpAndSignIn(withUser: user)
     }
     
-    func signInButtonAction() {
+    func didPressSignInButton() {
         router?.closeRegistrationViewController()
     }
 }
@@ -78,7 +56,7 @@ private extension RegistrationPresenter {
         guard EmailValidation.isValid(email) else {
             LoggingService.log(category: .registration, layer: .presenter, type: .alert, with: "invalid email address")
             
-            viewController?.showAlert(title: "Invalid email address", message: "Please try again")
+            viewController?.showInvalidEmailAlert()
             
             return
         }
@@ -87,8 +65,7 @@ private extension RegistrationPresenter {
             if isExist {
                 LoggingService.log(category: .registration, layer: .presenter, type: .alert, with: "user already exist")
                 
-                self.viewController?.showAlert(title: "User with this email exists",
-                                               message: "Please login or try another address")
+                self.viewController?.showUserAlreadyExistAlert()
             }
             
             return
@@ -99,8 +76,7 @@ private extension RegistrationPresenter {
         guard Constants.passwordLengthMin <= password.count else {
             LoggingService.log(category: .registration, layer: .presenter, type: .alert, with: "short password")
             
-            viewController?.showAlert(title: "Password is too short",
-                                      message: "Minimum length: \(Constants.passwordLengthMin). Please try again")
+            viewController?.showShortPasswordAlert(passwordLength: Constants.passwordLengthMin)
             
             return
         }
@@ -110,11 +86,8 @@ private extension RegistrationPresenter {
 // MARK: - IRegistrationInteractorOutput
 
 extension RegistrationPresenter: IRegistrationInteractorOutput {
-    func signUpSuccess(_ success: Bool, withUser user: RegistrationData) {
-        viewController?.activityIndicator = false
-        
-        if success {
-            router?.openChatsViewController(withEmail: user.email)
-        }
+    func signInSuccess() {
+        viewController?.hideSpinnerView()
+        router?.openLaunchViewController()
     }
 }

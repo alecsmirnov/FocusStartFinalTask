@@ -7,7 +7,7 @@
 
 protocol IRegistrationRouter: AnyObject {
     func closeRegistrationViewController()
-    func openChatsViewController(withEmail email: String)
+    func openLaunchViewController()
 }
 
 final class RegistrationRouter {
@@ -26,12 +26,10 @@ final class RegistrationRouter {
 
 extension RegistrationRouter: IRegistrationRouter {
     func closeRegistrationViewController() {
-        viewController?.dismiss(animated: true)
+        viewController?.navigationController?.popViewController(animated: true)
     }
     
-    func openChatsViewController(withEmail email: String) {
-        let chatsViewController = ChatsAssembly.createChatsViewController(withEmail: email)
-        
-        viewController?.navigationController?.pushViewController(chatsViewController, animated: true)
+    func openLaunchViewController() {
+        viewController?.navigationController?.popToRootViewController(animated: true)
     }
 }

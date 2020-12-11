@@ -6,11 +6,11 @@
 //
 
 protocol IRegistrationInteractor: AnyObject {
-    func signUp(withUser user: RegistrationData)
+    func signUpAndSignIn(withUser user: RegistrationData)
 }
 
 protocol IRegistrationInteractorOutput: AnyObject {
-    func signUpSuccess(_ success: Bool, withUser user: RegistrationData)
+    func signInSuccess()
 }
 
 final class RegistrationInteractor {
@@ -20,14 +20,12 @@ final class RegistrationInteractor {
 // MARK: - IRegistrationInteractor
 
 extension RegistrationInteractor: IRegistrationInteractor {
-    func signUp(withUser user: RegistrationData) {
+    func signUpAndSignIn(withUser user: RegistrationData) {
         FirebaseAuthService.createUser(withEmail: user.email, password: user.password) { authResult, error in
             guard let authResult = authResult else {
                 if let error = error {
                     LoggingService.log(category: .registration, layer: .interactor, type: .error, with: "\(error)")
                 }
-                
-                self.presenter?.signUpSuccess(false, withUser: user)
                 
                 return
             }
@@ -35,16 +33,40 @@ extension RegistrationInteractor: IRegistrationInteractor {
             LoggingService.log(category: .registration,
                                layer: .interactor,
                                type: .info,
-                               with: "create firebase user \(authResult.user)")
+                               with: "create firebase user \(authResult.user.uid)")
             
-            let firebaseUser = FirebaseUser(firstName: user.firstName,
+            let firebaseUser = UsersValue(firstName: user.firstName,
                                             lastName: user.lastName,
                                             userName: nil,
                                             email: user.email,
                                             profilePhotoURL: nil)
-            FirebaseDatabaseService.addUser(firebaseUser)
+            
+            FirebaseDatabaseService.addUser(firebaseUser, identifier: authResult.user.uid)
+            
+            self.signIn(withEmail: user.email, password: user.password)
+        }
+    }
+}
 
-            self.presenter?.signUpSuccess(true, withUser: user)
+// MARK: - Private Methods
+
+private extension RegistrationInteractor {
+    func signIn(withEmail email: String, password: String) {
+        FirebaseAuthService.signIn(withEmail: email, password: password) { authResult, error in
+            guard let authResult = authResult else {
+                if let error = error {
+                    LoggingService.log(category: .login, layer: .interactor, type: .error, with: "\(error)")
+                }
+                
+                return
+            }
+            
+            LoggingService.log(category: .login,
+                               layer: .interactor,
+                               type: .info,
+                               with: "user \(authResult.user.uid) is logged in")
+            
+            self.presenter?.signInSuccess()
         }
     }
 }

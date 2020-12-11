@@ -8,9 +8,13 @@
 import UIKit
 
 protocol IRegistrationViewController: AnyObject {
-    var activityIndicator: Bool { get set }
+    func showEmptyFieldsAlert()
+    func showInvalidEmailAlert()
+    func showUserAlreadyExistAlert()
+    func showShortPasswordAlert(passwordLength: Int)
     
-    func showAlert(title: String, message: String?)
+    func showSpinnerView()
+    func hideSpinnerView()
 }
 
 final class RegistrationViewController: UIViewController {
@@ -35,49 +39,61 @@ final class RegistrationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        presenter?.viewDidLoad(view: registrationView)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        hideNavigationBar()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        showNavigationBar()
+        setupViewActions()
     }
 }
 
 // MARK: - IRegistrationViewController
 
 extension RegistrationViewController: IRegistrationViewController {
-    var activityIndicator: Bool {
-        get { registrationView.activityIndicator }
-        set { registrationView.activityIndicator = newValue }
+    func showEmptyFieldsAlert() {
+        showAlert(title: "Required fields are empty", message: "Please enter First name, Email and Password")
+    }
+    
+    func showInvalidEmailAlert() {
+        showAlert(title: "Invalid email address", message: "Please try again")
+    }
+    
+    func showUserAlreadyExistAlert() {
+        showAlert(title: "User with this email exists", message: "Please login or try another address")
+    }
+    
+    func showShortPasswordAlert(passwordLength: Int) {
+        showAlert(title: "Password is too short", message: "Minimum length: \(passwordLength). Please try again")
+    }
+    
+    func showSpinnerView() {
+        registrationView.showSpinnerView()
+    }
+    
+    func hideSpinnerView() {
+        registrationView.hideSpinnerView()
+    }
+}
+
+// MARK: - Private Methods
+
+private extension RegistrationViewController {
+    func setupViewActions() {
+        registrationView.signUpButtonAction = { [weak self] in
+            self?.presenter?.didPressSignUpButton(firstName: self?.registrationView.firstNameText,
+                                                  lastName: self?.registrationView.lastNameText,
+                                                  email: self?.registrationView.emailText,
+                                                  password: self?.registrationView.passwordText)
+        }
+        
+        registrationView.signInButtonAction = { [weak self] in
+            self?.presenter?.didPressSignInButton()
+        }
     }
     
     func showAlert(title: String, message: String?) {
         let alertAction = UIAlertAction(title: "Dismiss", style: .cancel)
-        alertAction.setValue(Colors.alertActionButton, forKey: "titleTextColor")
-        
+        alertAction.setValue(LoginRegistrationColors.alertActionButton, forKey: "titleTextColor")
+
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(alertAction)
-        
-        self.present(alert, animated: true)
-    }
-}
 
-// MARK: - Appearance
-
-private extension RegistrationViewController {
-    func hideNavigationBar() {
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-    
-    func showNavigationBar() {
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        present(alert, animated: true)
     }
 }

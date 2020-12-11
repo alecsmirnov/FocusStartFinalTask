@@ -8,7 +8,7 @@
 import UIKit
 
 enum LaunchAssembly {
-    static func createLaunchNavigationViewController() -> UINavigationController {
+    static func createLaunchNavigationController() -> UINavigationController {
         let viewController = LaunchViewController()
         let navigationController = UINavigationController(rootViewController: viewController)
         

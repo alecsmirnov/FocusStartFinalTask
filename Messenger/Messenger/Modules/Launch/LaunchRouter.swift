@@ -28,16 +28,19 @@ extension LaunchRouter: ILaunchRouter {
     func openLoginViewController() {
         let loginViewController = LoginAssembly.createLoginViewController()
         
-        loginViewController.modalPresentationStyle = .fullScreen
+        let navigationController = viewController?.navigationController
+        navigationController?.setNavigationBarHidden(true, animated: false)
         
-        viewController?.navigationController?.pushViewController(loginViewController, animated: false)
+        navigationController?.pushViewController(loginViewController, animated: false)
     }
     
     func openChatsViewController() {
         let chatsViewController = ChatsAssembly.createChatsViewController()
         
-        chatsViewController.modalPresentationStyle = .fullScreen
+        let navigationController = viewController?.navigationController
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.setNavigationBarHidden(false, animated: false)
         
-        viewController?.navigationController?.pushViewController(chatsViewController, animated: false)
+        navigationController?.pushViewController(chatsViewController, animated: false)
     }
 }

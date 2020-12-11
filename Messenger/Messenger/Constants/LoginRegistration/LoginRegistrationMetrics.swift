@@ -1,5 +1,5 @@
 //
-//  Metrics.swift
+//  LoginRegistrationMetrics.swift
 //  Messenger
 //
 //  Created by Admin on 22.11.2020.
@@ -7,7 +7,7 @@
 
 import CoreGraphics
 
-enum Metrics {
+enum LoginRegistrationMetrics {
     static let verticalSpace: CGFloat = 8
     static let horizontalSpace: CGFloat = 16
     
@@ -20,7 +20,4 @@ enum Metrics {
     static let cornerRadius: CGFloat = buttonHeight / 2
     
     static let promptFontSize: CGFloat = 14
-    
-    static let photoHeight: CGFloat = 44
-    static let photoWidth: CGFloat = 44
 }

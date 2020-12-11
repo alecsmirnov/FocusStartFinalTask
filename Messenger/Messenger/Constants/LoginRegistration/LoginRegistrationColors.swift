@@ -1,5 +1,5 @@
 //
-//  Colors.swift
+//  LoginRegistrationColors.swift
 //  Messenger
 //
 //  Created by Admin on 22.11.2020.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum Colors {
+enum LoginRegistrationColors {
     static let buttonTitle = UIColor(white: 1, alpha: 1)
     static let buttonBackground = UIColor(cgColor: CGColor(red: 0, green: 0, blue: 0, alpha: 0.8))
     

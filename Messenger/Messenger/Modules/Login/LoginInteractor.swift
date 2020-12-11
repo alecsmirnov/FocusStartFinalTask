@@ -10,7 +10,8 @@ protocol ILoginInteractor: AnyObject {
 }
 
 protocol ILoginInteractorOutput: AnyObject {
-    func signInSuccess(_ success: Bool, withEmail email: String, password: String)
+    func signInSuccess()
+    func signInFail()
 }
 
 final class LoginInteractor {    
@@ -21,13 +22,13 @@ final class LoginInteractor {
 
 extension LoginInteractor: ILoginInteractor {
     func signIn(withEmail email: String, password: String) {
-        FirebaseAuthService.signIn(withEmail: email, password: password) { authResult, error in
+        FirebaseAuthService.signIn(withEmail: email, password: password) { [weak self] authResult, error in
             guard let authResult = authResult else {
-                if let error = error {
+                if let error = error {                    
                     LoggingService.log(category: .login, layer: .interactor, type: .error, with: "\(error)")
                 }
                 
-                self.presenter?.signInSuccess(false, withEmail: email, password: password)
+                self?.presenter?.signInFail()
                 
                 return
             }
@@ -35,9 +36,9 @@ extension LoginInteractor: ILoginInteractor {
             LoggingService.log(category: .login,
                                layer: .interactor,
                                type: .info,
-                               with: "user \(authResult.user) is logged in")
+                               with: "user \(authResult.user.uid) is logged in")
             
-            self.presenter?.signInSuccess(true, withEmail: email, password: password)
+            self?.presenter?.signInSuccess()
         }
     }
 }
