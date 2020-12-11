@@ -36,16 +36,6 @@ extension LoginPresenter: ILoginPresenter {
             
             return
         }
-        
-        FirebaseDatabaseService.isUserExist(withEmail: email) { [weak self] isExist in
-            if !isExist {
-                LoggingService.log(category: .login, layer: .presenter, type: .alert, with: "user does not exist")
-                
-                self?.viewController?.showUserNotExistAlert()
-            }
-            
-            return
-        }
 
         interactor?.signIn(withEmail: email, password: password)
         viewController?.showSpinnerView()
@@ -64,8 +54,12 @@ extension LoginPresenter: ILoginInteractorOutput {
         router?.openLaunchViewController()
     }
     
-    func signInFail() {
+    func signInFail(_ error: ILoginInteractorError) {
         viewController?.hideSpinnerView()
-        viewController?.showWrongPasswordAlert()
+        
+        switch error {
+        case .userNotFound: viewController?.showUserNotExistAlert()
+        case .wrongPassword: viewController?.showWrongPasswordAlert()
+        }
     }
 }

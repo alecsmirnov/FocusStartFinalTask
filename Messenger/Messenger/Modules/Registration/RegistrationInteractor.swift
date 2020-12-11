@@ -5,12 +5,14 @@
 //  Created by Admin on 22.11.2020.
 //
 
-protocol IRegistrationInteractor: AnyObject {
+protocol IRegistrationInteractor: AnyObject {    
     func signUpAndSignIn(withUser user: RegistrationData)
 }
 
 protocol IRegistrationInteractorOutput: AnyObject {
     func signInSuccess()
+    
+    func signUpFail()
 }
 
 final class RegistrationInteractor {
@@ -21,10 +23,15 @@ final class RegistrationInteractor {
 
 extension RegistrationInteractor: IRegistrationInteractor {
     func signUpAndSignIn(withUser user: RegistrationData) {
-        FirebaseAuthService.createUser(withEmail: user.email, password: user.password) { authResult, error in
+        FirebaseAuthService.createUser(withEmail: user.email,
+                                       password: user.password) { [weak self] authResult, error in
             guard let authResult = authResult else {
                 if let error = error {
                     LoggingService.log(category: .registration, layer: .interactor, type: .error, with: "\(error)")
+                    
+                    if error == .emailAlreadyInUse {
+                        self?.presenter?.signUpFail()
+                    }
                 }
                 
                 return
@@ -36,14 +43,14 @@ extension RegistrationInteractor: IRegistrationInteractor {
                                with: "create firebase user \(authResult.user.uid)")
             
             let firebaseUser = UsersValue(firstName: user.firstName,
-                                            lastName: user.lastName,
-                                            userName: nil,
-                                            email: user.email,
-                                            profilePhotoURL: nil)
+                                          lastName: user.lastName,
+                                          userName: nil,
+                                          email: user.email,
+                                          profilePhotoURL: nil)
             
             FirebaseDatabaseService.addUser(firebaseUser, identifier: authResult.user.uid)
             
-            self.signIn(withEmail: user.email, password: user.password)
+            self?.signIn(withEmail: user.email, password: user.password)
         }
     }
 }
@@ -52,7 +59,7 @@ extension RegistrationInteractor: IRegistrationInteractor {
 
 private extension RegistrationInteractor {
     func signIn(withEmail email: String, password: String) {
-        FirebaseAuthService.signIn(withEmail: email, password: password) { authResult, error in
+        FirebaseAuthService.signIn(withEmail: email, password: password) { [weak self] authResult, error in
             guard let authResult = authResult else {
                 if let error = error {
                     LoggingService.log(category: .login, layer: .interactor, type: .error, with: "\(error)")
@@ -66,7 +73,7 @@ private extension RegistrationInteractor {
                                type: .info,
                                with: "user \(authResult.user.uid) is logged in")
             
-            self.presenter?.signInSuccess()
+            self?.presenter?.signInSuccess()
         }
     }
 }

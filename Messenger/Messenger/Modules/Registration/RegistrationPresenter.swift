@@ -60,16 +60,6 @@ private extension RegistrationPresenter {
             
             return
         }
-        
-        FirebaseDatabaseService.isUserExist(withEmail: email) { isExist in
-            if isExist {
-                LoggingService.log(category: .registration, layer: .presenter, type: .alert, with: "user already exist")
-                
-                self.viewController?.showUserAlreadyExistAlert()
-            }
-            
-            return
-        }
     }
     
     func validatePassword(_ password: String) {
@@ -89,5 +79,10 @@ extension RegistrationPresenter: IRegistrationInteractorOutput {
     func signInSuccess() {
         viewController?.hideSpinnerView()
         router?.openLaunchViewController()
+    }
+    
+    func signUpFail() {
+        viewController?.hideSpinnerView()
+        viewController?.showUserAlreadyExistAlert()
     }
 }
