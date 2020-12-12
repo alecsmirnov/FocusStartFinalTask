@@ -38,7 +38,7 @@ extension RegistrationPresenter: IRegistrationPresenter {
         validateEmail(email)
         validatePassword(password)
         
-        let user = RegistrationData(firstName: firstName, lastName: lastName, email: email, password: password)
+        let user = RegistrationInfo(firstName: firstName, lastName: lastName, email: email, password: password)
         
         viewController?.showSpinnerView()
         interactor?.signUpAndSignIn(withUser: user)

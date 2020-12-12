@@ -6,7 +6,7 @@
 //
 
 protocol IRegistrationInteractor: AnyObject {    
-    func signUpAndSignIn(withUser user: RegistrationData)
+    func signUpAndSignIn(withUser user: RegistrationInfo)
 }
 
 protocol IRegistrationInteractorOutput: AnyObject {
@@ -22,7 +22,7 @@ final class RegistrationInteractor {
 // MARK: - IRegistrationInteractor
 
 extension RegistrationInteractor: IRegistrationInteractor {
-    func signUpAndSignIn(withUser user: RegistrationData) {
+    func signUpAndSignIn(withUser user: RegistrationInfo) {
         FirebaseAuthService.createUser(withEmail: user.email,
                                        password: user.password) { [weak self] authResult, error in
             guard let authResult = authResult else {
