@@ -8,12 +8,15 @@
 import UIKit
 
 protocol ISearchView: AnyObject {
-    var noResultLabelIsHidden: Bool { get set }
-    var activityIndicatorViewIsHidden: Bool { get set }
-    
     var searchText: String? { get }
     
     func reloadData()
+    
+    func showNoResultLabel()
+    func hideNoResultLabel()
+    
+    func showSpinnerView()
+    func hideSpinnerView()
 }
 
 final class SearchView: UIView {
@@ -34,10 +37,15 @@ final class SearchView: UIView {
         set { tableView.delegate = newValue }
     }
     
+    private enum Constants {
+        static let noResultLabelShowAnimationDuration = 0.6
+        static let noResultLabelHideAnimationDuration = 0.1
+    }
+    
     // MARK: Subviews
     
     private let noResultLabel = UILabel()
-    private let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+    private let spinnerView = SpinnerView()
     
     private let searchBar = UISearchBar()
     private let tableView = UITableView()
@@ -59,26 +67,32 @@ final class SearchView: UIView {
 // MARK: - ISearchView
 
 extension SearchView: ISearchView {
-    var noResultLabelIsHidden: Bool {
-        get { noResultLabel.isHidden }
-        set { noResultLabel.isHidden = newValue }
-    }
-    
-    var activityIndicatorViewIsHidden: Bool {
-        get { activityIndicatorView.isHidden }
-        set {
-            activityIndicatorView.isHidden = newValue
-            
-            newValue ? activityIndicatorView.stopAnimating() : activityIndicatorView.startAnimating()
-        }
-    }
-    
     var searchText: String? {
         return searchBar.text
     }
     
     func reloadData() {
         tableView.reloadData()
+    }
+    
+    func showNoResultLabel() {
+        UIView.animate(withDuration: Constants.noResultLabelShowAnimationDuration) {
+            self.noResultLabel.alpha = 1
+        }
+    }
+    
+    func hideNoResultLabel() {
+        UIView.animate(withDuration: Constants.noResultLabelHideAnimationDuration) {
+            self.noResultLabel.alpha = 0
+        }
+    }
+    
+    func showSpinnerView() {
+        spinnerView.show()
+    }
+    
+    func hideSpinnerView() {
+        spinnerView.hide()
     }
 }
 
@@ -89,7 +103,6 @@ private extension SearchView {
         backgroundColor = .systemBackground
         
         setupNoResultLabelAppearance()
-        setupActivityIndicatorViewAppearance()
         
         setupSearchBarAppearance()
         setupTableViewAppearance()
@@ -97,12 +110,7 @@ private extension SearchView {
     
     func setupNoResultLabelAppearance() {
         noResultLabel.text = "No users found"
-        noResultLabel.isHidden = true
-    }
-    
-    func setupActivityIndicatorViewAppearance() {
-        activityIndicatorView.color = .black
-        activityIndicatorView.isHidden = true
+        noResultLabel.alpha = 0
     }
     
     func setupSearchBarAppearance() {
@@ -125,7 +133,6 @@ private extension SearchView {
         setupSubviews()
         
         setupNoResultLabelLayout()
-        setupActivityIndicatorViewLayout()
         
         setupSearchBarLayout()
         setupTableViewLayout()
@@ -133,7 +140,7 @@ private extension SearchView {
     
     func setupSubviews() {
         addSubview(noResultLabel)
-        addSubview(activityIndicatorView)
+        addSubview(spinnerView)
         
         addSubview(searchBar)
         insertSubview(tableView, belowSubview: noResultLabel)
@@ -145,15 +152,6 @@ private extension SearchView {
         NSLayoutConstraint.activate([
             noResultLabel.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             noResultLabel.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor),
-        ])
-    }
-    
-    func setupActivityIndicatorViewLayout() {
-        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            activityIndicatorView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
-            activityIndicatorView.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor),
         ])
     }
     

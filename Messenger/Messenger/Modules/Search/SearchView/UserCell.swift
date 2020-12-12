@@ -19,15 +19,15 @@ final class UserCell: UITableViewCell {
         static let cellContentBottomSpace: CGFloat = 14
         static let cellContentRightSpace: CGFloat = 10
         
-        static let profilePhotoHorizontalSpace: CGFloat = 10
+        static let profileImageHorizontalSpace: CGFloat = 10
         
-        static let profilePhotoHeight: CGFloat = 54
-        static let profilePhotoWidth: CGFloat = 54
+        static let profileImageHeight: CGFloat = 54
+        static let profileImageWidth: CGFloat = 54
         
-        static let nameMessageSpace: CGFloat = 6
+        static let nameEmailVerticalSpace: CGFloat = 6
         
         static let nameLabelFontSize: CGFloat = 17
-        static let messageLabelFontSize: CGFloat = 16
+        static let emailLabelFontSize: CGFloat = 16
     }
     
     private enum LayoutPriority {
@@ -36,19 +36,19 @@ final class UserCell: UITableViewCell {
     
     // MARK: Subviews
     
-    private let profilePhotoView = UIView()
+    private let profileImageView = UIView()
     private let cellContentView = UIView()
     
-    private let profilePhotoImageView = UIImageView()
+    private let profileImageImageView = UIImageView()
     private let nameLabel = UILabel()
-    private let messageLabel = UILabel()
+    private let emailLabel = UILabel()
     
     // MARK: Lifecycle
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        drawProfilePhotoImageView()
+        drawProfileImageImageView()
     }
     
     // MARK: Initialization
@@ -72,17 +72,18 @@ extension UserCell: IUserCell {}
 // MARK: - Public Methods
 
 extension UserCell {
-    func configure(with user: SearchUser) {
+    func configure(with user: UserData) {
         nameLabel.text = "\(user.firstName) \(user.lastName ?? "")"
+        emailLabel.text = user.email
     }
 }
 
 // MARK: - Draw
 
 private extension UserCell {
-    func drawProfilePhotoImageView() {
-        profilePhotoImageView.layer.cornerRadius = profilePhotoImageView.frame.size.height / 2
-        profilePhotoImageView.clipsToBounds = true
+    func drawProfileImageImageView() {
+        profileImageImageView.layer.cornerRadius = profileImageImageView.frame.size.height / 2
+        profileImageImageView.clipsToBounds = true
     }
 }
 
@@ -90,16 +91,17 @@ private extension UserCell {
 
 private extension UserCell {
     func setupAppearance() {
-        setupProfilePhotoImageViewAppearance()
+        setupProfileImageImageViewAppearance()
         setupNameLabelAppearance()
-        setupMessageLabelAppearance()
+        setupEmailLabelAppearance()
         
         setupSeparatorAppearance()
     }
     
-    func setupProfilePhotoImageViewAppearance() {
-        profilePhotoImageView.contentMode = .scaleAspectFill
-        profilePhotoImageView.backgroundColor = .systemGray3
+    func setupProfileImageImageViewAppearance() {
+        profileImageImageView.contentMode = .scaleAspectFill
+        profileImageImageView.layer.borderWidth = 1
+        profileImageImageView.layer.borderColor = UIColor.systemGray.cgColor
     }
     
     func setupNameLabelAppearance() {
@@ -107,14 +109,14 @@ private extension UserCell {
         nameLabel.numberOfLines = 1
     }
     
-    func setupMessageLabelAppearance() {
-        messageLabel.font = .systemFont(ofSize: Metrics.messageLabelFontSize)
-        messageLabel.numberOfLines = 1
-        messageLabel.text = " "
+    func setupEmailLabelAppearance() {
+        emailLabel.font = .systemFont(ofSize: Metrics.emailLabelFontSize)
+        emailLabel.numberOfLines = 1
+        emailLabel.textColor = .darkGray
     }
     
     func setupSeparatorAppearance() {
-        let leftInset = Metrics.profilePhotoWidth + Metrics.profilePhotoHorizontalSpace * 2
+        let leftInset = Metrics.profileImageWidth + Metrics.profileImageHorizontalSpace * 2
         separatorInset = UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: 0)
     }
 }
@@ -125,30 +127,30 @@ private extension UserCell {
     func setupLayout() {
         setupSubviews()
         
-        setupProfilePhotoViewLayout()
+        setupProfileImageViewLayout()
         setupCellContentViewLayout()
         
         setupProfilePhotoImageViewLayout()
         setupNameLabelLayout()
-        setupMessageLabelLayout()
+        setupEmailLabelLayout()
     }
     
     func setupSubviews() {
-        contentView.addSubview(profilePhotoView)
+        contentView.addSubview(profileImageView)
         contentView.addSubview(cellContentView)
         
-        profilePhotoView.addSubview(profilePhotoImageView)
+        profileImageView.addSubview(profileImageImageView)
         
         cellContentView.addSubview(nameLabel)
-        cellContentView.addSubview(messageLabel)
+        cellContentView.addSubview(emailLabel)
     }
     
-    func setupProfilePhotoViewLayout() {
-        profilePhotoView.translatesAutoresizingMaskIntoConstraints = false
+    func setupProfileImageViewLayout() {
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            profilePhotoView.centerYAnchor.constraint(equalTo: cellContentView.centerYAnchor),
-            profilePhotoView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            profileImageView.centerYAnchor.constraint(equalTo: cellContentView.centerYAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
         ])
     }
     
@@ -164,24 +166,24 @@ private extension UserCell {
         NSLayoutConstraint.activate([
             cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Metrics.cellContentTopSpace),
             cellContentViewBottomConstraint,
-            cellContentView.leadingAnchor.constraint(equalTo: profilePhotoView.trailingAnchor),
+            cellContentView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor),
             cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
                                                       constant: -Metrics.cellContentRightSpace),
         ])
     }
     
     func setupProfilePhotoImageViewLayout() {
-        profilePhotoImageView.translatesAutoresizingMaskIntoConstraints = false
+        profileImageImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            profilePhotoImageView.topAnchor.constraint(equalTo: profilePhotoView.topAnchor),
-            profilePhotoImageView.bottomAnchor.constraint(equalTo: profilePhotoView.bottomAnchor),
-            profilePhotoImageView.leadingAnchor.constraint(equalTo: profilePhotoView.leadingAnchor,
-                                                           constant: Metrics.profilePhotoHorizontalSpace),
-            profilePhotoImageView.trailingAnchor.constraint(equalTo: profilePhotoView.trailingAnchor,
-                                                            constant: -Metrics.profilePhotoHorizontalSpace),
-            profilePhotoImageView.heightAnchor.constraint(equalToConstant: Metrics.profilePhotoHeight),
-            profilePhotoImageView.widthAnchor.constraint(equalToConstant: Metrics.profilePhotoWidth),
+            profileImageImageView.topAnchor.constraint(equalTo: profileImageView.topAnchor),
+            profileImageImageView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor),
+            profileImageImageView.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor,
+                                                           constant: Metrics.profileImageHorizontalSpace),
+            profileImageImageView.trailingAnchor.constraint(equalTo: profileImageView.trailingAnchor,
+                                                            constant: -Metrics.profileImageHorizontalSpace),
+            profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageHeight),
+            profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageWidth),
         ])
     }
     
@@ -195,14 +197,14 @@ private extension UserCell {
         ])
     }
     
-    func setupMessageLabelLayout() {
-        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+    func setupEmailLabelLayout() {
+        emailLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Metrics.nameMessageSpace),
-            messageLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor),
-            messageLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor),
-            messageLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor),
+            emailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Metrics.nameEmailVerticalSpace),
+            emailLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor),
+            emailLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor),
+            emailLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor),
         ])
     }
 }

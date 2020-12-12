@@ -8,11 +8,11 @@
 import Dispatch
 
 protocol ISearchInteractor: AnyObject {
-    func fetchUsers(by name: String)
+    func fetchUsers()
 }
 
 protocol ISearchInteractorOutput: AnyObject {
-    func fetchUsersSuccess(_ users: [SearchUser])
+    func fetchUsersSuccess(_ users: [UserData])
     func fetchUsersFail()
 }
 
@@ -23,72 +23,33 @@ final class SearchInteractor {
 // MARK: - ISearchInteractor
 
 extension SearchInteractor: ISearchInteractor {
-    func fetchUsers(by name: String) {
+    func fetchUsers() {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
         
-        FirebaseDatabaseService.getUsers(by: name, key: .name) { users in
+        FirebaseDatabaseService.fetchUsers { users in
             guard let users = users?.filter({ $0.key != userIdentifier }), !users.isEmpty else {
                 self.presenter?.fetchUsersFail()
 
                 return
             }
             
-            let searchUsers = users.map { identifier, user in
-                return SearchUser(identifier: identifier, firstName: user.firstName, lastName: user.lastName)
-            }
-
-            self.presenter?.fetchUsersSuccess(searchUsers)
-            
-            /*
-            FirebaseDatabaseService.getCompanions(to: userIdentifier) { companions in
-                guard let companions = companions else {
-                    let searchCompanions = users.map { firebaseUser -> SearchCompanion in
-                        let companionIdentifier = firebaseUser.key
-                        let companion = firebaseUser.value
-                        
-                        return SearchCompanion(userIdentifier: companionIdentifier,
-                                               firstName: companion.firstName,
-                                               lastName: companion.lastName,
-                                               profilePhotoURL: companion.profilePhotoURL,
-                                               chat: nil)
-                    }
-                    
-                    self.presenter?.receiveCompanions(searchCompanions)
-                    
-                    return
-                }
-                
-                let dispatchGroup = DispatchGroup()
-                var companionsChats = [String: SearchChat]()
-                
-                companions.forEach { companionIdentifier, chatIdentifier in
-                    dispatchGroup.enter()
-                    
-                    FirebaseDatabaseService.getLatestMessage(from: chatIdentifier) { message in
-                        guard let message = message else { return }
-                        companionsChats[companionIdentifier] = SearchChat(chatIdentifier: chatIdentifier,
-                                                                          latestMessages: message)
-                        
-                        dispatchGroup.leave()
-                    }
-                }
-                
-                dispatchGroup.notify(queue: .main) {
-                    let searchCompanions = users.map { firebaseUser -> SearchCompanion in
-                        let companionIdentifier = firebaseUser.key
-                        let companion = firebaseUser.value
-                        
-                        return SearchCompanion(userIdentifier: companionIdentifier,
-                                               firstName: companion.firstName,
-                                               lastName: companion.lastName,
-                                               profilePhotoURL: companion.profilePhotoURL,
-                                               chat: companionsChats[companionIdentifier])
-                    }
-
-                    self.presenter?.receiveCompanions(searchCompanions)
-                }
-            }
-            */
+            self.presenter?.fetchUsersSuccess(SearchInteractor.firebaseUsersToUsersData(users))
         }
+    }
+}
+
+// MARK: - Private Methods
+
+private extension SearchInteractor {
+    static func firebaseUsersToUsersData(_ users: [String: UsersValue]) -> [UserData] {
+        let usersData = users.map { identifier, user in
+            return UserData(identifier: identifier,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            email: user.email,
+                            profilePhotoURL: user.profilePhotoURL)
+        }
+        
+        return usersData
     }
 }

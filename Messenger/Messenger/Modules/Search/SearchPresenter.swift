@@ -5,17 +5,23 @@
 //  Created by Admin on 27.11.2020.
 //
 
+import Dispatch
+
 protocol ISearchPresenter: AnyObject {
     var usersCount: Int { get }
     
-    func user(forRowAt index: Int) -> SearchUser?
+    func viewDidLoad()
+    
+    func user(forRowAt index: Int) -> UserData
     
     func didChangeText(_ text: String)
     func didSelectUserAt(index: Int)
+    
+    func didPressCloseButton()
 }
 
 protocol ISearchPresenterDelegate: AnyObject {
-    func iSearchPresenter(_ searchPresenter: ISearchPresenter, didSelectUser user: SearchUser)
+    func iSearchPresenter(_ searchPresenter: ISearchPresenter, didSelectUser user: UserData)
 }
 
 final class SearchPresenter {
@@ -27,18 +33,35 @@ final class SearchPresenter {
     
     weak var delegate: ISearchPresenterDelegate?
     
-    private var users: [SearchUser]?
+    private enum Constants {
+        static let searchIndicationDelay = 0.8
+    }
+    
+    private var isSearchExecuted = false
+    
+    private var users = [UserData]()
+    private var filteredUsers = [UserData]()
 }
 
 // MARK: - ISearchPresenter
 
 extension SearchPresenter: ISearchPresenter {
     var usersCount: Int {
-        return users?.count ?? 0
+        return filteredUsers.count
     }
     
-    func user(forRowAt index: Int) -> SearchUser? {
-        return users?[index]
+    func viewDidLoad() {
+        interactor?.fetchUsers()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.searchIndicationDelay) {
+            if !self.isSearchExecuted {
+                self.viewController?.showSpinnerView()
+            }
+        }
+    }
+    
+    func user(forRowAt index: Int) -> UserData {
+        return filteredUsers[index]
     }
     
     func didChangeText(_ text: String) {
@@ -46,26 +69,36 @@ extension SearchPresenter: ISearchPresenter {
     }
     
     func didSelectUserAt(index: Int) {
-        if let user = users?[index] {
-            router?.closeSearchViewController()
-            delegate?.iSearchPresenter(self, didSelectUser: user)
-        }
+        router?.closeSearchViewController()
+        delegate?.iSearchPresenter(self, didSelectUser: users[index])
+    }
+    
+    func didPressCloseButton() {
+        router?.closeSearchViewController()
     }
 }
 
-// MARK: - Helper Methods
+// MARK: - Private Methods
 
 private extension SearchPresenter {
     func search(by name: String) {
-        users?.removeAll()
+        filteredUsers = users
         
-        viewController?.noResultLabelIsHidden = true
+        viewController?.hideNoResultLabel()
+        viewController?.reloadData()
        
         if !name.isEmpty {
-            viewController?.activityIndicatorViewIsHidden = false
-    
-            interactor?.fetchUsers(by: name)
-        } else {
+            filteredUsers = users.filter { user in
+                let userName = "\(user.firstName) \(user.lastName ?? "")".lowercased()
+                let searchName = name.lowercased()
+                
+                return userName.contains(searchName)
+            }
+            
+            if filteredUsers.isEmpty {
+                viewController?.showNoResultLabel()
+            }
+            
             viewController?.reloadData()
         }
     }
@@ -74,15 +107,20 @@ private extension SearchPresenter {
 // MARK: - ISearchInteractorOutput
 
 extension SearchPresenter: ISearchInteractorOutput {
-    func fetchUsersSuccess(_ users: [SearchUser]) {
+    func fetchUsersSuccess(_ users: [UserData]) {
         self.users = users
+        filteredUsers = users
         
-        viewController?.activityIndicatorViewIsHidden = true
+        isSearchExecuted = true
+        
+        viewController?.hideSpinnerView()
         viewController?.reloadData()
     }
     
     func fetchUsersFail() {
-        viewController?.activityIndicatorViewIsHidden = true
-        viewController?.noResultLabelIsHidden = false
+        isSearchExecuted = true
+        
+        viewController?.hideSpinnerView()
+        viewController?.showNoResultLabel()
     }
 }
