@@ -12,7 +12,8 @@ protocol IChatLogInteractor: AnyObject {
     
     func sendMessage(_ messageType: ChatsMessagesType, toChat chatIdentifier: String)
     
-    func observeMessages(for chatIdentifier: String)
+    func fetchMessages(chatIdentifier: String)
+    func observeMessages(chatIdentifier: String)
 }
 
 protocol IChatLogInteractorOutput: AnyObject {
@@ -44,9 +45,16 @@ extension ChatLogInteractor: IChatLogInteractor {
         FirebaseDatabaseService.sendMessage(message, chatIdentifier: chatIdentifier)
     }
     
-    func observeMessages(for chatIdentifier: String) {
-//        FirebaseDatabaseService.observeMessages(for: chatIdentifier) { [weak self] message in
-//            self?.presenter?.addedMessage(message)
-//        }
+    func fetchMessages(chatIdentifier: String) {
+        
+    }
+    
+    func observeMessages(chatIdentifier: String) {
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
+        
+        FirebaseDatabaseService.observeChatMessages(userIdentifier: userIdentifier,
+                                                    chatIdentifier: chatIdentifier) { [weak self] message in
+            self?.presenter?.addedMessage(message)
+        }
     }
 }

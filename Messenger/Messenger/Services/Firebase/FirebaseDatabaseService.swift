@@ -44,6 +44,9 @@ enum FirebaseDatabaseService {
             return Date().timeIntervalSince1970
         }
         
+        // to delete chat from observation
+        static let userActiveValue = true
+        
         static let emptyValue = 0
         static let counterInitialValue = 1
         
@@ -216,7 +219,7 @@ private extension FirebaseDatabaseService {
         databaseReference.child(Tables.chatsMembers)
                          .child(chatIdentifier)
                          .child(userIdentifier)
-                         .setValue(Constants.emptyValue)
+                         .setValue(Constants.userActiveValue)
 
         databaseReference.child(Tables.usersChats)
                          .child(userIdentifier)
@@ -523,7 +526,23 @@ private extension FirebaseDatabaseService {
 // MARK: - Fetch Messages
 
 extension FirebaseDatabaseService {
-    
+    static func observeChatMessages(userIdentifier: String,
+                                      chatIdentifier: String,
+                                      completion: @escaping (ChatsMessagesValue) -> Void) {
+        databaseReference.child(Tables.usersChatsMessages)
+                         .child(userIdentifier)
+                         .child(chatIdentifier)
+                         .observe(.childAdded) { snapshot in
+            let messageIdentifier = snapshot.key
+            
+            fetchChatMessage(chatIdentifier: chatIdentifier,
+                             messageIdentifier: messageIdentifier) { message in
+                if let message = message {
+                    completion(message)
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Helpers

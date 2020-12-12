@@ -35,6 +35,8 @@ final class ChatLogViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        presenter?.viewDidLoad()
+        
         setupView()
     }
     

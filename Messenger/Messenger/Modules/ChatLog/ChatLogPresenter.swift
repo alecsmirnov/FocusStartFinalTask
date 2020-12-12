@@ -5,12 +5,13 @@
 //  Created by Admin on 26.11.2020.
 //
 
-import Foundation
+import Dispatch
 
 protocol IChatLogPresenter: AnyObject {
     var sectionsCount: Int { get }
     var messagesCount: Int { get }
     
+    func viewDidLoad()
     func viewWillAppear()
     
     func didPressSendButton(messageType: ChatsMessagesType)
@@ -42,6 +43,12 @@ extension ChatLogPresenter: IChatLogPresenter {
 }
 
 extension ChatLogPresenter {
+    func viewDidLoad() {
+        if let chatIdentifier = chatIdentifier {
+            interactor?.observeMessages(chatIdentifier: chatIdentifier)
+        }
+    }
+    
     func viewWillAppear() {
         if let companion = companion {
             let receiverName = "\(companion.firstName) \(companion.lastName ?? "")"
@@ -67,10 +74,13 @@ extension ChatLogPresenter {
     }
 }
 
+// MARK: - IChatLogInteractorOutput
+
 extension ChatLogPresenter: IChatLogInteractorOutput {   
     func addedMessage(_ message: ChatsMessagesValue) {
         messages.append(message)
         
-        viewController?.reloadData()
+        // TODO: add new row
+        self.viewController?.reloadData()
     }
 }
