@@ -20,9 +20,7 @@ final class UserCell: UITableViewCell {
         static let cellContentRightSpace: CGFloat = 10
         
         static let profileImageHorizontalSpace: CGFloat = 10
-        
-        static let profileImageHeight: CGFloat = 54
-        static let profileImageWidth: CGFloat = 54
+        static let profileImageSize: CGFloat = 54
         
         static let nameEmailVerticalSpace: CGFloat = 6
         
@@ -72,7 +70,7 @@ extension UserCell: IUserCell {}
 // MARK: - Public Methods
 
 extension UserCell {
-    func configure(with user: UserData) {
+    func configure(with user: UserInfo) {
         nameLabel.text = "\(user.firstName) \(user.lastName ?? "")"
         emailLabel.text = user.email
     }
@@ -116,7 +114,7 @@ private extension UserCell {
     }
     
     func setupSeparatorAppearance() {
-        let leftInset = Metrics.profileImageWidth + Metrics.profileImageHorizontalSpace * 2
+        let leftInset = Metrics.profileImageSize + Metrics.profileImageHorizontalSpace * 2
         separatorInset = UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: 0)
     }
 }
@@ -182,8 +180,8 @@ private extension UserCell {
                                                            constant: Metrics.profileImageHorizontalSpace),
             profileImageImageView.trailingAnchor.constraint(equalTo: profileImageView.trailingAnchor,
                                                             constant: -Metrics.profileImageHorizontalSpace),
-            profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageHeight),
-            profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageWidth),
+            profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageSize),
+            profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageSize),
         ])
     }
     

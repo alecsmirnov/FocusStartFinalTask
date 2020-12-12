@@ -143,7 +143,7 @@ extension SearchViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 
 extension SearchViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {        
         presenter?.didSelectUserAt(index: indexPath.row)
     }
 }

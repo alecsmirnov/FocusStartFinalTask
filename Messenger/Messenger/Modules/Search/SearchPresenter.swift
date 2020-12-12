@@ -12,7 +12,7 @@ protocol ISearchPresenter: AnyObject {
     
     func viewDidLoad()
     
-    func user(forRowAt index: Int) -> UserData
+    func user(forRowAt index: Int) -> UserInfo
     
     func didChangeText(_ text: String)
     func didSelectUserAt(index: Int)
@@ -21,7 +21,7 @@ protocol ISearchPresenter: AnyObject {
 }
 
 protocol ISearchPresenterDelegate: AnyObject {
-    func iSearchPresenter(_ searchPresenter: ISearchPresenter, didSelectUser user: UserData)
+    func iSearchPresenter(_ searchPresenter: ISearchPresenter, didSelectUser user: UserInfo)
 }
 
 final class SearchPresenter {
@@ -39,8 +39,8 @@ final class SearchPresenter {
     
     private var isSearchExecuted = false
     
-    private var users = [UserData]()
-    private var filteredUsers = [UserData]()
+    private var users = [UserInfo]()
+    private var filteredUsers = [UserInfo]()
 }
 
 // MARK: - ISearchPresenter
@@ -60,7 +60,7 @@ extension SearchPresenter: ISearchPresenter {
         }
     }
     
-    func user(forRowAt index: Int) -> UserData {
+    func user(forRowAt index: Int) -> UserInfo {
         return filteredUsers[index]
     }
     
@@ -107,11 +107,13 @@ private extension SearchPresenter {
 // MARK: - ISearchInteractorOutput
 
 extension SearchPresenter: ISearchInteractorOutput {
-    func fetchUsersSuccess(_ users: [UserData]) {
-        self.users = users
-        filteredUsers = users
-        
+    func fetchUsersSuccess(_ users: [UserInfo]) {
         isSearchExecuted = true
+        
+        let sortedUsers = users.sorted { $0.firstName < $1.firstName }
+        
+        self.users = sortedUsers
+        filteredUsers = sortedUsers
         
         viewController?.hideSpinnerView()
         viewController?.reloadData()

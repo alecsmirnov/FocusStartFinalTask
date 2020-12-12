@@ -12,7 +12,7 @@ protocol ISearchInteractor: AnyObject {
 }
 
 protocol ISearchInteractorOutput: AnyObject {
-    func fetchUsersSuccess(_ users: [UserData])
+    func fetchUsersSuccess(_ users: [UserInfo])
     func fetchUsersFail()
 }
 
@@ -41,9 +41,9 @@ extension SearchInteractor: ISearchInteractor {
 // MARK: - Private Methods
 
 private extension SearchInteractor {
-    static func firebaseUsersToUsersData(_ users: [String: UsersValue]) -> [UserData] {
+    static func firebaseUsersToUsersData(_ users: [String: UsersValue]) -> [UserInfo] {
         let usersData = users.map { identifier, user in
-            return UserData(identifier: identifier,
+            return UserInfo(identifier: identifier,
                             firstName: user.firstName,
                             lastName: user.lastName,
                             email: user.email,
