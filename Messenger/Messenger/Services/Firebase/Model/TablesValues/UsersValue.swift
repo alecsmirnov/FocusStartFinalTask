@@ -14,20 +14,20 @@ struct UsersValue {
     var email: String { info.email }
     var profilePhotoURL: String? { info.profilePhotoURL }
     
-    private let info: UsersInfo
+    private let info: Info
     
     // MARK: Initialization
     
     init(firstName: String, lastName: String?, userName: String?, email: String, profilePhotoURL: String?) {
-        info = UsersInfo(firstName: firstName,
-                         lastName: lastName,
-                         userName: userName,
-                         email: email,
-                         profilePhotoURL: profilePhotoURL)
+        info = Info(firstName: firstName,
+                    lastName: lastName,
+                    userName: userName,
+                    email: email,
+                    profilePhotoURL: profilePhotoURL)
     }
 }
 
-fileprivate struct UsersInfo {
+fileprivate struct Info {
     // MARK: Properties
     
     let firstName: String
@@ -57,7 +57,7 @@ fileprivate struct UsersInfo {
 
 extension UsersValue: Codable {}
 
-extension UsersInfo: Codable {
+extension Info: Codable {
     enum CodingKeys: String, CodingKey {
         case firstName = "first_name"
         case lastName = "last_name"

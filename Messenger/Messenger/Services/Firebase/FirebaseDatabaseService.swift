@@ -80,6 +80,19 @@ extension FirebaseDatabaseService {
 // MARK: - Fetch Users
 
 extension FirebaseDatabaseService {
+    static func fetchUsers(completion: @escaping FetchUsersCompletion) {
+        databaseReference.child(Tables.users)
+                         .observeSingleEvent(of: .value) { snapshot in
+            guard let value = snapshot.value as? [String: Any] else {
+                completion(nil)
+                
+                return
+            }
+                            
+            completion(dictionaryToDecodable(value, type: [String: UsersValue].self))
+        }
+    }
+    
     static func fetchUsers(by parameter: String, key: SearchKey, completion: @escaping FetchUsersCompletion) {
         let queryableParameter = parameter.lowercased()
         
