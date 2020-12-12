@@ -1,5 +1,5 @@
 //
-//  ChatPresenter.swift
+//  ChatLogPresenter.swift
 //  Messenger
 //
 //  Created by Admin on 26.11.2020.
@@ -12,15 +12,15 @@ protocol IChatPresenter: AnyObject {
     func viewDidAppear()
 }
 
-final class ChatPresenter {
-    weak var viewController: IChatViewController?
-    var interactor: IChatInteractor?
+final class ChatLogPresenter {
+    weak var viewController: IChatLogViewController?
+    var interactor: IChatLogInteractor?
     var router: IChatRouter?
 }
 
 // MARK: - IChatPresenter
 
-extension ChatPresenter: IChatPresenter {
+extension ChatLogPresenter: IChatPresenter {
     var sectionsCount: Int {
         return 1
     }

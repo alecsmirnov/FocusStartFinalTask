@@ -12,7 +12,10 @@ final class MessageCell: UICollectionViewCell {
     
     static let reuseIdentifier = String(describing: self)
     
-    private enum MessageMetrics {
+    private enum Metrics {
+        static let verticalSpace: CGFloat = 8
+        static let horizontalSpace: CGFloat = 16
+        
         static let avatarSize: CGFloat = 44
     }
     
@@ -41,6 +44,16 @@ final class MessageCell: UICollectionViewCell {
     }
 }
 
+extension MessageCell {
+    func configure(firstName: String, lastName: String?, messageText: String) {
+        nameLabel.text = "\(firstName) \(lastName ?? "")"
+        messageLabel.text = messageText
+        dateLabel.text = ""
+        
+        avatarImageView.image = UIImage(systemName: "person")
+    }
+}
+
 // MARK: - Appearance
 
 private extension MessageCell {
@@ -49,8 +62,6 @@ private extension MessageCell {
         
         setupBubbleViewAppearance()
         setupNameLabelAppearance()
-        
-        configure()
     }
     
     func setupBubbleViewAppearance() {
@@ -61,14 +72,6 @@ private extension MessageCell {
     
     func setupNameLabelAppearance() {
         nameLabel.font = .boldSystemFont(ofSize: nameLabel.font.pointSize)
-    }
-    
-    func configure() {
-        nameLabel.text = "John Doe"
-        messageLabel.text = "text text text text text text"
-        dateLabel.text = "today"
-        
-        avatarImageView.image = UIImage(systemName: "person")
     }
 }
 
@@ -147,8 +150,8 @@ private extension MessageCell {
             avatarImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
                                                      constant: Metrics.horizontalSpace),
-            avatarImageView.heightAnchor.constraint(equalToConstant: MessageMetrics.avatarSize),
-            avatarImageView.widthAnchor.constraint(equalToConstant: MessageMetrics.avatarSize),
+            avatarImageView.heightAnchor.constraint(equalToConstant: Metrics.avatarSize),
+            avatarImageView.widthAnchor.constraint(equalToConstant: Metrics.avatarSize),
         ])
     }
 }

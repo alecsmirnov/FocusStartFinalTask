@@ -1,5 +1,5 @@
 //
-//  ChatView.swift
+//  ChatLogView.swift
 //  Messenger
 //
 //  Created by Admin on 26.11.2020.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol IChatView: AnyObject {
+protocol IChatLogView: AnyObject {
     var sendMessageButtonAction: Completions.ButtonPress? { get set }
 
     var messageText: String? { get }
@@ -17,7 +17,7 @@ protocol IChatView: AnyObject {
     //func contentToBottom()
 }
 
-final class ChatView: UIView {
+final class ChatLogView: UIView {
     // MARK: Properties
     
     var sendMessageButtonAction: Completions.ButtonPress?
@@ -32,6 +32,11 @@ final class ChatView: UIView {
         set { collectionView.delegate = newValue }
     }
     
+    private enum Metrics {
+        static let verticalSpace: CGFloat = 8
+        static let horizontalSpace: CGFloat = 16
+    }
+    
     private enum Settings {
         static let keyboardAnimationDuration = 0.5
     }
@@ -43,7 +48,9 @@ final class ChatView: UIView {
     
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
+    // TODO: rename - inputContainer
     private let textContainerView = UIView()
+    // TODO: rename - inputTextView
     private let textView = UITextView()
     private let sendButton = UIButton(type: .system)
     
@@ -64,9 +71,9 @@ final class ChatView: UIView {
     }
 }
 
-// MARK: - IChatsView
+// MARK: - IChatLogView
 
-extension ChatView: IChatView {
+extension ChatLogView: IChatLogView {
     var messageText: String? {
         return textView.text
     }
@@ -100,7 +107,7 @@ extension ChatView: IChatView {
 
 // MARK: - Appearance
 
-private extension ChatView {
+private extension ChatLogView {
     func setupAppearance() {
         backgroundColor = .systemBackground
         
@@ -149,7 +156,7 @@ private extension ChatView {
 
 // MARK: - Actions
 
-private extension ChatView {
+private extension ChatLogView {
     @objc func didPressSendButton() {
         sendMessageButtonAction?()
     }
@@ -157,7 +164,7 @@ private extension ChatView {
 
 // MARK: - Layout
 
-private extension ChatView {
+private extension ChatLogView {
     func setupLayout() {
         setupSubviews()
         
@@ -229,7 +236,7 @@ private extension ChatView {
 
 // MARK: - Keyboard Events
 
-private extension ChatView {
+private extension ChatLogView {
     func setupKeyboardObservers() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillShow),
@@ -262,7 +269,7 @@ private extension ChatView {
 
 // MARK: - UITextViewDelegate
 
-extension ChatView: UITextViewDelegate {
+extension ChatLogView: UITextViewDelegate {
     // TODO: input check
 //    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
 //
