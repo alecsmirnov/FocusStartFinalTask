@@ -5,9 +5,11 @@
 //  Created by Admin on 22.11.2020.
 //
 
+import UIKit
+
 protocol IChatsRouter: AnyObject {
     func openMenuViewController()
-    func openChatLogViewController(with user: UserData)
+    func openChatLogViewController(with user: UserInfo, chatIdentifier: String?)
     func openSearchViewController(delegate: ISearchPresenterDelegate?)
 }
 
@@ -32,15 +34,18 @@ extension ChatsRouter: IChatsRouter {
         viewController?.navigationController?.pushViewController(menuViewController, animated: true)
     }
     
-    func openChatLogViewController(with user: UserData) {
-        let chatLogViewController = ChatLogAssembly.createChatLogViewController(with: user)
+    func openChatLogViewController(with user: UserInfo, chatIdentifier: String?) {
+        let chatLogViewController = ChatLogAssembly.createChatLogViewController(with: user, chatIdentifier: chatIdentifier)
         
         viewController?.navigationController?.pushViewController(chatLogViewController, animated: true)
     }
     
     func openSearchViewController(delegate: ISearchPresenterDelegate?) {
         let searchViewController = SearchAssembly.createSearchViewController(delegate: delegate)
+        let navigationController = UINavigationController(rootViewController: searchViewController)
         
-        viewController?.present(searchViewController, animated: true)
+        navigationController.modalPresentationStyle = .fullScreen
+        
+        viewController?.present(navigationController, animated: true)
     }
 }

@@ -19,10 +19,8 @@ final class ChatCell: UITableViewCell {
         static let cellContentBottomSpace: CGFloat = 14
         static let cellContentRightSpace: CGFloat = 10
         
-        static let profilePhotoHorizontalSpace: CGFloat = 10
-        
-        static let profilePhotoHeight: CGFloat = 54
-        static let profilePhotoWidth: CGFloat = 54
+        static let profileImageHorizontalSpace: CGFloat = 10
+        static let profileImageSize: CGFloat = 54
         
         static let nameMessageSpace: CGFloat = 6
         
@@ -37,10 +35,10 @@ final class ChatCell: UITableViewCell {
     
     // MARK: Subviews
     
-    private let profilePhotoView = UIView()
+    private let profileImageView = UIView()
     private let cellContentView = UIView()
     
-    private let profilePhotoImageView = UIImageView()
+    private let profileImageImageView = UIImageView()
     private let nameLabel = UILabel()
     private let timestampLabel = UILabel()
     private let messageLabel = UILabel()
@@ -81,14 +79,26 @@ extension ChatCell {
     func configure(withText text: String) {
         messageLabel.text = text
     }
+    
+    func setImage(urlString: String) {
+        FirebaseStorageService.downloadProfileImageData(urlString: urlString) { data in
+            print("here")
+            
+            if let data = data {
+                DispatchQueue.main.async {
+                    self.profileImageImageView.image = UIImage(data: data)
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Draw
 
 private extension ChatCell {
     func drawProfilePhotoImageView() {
-        profilePhotoImageView.layer.cornerRadius = profilePhotoImageView.frame.size.height / 2
-        profilePhotoImageView.clipsToBounds = true
+        profileImageImageView.layer.cornerRadius = profileImageImageView.frame.size.height / 2
+        profileImageImageView.clipsToBounds = true
     }
 }
 
@@ -96,7 +106,7 @@ private extension ChatCell {
 
 private extension ChatCell {
     func setupAppearance() {
-        setupProfilePhotoImageViewAppearance()
+        setupProfileImageImageViewAppearance()
         setupNameLabelAppearance()
         setupTimestampLabelAppearance()
         setupMessageLabelAppearance()
@@ -104,15 +114,15 @@ private extension ChatCell {
         setupSeparatorAppearance()
     }
     
-    func setupProfilePhotoImageViewAppearance() {
-        profilePhotoImageView.contentMode = .scaleAspectFill
-        profilePhotoImageView.backgroundColor = .systemGray3
+    func setupProfileImageImageViewAppearance() {
+        profileImageImageView.contentMode = .scaleAspectFill
+        profileImageImageView.layer.borderWidth = 1
+        profileImageImageView.layer.borderColor = UIColor.systemGray.cgColor
     }
     
     func setupNameLabelAppearance() {
         nameLabel.font = .boldSystemFont(ofSize: Metrics.nameLabelFontSize)
         nameLabel.numberOfLines = 1
-        nameLabel.text = " "
     }
     
     func setupTimestampLabelAppearance() {
@@ -124,11 +134,10 @@ private extension ChatCell {
     func setupMessageLabelAppearance() {
         messageLabel.font = .systemFont(ofSize: Metrics.messageLabelFontSize)
         messageLabel.numberOfLines = 1
-        messageLabel.text = " "
     }
     
     func setupSeparatorAppearance() {
-        let leftInset = Metrics.profilePhotoWidth + Metrics.profilePhotoHorizontalSpace * 2
+        let leftInset = Metrics.profileImageSize + Metrics.profileImageHorizontalSpace * 2
         separatorInset = UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: 0)
     }
 }
@@ -139,32 +148,32 @@ private extension ChatCell {
     func setupLayout() {
         setupSubviews()
         
-        setupProfilePhotoViewLayout()
+        setupProfileImageViewLayout()
         setupCellContentViewLayout()
         
-        setupProfilePhotoImageViewLayout()
+        setupProfileImageImageViewLayout()
         setupNameLabelLayout()
         setupTimestampLabelLayout()
         setupMessageLabelLayout()
     }
     
     func setupSubviews() {
-        contentView.addSubview(profilePhotoView)
+        contentView.addSubview(profileImageView)
         contentView.addSubview(cellContentView)
         
-        profilePhotoView.addSubview(profilePhotoImageView)
+        profileImageView.addSubview(profileImageImageView)
         
         cellContentView.addSubview(nameLabel)
         cellContentView.addSubview(timestampLabel)
         cellContentView.addSubview(messageLabel)
     }
     
-    func setupProfilePhotoViewLayout() {
-        profilePhotoView.translatesAutoresizingMaskIntoConstraints = false
+    func setupProfileImageViewLayout() {
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            profilePhotoView.centerYAnchor.constraint(equalTo: cellContentView.centerYAnchor),
-            profilePhotoView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            profileImageView.centerYAnchor.constraint(equalTo: cellContentView.centerYAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
         ])
     }
     
@@ -180,24 +189,24 @@ private extension ChatCell {
         NSLayoutConstraint.activate([
             cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Metrics.cellContentTopSpace),
             cellContentViewBottomConstraint,
-            cellContentView.leadingAnchor.constraint(equalTo: profilePhotoView.trailingAnchor),
+            cellContentView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor),
             cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
                                                       constant: -Metrics.cellContentRightSpace),
         ])
     }
     
-    func setupProfilePhotoImageViewLayout() {
-        profilePhotoImageView.translatesAutoresizingMaskIntoConstraints = false
+    func setupProfileImageImageViewLayout() {
+        profileImageImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            profilePhotoImageView.topAnchor.constraint(equalTo: profilePhotoView.topAnchor),
-            profilePhotoImageView.bottomAnchor.constraint(equalTo: profilePhotoView.bottomAnchor),
-            profilePhotoImageView.leadingAnchor.constraint(equalTo: profilePhotoView.leadingAnchor,
-                                                           constant: Metrics.profilePhotoHorizontalSpace),
-            profilePhotoImageView.trailingAnchor.constraint(equalTo: profilePhotoView.trailingAnchor,
-                                                            constant: -Metrics.profilePhotoHorizontalSpace),
-            profilePhotoImageView.heightAnchor.constraint(equalToConstant: Metrics.profilePhotoHeight),
-            profilePhotoImageView.widthAnchor.constraint(equalToConstant: Metrics.profilePhotoWidth),
+            profileImageImageView.topAnchor.constraint(equalTo: profileImageView.topAnchor),
+            profileImageImageView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor),
+            profileImageImageView.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor,
+                                                           constant: Metrics.profileImageHorizontalSpace),
+            profileImageImageView.trailingAnchor.constraint(equalTo: profileImageView.trailingAnchor,
+                                                            constant: -Metrics.profileImageHorizontalSpace),
+            profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageSize),
+            profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageSize),
         ])
     }
     

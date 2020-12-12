@@ -13,8 +13,8 @@ protocol IChatsInteractorOutput: AnyObject {
     func fetchChatsSuccess(_ chats: [FirebaseChat])
     func fetchChatsFail()
     
+    // TODO: renaming
     func addChat(_ chat: FirebaseChat)
-    
     func removeChat(_ chatIdentifier: String)
     
     // TODO: change user and message structure
@@ -33,7 +33,7 @@ extension ChatsInteractor: IChatsInteractor {
         if let userIdentifier = FirebaseAuthService.currentUser()?.uid {
             fetchChats(for: userIdentifier)
             
-            observeUsersChanged(for: userIdentifier)
+            observeCompanionsChanged(for: userIdentifier)
             observeChatsLatestMessagesChanged(for: userIdentifier)
             
             observeChats(for: userIdentifier)
@@ -66,7 +66,7 @@ private extension ChatsInteractor {
 
                 return
             }
-
+            
             self?.presenter?.fetchChatsSuccess(chats)
         }
     }
@@ -77,6 +77,12 @@ private extension ChatsInteractor {
                 return
             }
             
+            FirebaseDatabaseService.observeUserChanged(userIdentifier: chat.userIdentifier) { user in
+                if let user = user?.first {
+                    self?.presenter?.updateUser(user.value, userIdentifier: user.key)
+                }
+            }
+            
             self?.presenter?.addChat(chat)
         }
     
@@ -85,18 +91,18 @@ private extension ChatsInteractor {
         }
     }
     
-    func observeUsersChanged(for userIdentifier: String) {
-        FirebaseDatabaseService.observeUsersChanged(for: userIdentifier) { [weak self] firebaseUser in
-            if let firebaseUser = firebaseUser?.first {
-                self?.presenter?.updateUser(firebaseUser.value, userIdentifier: firebaseUser.key)
+    func observeCompanionsChanged(for userIdentifier: String) {
+        FirebaseDatabaseService.observeUserCompanionsChanged(userIdentifier: userIdentifier) { [weak self] user in
+            if let user = user?.first {
+                self?.presenter?.updateUser(user.value, userIdentifier: user.key)
             }
         }
     }
     
     func observeChatsLatestMessagesChanged(for userIdentifier: String) {
-        FirebaseDatabaseService.observeChatsLatestMessagesChanged(for: userIdentifier) { [weak self] firebaseMessage in
-            if let firebaseMessage = firebaseMessage?.first {
-                self?.presenter?.updateChatMessage(firebaseMessage.value, chatIdentifier: firebaseMessage.key)
+        FirebaseDatabaseService.observeChatsLatestMessagesChanged(for: userIdentifier) { [weak self] message in
+            if let message = message?.first {
+                self?.presenter?.updateChatMessage(message.value, chatIdentifier: message.key)
             }
         }
     }

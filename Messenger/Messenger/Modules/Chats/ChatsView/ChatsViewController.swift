@@ -40,12 +40,6 @@ final class ChatsViewController: UIViewController, UISearchBarDelegate {
         setupViewDelegates()
         setupButtons()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        presenter?.viewWillAppear()
-    }
 }
 
 // MARK: - IChatsViewController
@@ -134,6 +128,10 @@ extension ChatsViewController: UITableViewDataSource {
             
             cell.configure(withFirstName: chat.user.firstName, lastName: chat.user.lastName)
             cell.configure(withText: messageText)
+            
+            if let urlString = chat.user.profilePhotoURL {
+                cell.setImage(urlString: urlString)
+            }
         }
         
         return cell
