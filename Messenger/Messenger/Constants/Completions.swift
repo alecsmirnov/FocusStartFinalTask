@@ -7,5 +7,4 @@
 
 enum Completions {
     typealias ButtonPress = () -> Void
-    typealias FirebaseAuthSuccess = () -> Void
 }
