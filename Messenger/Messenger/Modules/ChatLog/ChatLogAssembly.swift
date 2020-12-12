@@ -21,7 +21,7 @@ enum ChatLogAssembly {
         presenter.interactor = interactor
         presenter.router = router
         
-        presenter.receiver = user
+        presenter.companion = user
         presenter.chatIdentifier = chatIdentifier
         
         return viewController

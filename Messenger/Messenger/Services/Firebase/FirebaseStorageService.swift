@@ -26,7 +26,7 @@ enum FirebaseStorageService {
         static let profileImages = "profile_images"
     }
     
-    static private let storageReference = Storage.storage().reference()
+    private static let storageReference = Storage.storage().reference()
 }
 
 // MARK: - Methods

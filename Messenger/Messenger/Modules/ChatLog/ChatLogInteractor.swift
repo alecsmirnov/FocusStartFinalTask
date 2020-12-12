@@ -8,15 +8,14 @@
 import Foundation
 
 protocol IChatLogInteractor: AnyObject {
-    func sendMessage(text: String, from fromIdentifier: String, to toIdentifier: String)
+    func createChat(withUser userIdentifier: String) -> String?
     
-//    func fetchMessages()
+    func sendMessage(_ messageType: ChatsMessagesType, toChat chatIdentifier: String)
+    
     func observeMessages(for chatIdentifier: String)
 }
 
 protocol IChatLogInteractorOutput: AnyObject {
-    func sendMessageFail()
-    
     func addedMessage(_ message: ChatsMessagesValue)
 }
 
@@ -27,19 +26,22 @@ final class ChatLogInteractor {
 // MARK: - IChatLogInteractor
 
 extension ChatLogInteractor: IChatLogInteractor {
-    func sendMessage(text: String, from fromIdentifier: String, to toIdentifier: String) {
-        let message = ChatsMessagesValue(senderIdentifier: fromIdentifier,
-                                      messageType: .text(text),
-                                      timestamp: Date().timeIntervalSince1970,
-                                      isRead: false)
+    func createChat(withUser userIdentifier: String) -> String? {
+        guard let identifier = FirebaseAuthService.currentUser()?.uid else { return nil }
         
-//        FirebaseDatabaseService.send(message: message, to: toIdentifier) { error in
-//            if error == nil {
-//                print("send: \(text)")
-//            } else {
-//                print("fail to send: \(text)")
-//            }
-//        }
+        return FirebaseDatabaseService.createChatBetween(userIdentifier1: identifier,
+                                                         userIdentifier2: userIdentifier)
+    }
+    
+    func sendMessage(_ messageType: ChatsMessagesType, toChat chatIdentifier: String) {
+        guard let identifier = FirebaseAuthService.currentUser()?.uid else { return }
+        
+        let message = ChatsMessagesValue(senderIdentifier: identifier,
+                                         messageType: messageType,
+                                         timestamp: Date().timeIntervalSince1970,
+                                         isRead: false)
+        
+        FirebaseDatabaseService.sendMessage(message, chatIdentifier: chatIdentifier)
     }
     
     func observeMessages(for chatIdentifier: String) {

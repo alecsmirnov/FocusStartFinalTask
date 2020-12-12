@@ -23,7 +23,7 @@ enum FirebaseAuthService {
         case undefined
     }
     
-    static private let authReference = FirebaseAuth.Auth.auth()
+    private static let authReference = FirebaseAuth.Auth.auth()
 }
 
 // MARK: - Methods

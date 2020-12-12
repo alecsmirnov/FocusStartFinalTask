@@ -30,13 +30,13 @@ extension MenuInteractor: IMenuInteractor {
                 return
             }
             
-            FirebaseStorageService.downloadProfileImageDataURL(userIdentifier: userIdentifier) { urlString, error in
-                guard let urlString = urlString, error == nil else {
-                    return
-                }
-                
-                //FirebaseDatabaseService.updateUserInfo(for: userIdentifier, key: .profilePhotoURL, value: urlString)
-            }
+//            FirebaseStorageService.downloadProfileImageDataURL(userIdentifier: userIdentifier) { urlString, error in
+//                guard let urlString = urlString, error == nil else {
+//                    return
+//                }
+//                
+//                FirebaseDatabaseService.updateUserInfo(for: userIdentifier, key: .profilePhotoURL, value: urlString)
+//            }
         }
     }
     

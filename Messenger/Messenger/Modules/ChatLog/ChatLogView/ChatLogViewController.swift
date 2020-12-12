@@ -26,8 +26,6 @@ final class ChatLogViewController: UIViewController {
         return view
     }
     
-    private var companion: UserInfo?
-    
     // MARK: Lifecycle
     
     override func loadView() {
@@ -37,9 +35,7 @@ final class ChatLogViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        presenter?.viewDidLoad(view: chatLogView)
-        
-        setupViewDelegates()
+        setupView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,12 +57,27 @@ extension ChatLogViewController: IChatLogViewController {
     }
 }
 
-// MARK: - View Delegates
+// MARK: - View Setup
 
 private extension ChatLogViewController {
+    func setupView() {
+        setupViewDelegates()
+        setupViewActions()
+    }
+    
     func setupViewDelegates() {
         chatLogView.collectionViewDataSource = self
         chatLogView.collectionViewDelegate = self
+    }
+    
+    func setupViewActions() {
+        chatLogView.sendMessageButtonAction = { [weak self] in
+            if let messageText = self?.chatLogView.messageText {
+                self?.presenter?.didPressSendButton(messageType: .text(messageText))
+                
+                self?.chatLogView.clearTextView()
+            }
+        }
     }
 }
 

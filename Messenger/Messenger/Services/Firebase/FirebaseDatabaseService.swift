@@ -62,7 +62,7 @@ enum FirebaseDatabaseService {
         static let usersChatsUnread = "users_chats_unread_messages_count"
     }
     
-    static private let databaseReference = Database.database().reference()
+    private static let databaseReference = Database.database().reference()
 }
 
 // MARK: - Users
@@ -458,7 +458,10 @@ extension FirebaseDatabaseService {
             guard let membersIdentifiers = membersIdentifiers,
                   let messageIdentifier = databaseReference.child(Tables.chatsMessages)
                                                            .child(chatIdentifier)
-                                                           .childByAutoId().key else { return }
+                                                           .childByAutoId().key else {
+                // TODO: unable to send error
+                return
+            }
             
             databaseReference.child(Tables.chatsMessages)
                              .child(chatIdentifier)

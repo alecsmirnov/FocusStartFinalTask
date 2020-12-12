@@ -7,6 +7,8 @@
 
 import UIKit
 
+protocol IMessageCell: AnyObject {}
+
 final class MessageCell: UICollectionViewCell {
     // MARK: Properties
     
@@ -43,6 +45,12 @@ final class MessageCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+// MARK: - IMessageCell
+
+extension MessageCell: IMessageCell {}
+
+// MARK: - Public Methods
 
 extension MessageCell {
     func configure(firstName: String, lastName: String?, messageText: String) {
