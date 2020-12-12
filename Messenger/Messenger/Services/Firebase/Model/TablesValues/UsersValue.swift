@@ -8,6 +8,28 @@
 struct UsersValue {
     // MARK: Properties
     
+    var firstName: String { info.firstName }
+    var lastName: String? { info.lastName }
+    var userName: String? { info.userName }
+    var email: String { info.email }
+    var profilePhotoURL: String? { info.profilePhotoURL }
+    
+    private let info: UsersInfo
+    
+    // MARK: Initialization
+    
+    init(firstName: String, lastName: String?, userName: String?, email: String, profilePhotoURL: String?) {
+        info = UsersInfo(firstName: firstName,
+                         lastName: lastName,
+                         userName: userName,
+                         email: email,
+                         profilePhotoURL: profilePhotoURL)
+    }
+}
+
+fileprivate struct UsersInfo {
+    // MARK: Properties
+    
     let firstName: String
     let lastName: String?
     let userName: String?
@@ -33,8 +55,10 @@ struct UsersValue {
 
 // MARK: - Codable
 
-extension UsersValue: Codable {
-    private enum CodingKeys: String, CodingKey {
+extension UsersValue: Codable {}
+
+extension UsersInfo: Codable {
+    enum CodingKeys: String, CodingKey {
         case firstName = "first_name"
         case lastName = "last_name"
         case userName = "user_name"
@@ -43,13 +67,5 @@ extension UsersValue: Codable {
         
         case queryableName = "queryable_name"
         case queryableUsername = "queryable_user_name"
-    }
-}
-
-// MARK: - Equatable
-
-extension UsersValue: Equatable {
-    static func ==(lhs: UsersValue, rhs: UsersValue) -> Bool {
-        return lhs.email == rhs.email
     }
 }

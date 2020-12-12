@@ -11,6 +11,7 @@ enum FirebaseAuthService {
     // MARK: Completions
     
     typealias AuthDataResultCompletion = (AuthDataResult?, AuthError?) -> Void
+    typealias AuthUserExistCompletion = (Bool) -> Void
     
     // MARK: Properties
     
@@ -18,6 +19,7 @@ enum FirebaseAuthService {
         case userNotFound
         case wrongPassword
         case emailAlreadyInUse
+        case tooManyRequests
         case undefined
     }
     
@@ -49,9 +51,10 @@ extension FirebaseAuthService {
             guard authResult != nil else {
                 if let error = error as NSError? {
                     switch error.code {
-                    case AuthErrorCode.userNotFound.rawValue:  completion?(nil, AuthError.userNotFound)
-                    case AuthErrorCode.wrongPassword.rawValue: completion?(nil, AuthError.wrongPassword)
-                    default:                                   completion?(nil, AuthError.undefined)
+                    case AuthErrorCode.userNotFound.rawValue:    completion?(nil, AuthError.userNotFound)
+                    case AuthErrorCode.wrongPassword.rawValue:   completion?(nil, AuthError.wrongPassword)
+                    case AuthErrorCode.tooManyRequests.rawValue: completion?(nil, AuthError.tooManyRequests)
+                    default:                                     completion?(nil, AuthError.undefined)
                     }
                 }
                 
@@ -68,6 +71,18 @@ extension FirebaseAuthService {
     
     static func isUserSignedIn() -> Bool {
         return authReference.currentUser != nil
+    }
+    
+    static func isUserExist(withEmail email: String, completion: @escaping AuthUserExistCompletion) {
+        authReference.fetchSignInMethods(forEmail: email) { providers, error in
+            guard providers == nil, error == nil else {
+                completion(false)
+                
+                return
+            }
+            
+            completion(true)
+        }
     }
     
     static func currentUser() -> User? {

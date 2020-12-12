@@ -9,7 +9,7 @@ struct ChatsMessagesValue {
     let senderIdentifier: String
     
     let messageType: ChatsMessagesType
-    let date: String
+    let timestamp: Double
     let isRead: Bool
 }
 
@@ -20,7 +20,7 @@ extension ChatsMessagesValue: Codable {
         case senderIdentifier = "sender_identifier"
         
         case messageType = "message_type"
-        case date
+        case timestamp
         case isRead = "is_read"
     }
 }

@@ -22,8 +22,8 @@ enum FirebaseStorageService {
         case failedToDownload
     }
     
-    private enum Paths {
-        static let images = "profileImages"
+    private enum Folders {
+        static let profileImages = "profile_images"
     }
     
     static private let storageReference = Storage.storage().reference()
@@ -35,7 +35,9 @@ extension FirebaseStorageService {
     static func uploadProfileImageData(_ data: Data,
                                        userIdentifier: String,
                                        completion: @escaping StorageUploadCompletion) {
-        storageReference.child(Paths.images).child("\(userIdentifier).png").putData(data, metadata: nil) { _, error in
+        storageReference.child(Folders.profileImages)
+                        .child("\(userIdentifier).png")
+                        .putData(data, metadata: nil) { _, error in
             guard error == nil else {
                 completion(.failedToUpload)
                 
@@ -47,7 +49,9 @@ extension FirebaseStorageService {
     }
     
     static func downloadProfileImageDataURL(userIdentifier: String, completion: @escaping StorageDownloadCompletion) {
-        storageReference.child(Paths.images).child("\(userIdentifier).png").downloadURL { url, error in
+        storageReference.child(Folders.profileImages)
+                        .child("\(userIdentifier).png")
+                        .downloadURL { url, error in
             guard let urlString = url?.absoluteString, error == nil else {
                 completion(nil, .failedToDownload)
                 
@@ -67,7 +71,7 @@ extension FirebaseStorageService {
                 return
             }
             
-            URLSession.shared.dataTask(with: url) { data, response, error in
+            let dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
                 guard let data = data, response != nil, error == nil else {
                     completion(nil)
                     
@@ -76,6 +80,24 @@ extension FirebaseStorageService {
                 
                 completion(data)
             }
+            
+            dataTask.resume()
         }
+    }
+    
+    static func downloadProfileImageData(urlString: String, completion: @escaping DataDownloadCompletion) {
+        guard let url = URL(string: urlString) else { return }
+        
+        let dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, response != nil, error == nil else {
+                completion(nil)
+                
+                return
+            }
+            
+            completion(data)
+        }
+        
+        dataTask.resume()
     }
 }
