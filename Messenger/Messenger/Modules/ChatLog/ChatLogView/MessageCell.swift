@@ -22,19 +22,21 @@ final class MessageCell: UICollectionViewCell {
         
         static let bubbleViewCornerRadius: CGFloat = 16
         
-        static let profileImageBubbleViewHorizontalSpace: CGFloat = 8
+        static let cellContentViewMultiplier: CGFloat = 0.7
     }
     
     private var contentViewWidthConstraint: NSLayoutConstraint?
     
     // MARK: Subviews
     
+    private let profileImageView = UIView()
+    private let cellContentView = UIView()
+    
+    private let profileImageImageView = UIImageView()
     private let bubbleView = UIView()
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
     private let timestampLabel = UILabel()
-    
-    private let profileImageImageView = UIImageView()
     
     // MARK: Lifecycle
     
@@ -68,7 +70,7 @@ extension MessageCell {
     func configure(firstName: String, lastName: String?, messageText: String) {
         nameLabel.text = "\(firstName) \(lastName ?? "")"
         messageLabel.text = messageText
-        timestampLabel.text = ""
+        timestampLabel.text = "00:00"
     }
 }
 
@@ -78,11 +80,18 @@ private extension MessageCell {
     func setupAppearance() {
         backgroundColor = .systemBackground
         
+        setupProfileImageImageViewAppearance()
         setupBubbleViewAppearance()
         setupNameLabelAppearance()
         setupMessageLabelAppearance()
-        
-        setupProfileImageImageViewAppearance()
+        setupTimestampLabelAppearance()
+    }
+    
+    func setupProfileImageImageViewAppearance() {
+        profileImageImageView.layer.borderWidth = 1
+        profileImageImageView.layer.borderColor = UIColor.systemGray.cgColor
+        profileImageImageView.layer.cornerRadius = Metrics.profileImageSize / 2
+        profileImageImageView.clipsToBounds = true
     }
     
     func setupBubbleViewAppearance() {
@@ -98,11 +107,10 @@ private extension MessageCell {
         messageLabel.numberOfLines = 0
     }
     
-    func setupProfileImageImageViewAppearance() {
-        profileImageImageView.layer.borderWidth = 1
-        profileImageImageView.layer.borderColor = UIColor.systemGray.cgColor
-        profileImageImageView.layer.cornerRadius = Metrics.profileImageSize / 2
-        profileImageImageView.clipsToBounds = true
+    func setupTimestampLabelAppearance() {
+        timestampLabel.textAlignment = .right
+        timestampLabel.textColor = .systemGray
+        timestampLabel.font = .systemFont(ofSize: 10)
     }
 }
 
@@ -113,17 +121,23 @@ private extension MessageCell {
         setupSubviews()
         
         setupContentViewLayout()
-        setupBubbleViewLayout()
-        setupProfileImageImageViewLayout()
         
+        setupProfileImageViewLayout()
+        setupCellContentViewLayout()
+        
+        setupProfileImageImageViewLayout()
+        setupBubbleViewLayout()
         setupNameLabelLayout()
         setupMessageLabelLayout()
         setupTimestampLabelLayout()
     }
     
     func setupSubviews() {
-        contentView.addSubview(bubbleView)
-        contentView.addSubview(profileImageImageView)
+        contentView.addSubview(profileImageView)
+        contentView.addSubview(cellContentView)
+        
+        profileImageView.addSubview(profileImageImageView)
+        cellContentView.addSubview(bubbleView)
         
         bubbleView.addSubview(nameLabel)
         bubbleView.addSubview(messageLabel)
@@ -137,16 +151,24 @@ private extension MessageCell {
         contentViewWidthConstraint?.isActive = true
     }
     
-    func setupBubbleViewLayout() {
-        bubbleView.translatesAutoresizingMaskIntoConstraints = false
+    func setupProfileImageViewLayout() {
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Metrics.verticalSpace),
-            bubbleView.bottomAnchor.constraint(equalTo: profileImageImageView.bottomAnchor),
-            bubbleView.leadingAnchor.constraint(equalTo: profileImageImageView.trailingAnchor,
-                                                constant: Metrics.profileImageBubbleViewHorizontalSpace),
-            bubbleView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor,
-                                                 constant: -Metrics.horizontalSpace),
+            profileImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+        ])
+    }
+    
+    func setupCellContentViewLayout() {
+        cellContentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            cellContentView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor),
+            cellContentView.leadingAnchor.constraint(equalTo: profileImageImageView.trailingAnchor),
+            cellContentView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor,
+                                                   multiplier: Metrics.cellContentViewMultiplier),
         ])
     }
     
@@ -154,11 +176,25 @@ private extension MessageCell {
         profileImageImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            profileImageImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            profileImageImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
+            profileImageImageView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor,
+                                                          constant: -Metrics.verticalSpace),
+            profileImageImageView.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor,
                                                            constant: Metrics.horizontalSpace),
             profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageSize),
             profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageSize),
+        ])
+    }
+    
+    func setupBubbleViewLayout() {
+        bubbleView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            bubbleView.topAnchor.constraint(equalTo: cellContentView.topAnchor, constant: Metrics.verticalSpace),
+            bubbleView.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor, constant: -Metrics.verticalSpace),
+            bubbleView.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor,
+                                                constant: Metrics.horizontalSpace),
+            bubbleView.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor,
+                                                 constant: -Metrics.horizontalSpace),
         ])
     }
     
@@ -176,7 +212,7 @@ private extension MessageCell {
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
+            messageLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Metrics.verticalSpace),
             messageLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: Metrics.horizontalSpace),
             messageLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
                                                    constant: -Metrics.horizontalSpace),

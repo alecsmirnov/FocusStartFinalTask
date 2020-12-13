@@ -108,7 +108,7 @@ extension ChatLogViewController: UICollectionViewDataSource {
                 messageText = text
             }
             
-            cell.configure(firstName: "", lastName: "", messageText: messageText)
+            cell.configure(firstName: "Empty", lastName: "", messageText: messageText)
         }
         
         return cell
