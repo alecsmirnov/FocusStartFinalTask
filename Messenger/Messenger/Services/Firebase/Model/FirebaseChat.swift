@@ -14,5 +14,7 @@ struct FirebaseChat {
     var user: UsersValue
     var latestMessage: ChatsMessagesValue
     
+    var unreadMessagesCount: Int
+    
     var imageData: Data?
 }

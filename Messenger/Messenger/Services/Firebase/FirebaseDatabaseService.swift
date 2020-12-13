@@ -296,13 +296,23 @@ private extension FirebaseDatabaseService {
                             
                             return
                         }
-     
-                        let chat = FirebaseChat(chatIdentifier: chatIdentifier,
-                                                userIdentifier: companionIdentifier,
-                                                user: companion,
-                                                latestMessage: chatMessage)
                         
-                        completion(chat, nil)
+                        fetchChatUnreadMessagesCount(userIdentifier: userIdentifier,
+                                                     chatIdentifier: chatIdentifier) { count in
+                            var unreadMessagesCount = 0
+                            
+                            if let count = count {
+                                unreadMessagesCount = count
+                            }
+                            
+                            let chat = FirebaseChat(chatIdentifier: chatIdentifier,
+                                                    userIdentifier: companionIdentifier,
+                                                    user: companion,
+                                                    latestMessage: chatMessage,
+                                                    unreadMessagesCount: unreadMessagesCount)
+                            
+                            completion(chat, nil)
+                        }
                     }
                 }
             }
@@ -383,10 +393,10 @@ private extension FirebaseDatabaseService {
                          .observeSingleEvent(of: .value) { snapshot in
             guard let count = snapshot.value as? Int else {
                 completion(nil)
-                
+
                 return
             }
-            
+
             completion(count)
         }
     }
@@ -445,12 +455,6 @@ extension FirebaseDatabaseService {
             }
         }
     }
-    
-    static func observeChatLatestMessagesChanged(userIdentifier: String,
-                                                 chatIdentifier: String,
-                                                 completion: @escaping FetchMessageCompletion) {
-        
-    }
 }
 
 // MARK: - Messages
@@ -491,6 +495,16 @@ extension FirebaseDatabaseService {
             }
         }
     }
+    
+    static func markMessageAsRead(chatIdentifier: String, userIdentifier: String, messageIdentifier: String) {
+        databaseReference.child(Tables.chatsMessages)
+                         .child(chatIdentifier)
+                         .child(messageIdentifier)
+                         .child("is_read")
+                         .setValue(true)
+        
+        decreaseUnreadMessagesCount(userIdentifier: userIdentifier, chatIdentifier: chatIdentifier)
+    }
 }
 
 private extension FirebaseDatabaseService {
@@ -499,12 +513,14 @@ private extension FirebaseDatabaseService {
                                                 .child(userIdentifier)
                                                 .child(chatIdentifier)
         
-        counterReference.observeSingleEvent(of: .value) { snapshot in
-            if let value = snapshot.value as? Int {
+        counterReference.runTransactionBlock { mutableDat in
+            if let value = mutableDat.value as? Int {
                 counterReference.setValue(value + 1)
             } else {
                 counterReference.setValue(Constants.counterInitialValue)
             }
+            
+            return TransactionResult.success(withValue: mutableDat)
         }
     }
     
@@ -513,12 +529,16 @@ private extension FirebaseDatabaseService {
                                                 .child(userIdentifier)
                                                 .child(chatIdentifier)
         
-        counterReference.observeSingleEvent(of: .value) { snapshot in
-            if let value = snapshot.value as? Int, Constants.counterInitialValue < value {
-                counterReference.setValue(value - 1)
-            } else {
-                counterReference.removeValue()
+        counterReference.runTransactionBlock { mutableDat in
+            if let value = mutableDat.value as? Int {
+                if Constants.counterInitialValue < value {
+                    mutableDat.value = value - 1
+                } else {
+                    counterReference.removeValue()
+                }
             }
+            
+            return TransactionResult.success(withValue: mutableDat)
         }
     }
 }
@@ -527,8 +547,8 @@ private extension FirebaseDatabaseService {
 
 extension FirebaseDatabaseService {
     static func observeChatMessages(userIdentifier: String,
-                                      chatIdentifier: String,
-                                      completion: @escaping (ChatsMessagesValue) -> Void) {
+                                    chatIdentifier: String,
+                                    completion: @escaping (Message) -> Void) {
         databaseReference.child(Tables.usersChatsMessages)
                          .child(userIdentifier)
                          .child(chatIdentifier)
@@ -538,10 +558,24 @@ extension FirebaseDatabaseService {
             fetchChatMessage(chatIdentifier: chatIdentifier,
                              messageIdentifier: messageIdentifier) { message in
                 if let message = message {
-                    completion(message)
+                    completion(Message(identifier: messageIdentifier, data: message))
                 }
             }
         }
+    }
+    
+    static func observeChatMessagesChange(chatIdentifier: String,
+                                          completion: @escaping (Message) -> Void) {
+        databaseReference.child(Tables.chatsMessages)
+                         .child(chatIdentifier)
+                         .observe(.childChanged) { snapshot in
+            guard let value = snapshot.value as? [String: Any] else { return }
+                            
+            let messageIdentifier = snapshot.key
+            let message = dictionaryToDecodable(value, type: ChatsMessagesValue.self)
+
+            completion(Message(identifier: messageIdentifier, data: message))
+         }
     }
 }
 
