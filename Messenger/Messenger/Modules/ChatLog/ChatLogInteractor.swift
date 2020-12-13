@@ -11,6 +11,7 @@ protocol IChatLogInteractor: AnyObject {
     func createChat(withUser userIdentifier: String) -> String?
     
     func sendMessage(_ messageType: ChatsMessagesType, toChat chatIdentifier: String)
+    func readMessage(chatIdentifier: String, messageIdentifier: String)
     
     func fetchMessages(chatIdentifier: String)
     func observeMessages(chatIdentifier: String)
@@ -43,6 +44,10 @@ extension ChatLogInteractor: IChatLogInteractor {
                                          isRead: false)
         
         FirebaseDatabaseService.sendMessage(message, chatIdentifier: chatIdentifier)
+    }
+    
+    func readMessage(chatIdentifier: String, messageIdentifier: String) {
+        
     }
     
     func fetchMessages(chatIdentifier: String) {

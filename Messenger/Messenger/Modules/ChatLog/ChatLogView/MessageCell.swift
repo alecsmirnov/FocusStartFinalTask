@@ -18,19 +18,31 @@ final class MessageCell: UICollectionViewCell {
         static let verticalSpace: CGFloat = 8
         static let horizontalSpace: CGFloat = 16
         
-        static let avatarSize: CGFloat = 44
+        static let profileImageSize: CGFloat = 44
+        
+        static let bubbleViewCornerRadius: CGFloat = 16
+        
+        static let profileImageBubbleViewHorizontalSpace: CGFloat = 8
     }
     
-    private var isProcessed: Bool = false
+    private var contentViewWidthConstraint: NSLayoutConstraint?
     
     // MARK: Subviews
     
     private let bubbleView = UIView()
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
-    private let dateLabel = UILabel()
+    private let timestampLabel = UILabel()
     
-    private let avatarImageView = UIImageView()
+    private let profileImageImageView = UIImageView()
+    
+    // MARK: Lifecycle
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        updateLayout()
+    }
     
     // MARK: Initialization
     
@@ -56,9 +68,7 @@ extension MessageCell {
     func configure(firstName: String, lastName: String?, messageText: String) {
         nameLabel.text = "\(firstName) \(lastName ?? "")"
         messageLabel.text = messageText
-        dateLabel.text = ""
-        
-        avatarImageView.image = UIImage(systemName: "person")
+        timestampLabel.text = ""
     }
 }
 
@@ -70,16 +80,29 @@ private extension MessageCell {
         
         setupBubbleViewAppearance()
         setupNameLabelAppearance()
+        setupMessageLabelAppearance()
+        
+        setupProfileImageImageViewAppearance()
     }
     
     func setupBubbleViewAppearance() {
         bubbleView.backgroundColor = .systemGray5
-        
-        bubbleView.layer.cornerRadius = 16
+        bubbleView.layer.cornerRadius = Metrics.bubbleViewCornerRadius
     }
     
     func setupNameLabelAppearance() {
         nameLabel.font = .boldSystemFont(ofSize: nameLabel.font.pointSize)
+    }
+    
+    func setupMessageLabelAppearance() {
+        messageLabel.numberOfLines = 0
+    }
+    
+    func setupProfileImageImageViewAppearance() {
+        profileImageImageView.layer.borderWidth = 1
+        profileImageImageView.layer.borderColor = UIColor.systemGray.cgColor
+        profileImageImageView.layer.cornerRadius = Metrics.profileImageSize / 2
+        profileImageImageView.clipsToBounds = true
     }
 }
 
@@ -89,22 +112,29 @@ private extension MessageCell {
     func setupLayout() {
         setupSubviews()
         
+        setupContentViewLayout()
         setupBubbleViewLayout()
+        setupProfileImageImageViewLayout()
+        
         setupNameLabelLayout()
         setupMessageLabelLayout()
-        setupDateLabelLayout()
-        
-        setupAvatarImageViewLayout()
+        setupTimestampLabelLayout()
     }
     
     func setupSubviews() {
         contentView.addSubview(bubbleView)
-        contentView.addSubview(avatarImageView)
+        contentView.addSubview(profileImageImageView)
         
         bubbleView.addSubview(nameLabel)
         bubbleView.addSubview(messageLabel)
-        bubbleView.addSubview(dateLabel)
-        bubbleView.addSubview(avatarImageView)
+        bubbleView.addSubview(timestampLabel)
+    }
+    
+    func setupContentViewLayout() {
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentViewWidthConstraint = contentView.widthAnchor.constraint(equalToConstant: bounds.size.width)
+        contentViewWidthConstraint?.isActive = true
     }
     
     func setupBubbleViewLayout() {
@@ -112,10 +142,23 @@ private extension MessageCell {
         
         NSLayoutConstraint.activate([
             bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Metrics.verticalSpace),
-            bubbleView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor),
-            bubbleView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
+            bubbleView.bottomAnchor.constraint(equalTo: profileImageImageView.bottomAnchor),
+            bubbleView.leadingAnchor.constraint(equalTo: profileImageImageView.trailingAnchor,
+                                                constant: Metrics.profileImageBubbleViewHorizontalSpace),
             bubbleView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor,
                                                  constant: -Metrics.horizontalSpace),
+        ])
+    }
+    
+    func setupProfileImageImageViewLayout() {
+        profileImageImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            profileImageImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            profileImageImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
+                                                           constant: Metrics.horizontalSpace),
+            profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageSize),
+            profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageSize),
         ])
     }
     
@@ -140,43 +183,32 @@ private extension MessageCell {
         ])
     }
     
-    func setupDateLabelLayout() {
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
+    func setupTimestampLabelLayout() {
+        timestampLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            dateLabel.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: Metrics.verticalSpace),
-            dateLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -Metrics.verticalSpace),
-            dateLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: Metrics.horizontalSpace),
-            dateLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -Metrics.horizontalSpace),
-        ])
-    }
-    
-    func setupAvatarImageViewLayout() {
-        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            avatarImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
-                                                     constant: Metrics.horizontalSpace),
-            avatarImageView.heightAnchor.constraint(equalToConstant: Metrics.avatarSize),
-            avatarImageView.widthAnchor.constraint(equalToConstant: Metrics.avatarSize),
+            timestampLabel.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: Metrics.verticalSpace),
+            timestampLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -Metrics.verticalSpace),
+            timestampLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor,
+                                                    constant: Metrics.horizontalSpace),
+            timestampLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
+                                                     constant: -Metrics.horizontalSpace),
         ])
     }
 }
 
-// MARK: - Autoresize Content
+// MARK: - Update Layout
+
+private extension MessageCell {
+    func updateLayout() {
+        contentViewWidthConstraint?.constant = UIScreen.main.bounds.width
+    }
+}
 
 extension MessageCell {
-    override func preferredLayoutAttributesFitting(
-        _ layoutAttributes: UICollectionViewLayoutAttributes
-    ) -> UICollectionViewLayoutAttributes {
-        let contentViewSize = contentView.systemLayoutSizeFitting(layoutAttributes.size)
-        
-        var cellFrame = layoutAttributes.frame
-        cellFrame.size = CGSize(width: UIScreen.main.bounds.width, height: contentViewSize.height)
-        
-        layoutAttributes.frame = cellFrame
-        
-        return layoutAttributes
+    override func systemLayoutSizeFitting(_ targetSize: CGSize,
+                                          withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
+                                          verticalFittingPriority: UILayoutPriority) -> CGSize {
+        return contentView.systemLayoutSizeFitting(targetSize)
     }
 }

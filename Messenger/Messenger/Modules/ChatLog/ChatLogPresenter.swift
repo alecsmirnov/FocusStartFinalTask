@@ -70,7 +70,18 @@ extension ChatLogPresenter {
     }
     
     func messageAt(index: Int) -> ChatsMessagesValue {
+        readMessageAt(index: index)
+        
         return messages[index]
+    }
+}
+
+// MARK: - Private Methods
+
+private extension ChatLogPresenter {
+    func readMessageAt(index: Int) {
+        // TODO: if this is our message
+        //interactor?.readMessage(chatIdentifier: chatIdentifier, messageIdentifier: messageIdentifier)
     }
 }
 

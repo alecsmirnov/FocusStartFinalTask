@@ -48,7 +48,7 @@ final class ChatCell: UITableViewCell {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        drawProfilePhotoImageView()
+        drawProfileImageImageView()
     }
     
     // MARK: Initialization
@@ -96,7 +96,7 @@ extension ChatCell {
 // MARK: - Draw
 
 private extension ChatCell {
-    func drawProfilePhotoImageView() {
+    func drawProfileImageImageView() {
         profileImageImageView.layer.cornerRadius = profileImageImageView.frame.size.height / 2
         profileImageImageView.clipsToBounds = true
     }

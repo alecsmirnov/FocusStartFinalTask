@@ -14,6 +14,7 @@ protocol IChatLogView: AnyObject {
     
     func clearTextView()
     func reloadData()
+    
     //func contentToBottom()
 }
 
@@ -53,6 +54,14 @@ final class ChatLogView: UIView {
     // TODO: rename - inputTextView
     private let textView = UITextView()
     private let sendButton = UIButton(type: .system)
+    
+    // MARK: Lifecycle
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        updateFlowLayout()
+    }
     
     // MARK: Initialization
     
@@ -122,12 +131,9 @@ private extension ChatLogView {
     
     func setupCollectionViewAppearance() {
         collectionView.backgroundColor = .systemBackground
+        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: MessageCell.reuseIdentifier)
-        
-        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        }
     }
     
     func setupTextContainerViewAppearance() {
@@ -191,6 +197,8 @@ private extension ChatLogView {
             collectionView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
         ])
+        
+        updateFlowLayout()
     }
     
     func setupTextContainerViewLayout() {
@@ -231,6 +239,16 @@ private extension ChatLogView {
                                                constant: -Metrics.verticalSpace),
             sendButton.leadingAnchor.constraint(equalTo: textView.trailingAnchor, constant: Metrics.horizontalSpace),
         ])
+    }
+}
+
+// MARK: - Flow Layout
+
+private extension ChatLogView {
+    func updateFlowLayout() {
+        if let collectionViewFlowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            collectionViewFlowLayout.estimatedItemSize = CGSize(width: UIScreen.main.bounds.size.width, height: .zero)
+        }
     }
 }
 
