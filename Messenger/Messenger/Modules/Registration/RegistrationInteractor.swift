@@ -48,6 +48,8 @@ extension RegistrationInteractor: IRegistrationInteractor {
                                           email: user.email,
                                           profilePhotoURL: nil)
             
+            // TODO: Add user after signIn
+            
             FirebaseDatabaseService.addUser(firebaseUser, identifier: authResult.user.uid)
             
             self?.signIn(withEmail: user.email, password: user.password)

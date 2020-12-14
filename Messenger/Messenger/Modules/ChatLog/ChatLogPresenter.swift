@@ -13,10 +13,12 @@ protocol IChatLogPresenter: AnyObject {
     
     func viewDidLoad()
     func viewWillAppear()
+    func viewDidAppear()
     
     func didPressSendButton(messageType: ChatsMessagesType)
     
     func messageAt(index: Int) -> ChatsMessagesValue
+    func displayMessageAt(index: Int)
 }
 
 final class ChatLogPresenter {
@@ -27,7 +29,9 @@ final class ChatLogPresenter {
     var chatIdentifier: String?
     var companion: UserInfo?
     
-    var messages = [ChatsMessagesValue]()
+    private var isViewAppear = false
+
+    private var messages = [Message]()
 }
 
 // MARK: - IChatLogPresenter
@@ -50,11 +54,19 @@ extension ChatLogPresenter {
     }
     
     func viewWillAppear() {
+        isViewAppear = true
+        
+        //viewController?.reloadData()
+        
         if let companion = companion {
             let receiverName = "\(companion.firstName) \(companion.lastName ?? "")"
             
             viewController?.setTitle(text: receiverName)
         }
+    }
+    
+    func viewDidAppear() {
+
     }
     
     func didPressSendButton(messageType: ChatsMessagesType) {
@@ -70,28 +82,42 @@ extension ChatLogPresenter {
     }
     
     func messageAt(index: Int) -> ChatsMessagesValue {
-        readMessageAt(index: index)
-        
-        return messages[index]
+        return messages[index].data
     }
-}
-
-// MARK: - Private Methods
-
-private extension ChatLogPresenter {
-    func readMessageAt(index: Int) {
-        // TODO: if this is our message
-        //interactor?.readMessage(chatIdentifier: chatIdentifier, messageIdentifier: messageIdentifier)
+    
+    func displayMessageAt(index: Int) {
+        if let chatIdentifier = chatIdentifier {
+            //print(index)
+            
+            interactor?.readMessage(messages[index], chatIdentifier: chatIdentifier)
+        }
     }
 }
 
 // MARK: - IChatLogInteractorOutput
 
-extension ChatLogPresenter: IChatLogInteractorOutput {   
-    func addedMessage(_ message: ChatsMessagesValue) {
+extension ChatLogPresenter: IChatLogInteractorOutput {
+    func addedMessage(_ message: Message) {
         messages.append(message)
         
-        // TODO: add new row
-        self.viewController?.reloadData()
+        if isViewAppear {
+            viewController?.insertNewRow()
+            //viewController?.startFromRowAt(index: 10)
+            //viewController?.scrollToBottom()
+        }
+    }
+    
+    func updateMessage(_ message: Message) {
+        if let index = messages.firstIndex(where: { $0.identifier == message.identifier }) {
+            messages[index] = message
+            
+            // check if sender is not me and update
+            
+            guard let identifier = FirebaseAuthService.currentUser()?.uid else { return }
+            
+            if isViewAppear, message.data.senderIdentifier == identifier {
+                viewController?.updateRowAt(index: index)
+            }
+        }
     }
 }

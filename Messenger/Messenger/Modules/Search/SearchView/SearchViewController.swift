@@ -44,6 +44,12 @@ final class SearchViewController: UIViewController {
         setupButtons()
         setupViewDelegates()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        presenter?.viewWillAppear()
+    }
 }
 
 // MARK: - ISearchViewController

@@ -13,7 +13,7 @@ protocol IChatsViewController: AnyObject {
     func reloadData()
 }
 
-final class ChatsViewController: UIViewController, UISearchBarDelegate {
+final class ChatsViewController: UIViewController {
     // MARK: Properties
     
     var presenter: IChatsPresenter?
@@ -128,6 +128,8 @@ extension ChatsViewController: UITableViewDataSource {
             
             cell.configure(withFirstName: chat.user.firstName, lastName: chat.user.lastName)
             cell.configure(withText: messageText)
+            
+            cell.setUnreadMessagesCount(chat.unreadMessagesCount)
             
             if let urlString = chat.user.profilePhotoURL {
                 cell.setImage(urlString: urlString)

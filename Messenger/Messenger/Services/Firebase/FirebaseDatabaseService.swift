@@ -390,6 +390,7 @@ private extension FirebaseDatabaseService {
         databaseReference.child(Tables.usersChatsUnread)
                          .child(userIdentifier)
                          .child(chatIdentifier)
+            //.child("count")
                          .observeSingleEvent(of: .value) { snapshot in
             guard let count = snapshot.value as? Int else {
                 completion(nil)
@@ -455,6 +456,23 @@ extension FirebaseDatabaseService {
             }
         }
     }
+    
+    static func observeChatUnreadMessagesCountChanged(userIdentifier: String,
+                                                      chatIdentifier: String,
+                                                      completion: @escaping (Int?) -> Void) {
+        databaseReference.child(Tables.usersChatsUnread)
+                         .child(userIdentifier)
+                         .child(chatIdentifier)
+                         .observe(.childChanged) { snapshot in
+            guard let count = snapshot.value as? Int else {
+                completion(nil)
+
+                return
+            }
+
+            completion(count)
+        }
+    }
 }
 
 // MARK: - Messages
@@ -512,12 +530,14 @@ private extension FirebaseDatabaseService {
         let counterReference = databaseReference.child(Tables.usersChatsUnread)
                                                 .child(userIdentifier)
                                                 .child(chatIdentifier)
+            //.child("count")
+        
         
         counterReference.runTransactionBlock { mutableDat in
             if let value = mutableDat.value as? Int {
-                counterReference.setValue(value + 1)
+                mutableDat.value = value + 1
             } else {
-                counterReference.setValue(Constants.counterInitialValue)
+                mutableDat.value = Constants.counterInitialValue
             }
             
             return TransactionResult.success(withValue: mutableDat)
@@ -528,13 +548,14 @@ private extension FirebaseDatabaseService {
         let counterReference = databaseReference.child(Tables.usersChatsUnread)
                                                 .child(userIdentifier)
                                                 .child(chatIdentifier)
+            //.child("count")
         
         counterReference.runTransactionBlock { mutableDat in
             if let value = mutableDat.value as? Int {
                 if Constants.counterInitialValue < value {
                     mutableDat.value = value - 1
                 } else {
-                    counterReference.removeValue()
+                    mutableDat.value = 0
                 }
             }
             

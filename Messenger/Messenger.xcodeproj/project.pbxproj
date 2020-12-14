@@ -24,6 +24,7 @@
 		84542CA9257DFBE400FEC359 /* MenuPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84542CA8257DFBE400FEC359 /* MenuPresenter.swift */; };
 		84542CAC257DFBEF00FEC359 /* MenuRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84542CAB257DFBEF00FEC359 /* MenuRouter.swift */; };
 		84542CAF257DFBFA00FEC359 /* MenuAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84542CAE257DFBFA00FEC359 /* MenuAssembly.swift */; };
+		845446D32585FC5900F5DD4C /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845446D22585FC5900F5DD4C /* Message.swift */; };
 		8454B64F257CC102007FEBC2 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454B64E257CC102007FEBC2 /* LaunchViewController.swift */; };
 		8454B652257CC11A007FEBC2 /* LaunchRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454B651257CC11A007FEBC2 /* LaunchRouter.swift */; };
 		8454B655257CC126007FEBC2 /* LaunchPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454B654257CC126007FEBC2 /* LaunchPresenter.swift */; };
@@ -81,6 +82,16 @@
 		845CFC8F257F5A4E00B2ED5F /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845CFC8E257F5A4E00B2ED5F /* UserInfo.swift */; };
 		845CFC9B257F884100B2ED5F /* FirebaseChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845CFC9A257F884100B2ED5F /* FirebaseChat.swift */; };
 		845D97A02577B56700339DA3 /* RegistrationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845D979F2577B56700339DA3 /* RegistrationInfo.swift */; };
+		84602B5D25870BD0003C8F6B /* Messenger.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 84602B5B25870BD0003C8F6B /* Messenger.xcdatamodeld */; };
+		84602B60258710E3003C8F6B /* ChatInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B5F258710E3003C8F6B /* ChatInfo.swift */; };
+		84602B6A25871CD5003C8F6B /* CoreDataUser+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B6225871CD5003C8F6B /* CoreDataUser+CoreDataClass.swift */; };
+		84602B6B25871CD5003C8F6B /* CoreDataUser+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B6325871CD5003C8F6B /* CoreDataUser+CoreDataProperties.swift */; };
+		84602B6C25871CD5003C8F6B /* CoreDataChat+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B6425871CD5003C8F6B /* CoreDataChat+CoreDataClass.swift */; };
+		84602B6D25871CD5003C8F6B /* CoreDataChat+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B6525871CD5003C8F6B /* CoreDataChat+CoreDataProperties.swift */; };
+		84602B6E25871CD5003C8F6B /* CoreDataSession+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B6625871CD5003C8F6B /* CoreDataSession+CoreDataClass.swift */; };
+		84602B6F25871CD5003C8F6B /* CoreDataSession+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B6725871CD5003C8F6B /* CoreDataSession+CoreDataProperties.swift */; };
+		84602B7025871CD5003C8F6B /* CoreDataMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B6825871CD5003C8F6B /* CoreDataMessage+CoreDataClass.swift */; };
+		84602B7125871CD5003C8F6B /* CoreDataMessage+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B6925871CD5003C8F6B /* CoreDataMessage+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -103,6 +114,7 @@
 		84542CA8257DFBE400FEC359 /* MenuPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPresenter.swift; sourceTree = "<group>"; };
 		84542CAB257DFBEF00FEC359 /* MenuRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuRouter.swift; sourceTree = "<group>"; };
 		84542CAE257DFBFA00FEC359 /* MenuAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuAssembly.swift; sourceTree = "<group>"; };
+		845446D22585FC5900F5DD4C /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		8454B64E257CC102007FEBC2 /* LaunchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchViewController.swift; sourceTree = "<group>"; };
 		8454B651257CC11A007FEBC2 /* LaunchRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchRouter.swift; sourceTree = "<group>"; };
 		8454B654257CC126007FEBC2 /* LaunchPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchPresenter.swift; sourceTree = "<group>"; };
@@ -160,6 +172,16 @@
 		845CFC8E257F5A4E00B2ED5F /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		845CFC9A257F884100B2ED5F /* FirebaseChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseChat.swift; sourceTree = "<group>"; };
 		845D979F2577B56700339DA3 /* RegistrationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationInfo.swift; sourceTree = "<group>"; };
+		84602B5C25870BD0003C8F6B /* Messenger.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Messenger.xcdatamodel; sourceTree = "<group>"; };
+		84602B5F258710E3003C8F6B /* ChatInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInfo.swift; sourceTree = "<group>"; };
+		84602B6225871CD5003C8F6B /* CoreDataUser+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataUser+CoreDataClass.swift"; sourceTree = "<group>"; };
+		84602B6325871CD5003C8F6B /* CoreDataUser+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataUser+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		84602B6425871CD5003C8F6B /* CoreDataChat+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataChat+CoreDataClass.swift"; sourceTree = "<group>"; };
+		84602B6525871CD5003C8F6B /* CoreDataChat+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataChat+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		84602B6625871CD5003C8F6B /* CoreDataSession+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataSession+CoreDataClass.swift"; sourceTree = "<group>"; };
+		84602B6725871CD5003C8F6B /* CoreDataSession+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataSession+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		84602B6825871CD5003C8F6B /* CoreDataMessage+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataMessage+CoreDataClass.swift"; sourceTree = "<group>"; };
+		84602B6925871CD5003C8F6B /* CoreDataMessage+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataMessage+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8C40544F69552230E628BB56 /* Pods-Messenger.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Messenger.debug.xcconfig"; path = "Target Support Files/Pods-Messenger/Pods-Messenger.debug.xcconfig"; sourceTree = "<group>"; };
 		F98640FE0EFADD19720362E9 /* Pods-Messenger.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Messenger.release.xcconfig"; path = "Target Support Files/Pods-Messenger/Pods-Messenger.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -197,6 +219,7 @@
 		8453EC7F2569593E00385810 /* Messenger */ = {
 			isa = PBXGroup;
 			children = (
+				84602B5A25870BA6003C8F6B /* CoreData */,
 				8453EC9C2569603A00385810 /* Application */,
 				8453EC9B25695E6100385810 /* Resources */,
 				8453EC9925695E0E00385810 /* Constants */,
@@ -326,6 +349,7 @@
 			children = (
 				845D979F2577B56700339DA3 /* RegistrationInfo.swift */,
 				845CFC8E257F5A4E00B2ED5F /* UserInfo.swift */,
+				84602B5F258710E3003C8F6B /* ChatInfo.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -335,6 +359,7 @@
 			children = (
 				8454F6462580E25800A432B6 /* TablesValues */,
 				845CFC9A257F884100B2ED5F /* FirebaseChat.swift */,
+				845446D22585FC5900F5DD4C /* Message.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -507,6 +532,22 @@
 			path = Firebase;
 			sourceTree = "<group>";
 		};
+		84602B5A25870BA6003C8F6B /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				84602B6225871CD5003C8F6B /* CoreDataUser+CoreDataClass.swift */,
+				84602B6325871CD5003C8F6B /* CoreDataUser+CoreDataProperties.swift */,
+				84602B6425871CD5003C8F6B /* CoreDataChat+CoreDataClass.swift */,
+				84602B6525871CD5003C8F6B /* CoreDataChat+CoreDataProperties.swift */,
+				84602B6625871CD5003C8F6B /* CoreDataSession+CoreDataClass.swift */,
+				84602B6725871CD5003C8F6B /* CoreDataSession+CoreDataProperties.swift */,
+				84602B6825871CD5003C8F6B /* CoreDataMessage+CoreDataClass.swift */,
+				84602B6925871CD5003C8F6B /* CoreDataMessage+CoreDataProperties.swift */,
+				84602B5B25870BD0003C8F6B /* Messenger.xcdatamodeld */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
 		EB34A16174666E8C3B4DB0DB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -648,13 +689,17 @@
 				8455B88025823F40001FCE7D /* SpinnerView.swift in Sources */,
 				8455B88B258264CC001FCE7D /* LoginRegistrationMetrics.swift in Sources */,
 				8454F85E256FA70B003AABAA /* ChatLogPresenter.swift in Sources */,
+				84602B7025871CD5003C8F6B /* CoreDataMessage+CoreDataClass.swift in Sources */,
 				845416D72573A5E800CF7388 /* KeyValueService.swift in Sources */,
 				8454DFBA2570BB8A00131C1B /* SearchViewController.swift in Sources */,
 				845A69D7256D51BD00E2E6E8 /* UsersValue.swift in Sources */,
 				8455B8932582695F001FCE7D /* LoginRegistrationPresentationType.swift in Sources */,
+				84602B6B25871CD5003C8F6B /* CoreDataUser+CoreDataProperties.swift in Sources */,
 				845A69A6256CCD4600E2E6E8 /* ZoomAnimationController.swift in Sources */,
+				84602B60258710E3003C8F6B /* ChatInfo.swift in Sources */,
 				8454B64F257CC102007FEBC2 /* LaunchViewController.swift in Sources */,
 				8457C1E1256A41CD001E3F4C /* RegistrationPresenter.swift in Sources */,
+				84602B6D25871CD5003C8F6B /* CoreDataChat+CoreDataProperties.swift in Sources */,
 				8457C1BE256A2F97001E3F4C /* ChatsInteractor.swift in Sources */,
 				84542CAF257DFBFA00FEC359 /* MenuAssembly.swift in Sources */,
 				845792AA256BD9480069D5FF /* FirebaseAuthService.swift in Sources */,
@@ -664,7 +709,9 @@
 				8457C1C1256A2FA6001E3F4C /* ChatsPresenter.swift in Sources */,
 				845CFC9B257F884100B2ED5F /* FirebaseChat.swift in Sources */,
 				8453ECA925696C3700385810 /* LoginViewController.swift in Sources */,
+				84602B6E25871CD5003C8F6B /* CoreDataSession+CoreDataClass.swift in Sources */,
 				8454F86F256FADDD003AABAA /* ChatsMessagesValue.swift in Sources */,
+				84602B6F25871CD5003C8F6B /* CoreDataSession+CoreDataProperties.swift in Sources */,
 				8457C1D3256A392E001E3F4C /* LoginAssembly.swift in Sources */,
 				8454F873256FAE13003AABAA /* ChatsMessagesType.swift in Sources */,
 				845A69DA256D6EDB00E2E6E8 /* FirebaseDatabaseService.swift in Sources */,
@@ -676,7 +723,9 @@
 				8454B652257CC11A007FEBC2 /* LaunchRouter.swift in Sources */,
 				8445C5A4257E5130002C1D82 /* FirebaseStorageService.swift in Sources */,
 				84542CA0257DFBB200FEC359 /* MenuView.swift in Sources */,
+				84602B6C25871CD5003C8F6B /* CoreDataChat+CoreDataClass.swift in Sources */,
 				8454B667257CCC90007FEBC2 /* EmailValidation.swift in Sources */,
+				84602B7125871CD5003C8F6B /* CoreDataMessage+CoreDataProperties.swift in Sources */,
 				8454F862256FA74D003AABAA /* ChatLogRouter.swift in Sources */,
 				845792B1256BD9CB0069D5FF /* SlideAnimationController.swift in Sources */,
 				845CFC85257F46F500B2ED5F /* UserCell.swift in Sources */,
@@ -685,9 +734,11 @@
 				8457C1DD256A41C1001E3F4C /* RegistrationInteractor.swift in Sources */,
 				84542CAC257DFBEF00FEC359 /* MenuRouter.swift in Sources */,
 				8457C1EE256A5CAE001E3F4C /* LoggingService.swift in Sources */,
+				84602B5D25870BD0003C8F6B /* Messenger.xcdatamodeld in Sources */,
 				8457C1DA256A4184001E3F4C /* RegistrationView.swift in Sources */,
 				8457C1E4256A41D8001E3F4C /* RegistrationRouter.swift in Sources */,
 				8454B65B257CC142007FEBC2 /* LaunchAssembly.swift in Sources */,
+				84602B6A25871CD5003C8F6B /* CoreDataUser+CoreDataClass.swift in Sources */,
 				845792B0256BD9CB0069D5FF /* TransitionDelegate.swift in Sources */,
 				8457C1C7256A2FD3001E3F4C /* ChatsAssembly.swift in Sources */,
 				8454F87C256FB332003AABAA /* MessageCell.swift in Sources */,
@@ -696,6 +747,7 @@
 				8454DFB62570BB7D00131C1B /* SearchView.swift in Sources */,
 				8454B658257CC132007FEBC2 /* LaunchInteractor.swift in Sources */,
 				845B8ECB256E357200682D9B /* ChatsView.swift in Sources */,
+				845446D32585FC5900F5DD4C /* Message.swift in Sources */,
 				8457C1D7256A3E8E001E3F4C /* RegistrationViewController.swift in Sources */,
 				8454B65E257CC560007FEBC2 /* LaunchView.swift in Sources */,
 				84553CA8257A7198003C272A /* DateConverter.swift in Sources */,
@@ -903,6 +955,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		84602B5B25870BD0003C8F6B /* Messenger.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				84602B5C25870BD0003C8F6B /* Messenger.xcdatamodel */,
+			);
+			currentVersion = 84602B5C25870BD0003C8F6B /* Messenger.xcdatamodel */;
+			path = Messenger.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 8453EC752569593E00385810 /* Project object */;
 }

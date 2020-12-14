@@ -40,8 +40,9 @@ final class ChatCell: UITableViewCell {
     
     private let profileImageImageView = UIImageView()
     private let nameLabel = UILabel()
-    private let timestampLabel = UILabel()
     private let messageLabel = UILabel()
+    private let unreadMessagesCountLabel = UILabel()
+    private let timestampLabel = UILabel()
     
     // MARK: Lifecycle
     
@@ -80,6 +81,10 @@ extension ChatCell {
         messageLabel.text = text
     }
     
+    func setUnreadMessagesCount(_ count: Int) {
+        unreadMessagesCountLabel.text = count.description
+    }
+    
     func setImage(urlString: String) {
         FirebaseStorageService.downloadProfileImageData(urlString: urlString) { data in
             print("here")
@@ -108,8 +113,8 @@ private extension ChatCell {
     func setupAppearance() {
         setupProfileImageImageViewAppearance()
         setupNameLabelAppearance()
-        setupTimestampLabelAppearance()
         setupMessageLabelAppearance()
+        setupTimestampLabelAppearance()
         
         setupSeparatorAppearance()
     }
@@ -125,15 +130,15 @@ private extension ChatCell {
         nameLabel.numberOfLines = 1
     }
     
+    func setupMessageLabelAppearance() {
+        messageLabel.font = .systemFont(ofSize: Metrics.messageLabelFontSize)
+        messageLabel.numberOfLines = 1
+    }
+    
     func setupTimestampLabelAppearance() {
         timestampLabel.font = .systemFont(ofSize: Metrics.timestampLabelFontSize)
         timestampLabel.textAlignment = .right
         timestampLabel.numberOfLines = 1
-    }
-    
-    func setupMessageLabelAppearance() {
-        messageLabel.font = .systemFont(ofSize: Metrics.messageLabelFontSize)
-        messageLabel.numberOfLines = 1
     }
     
     func setupSeparatorAppearance() {
@@ -153,8 +158,9 @@ private extension ChatCell {
         
         setupProfileImageImageViewLayout()
         setupNameLabelLayout()
-        setupTimestampLabelLayout()
         setupMessageLabelLayout()
+        setupTimestampLabelLayout()
+        setupUnreadMessagesCountLabelLayout()
     }
     
     func setupSubviews() {
@@ -164,8 +170,9 @@ private extension ChatCell {
         profileImageView.addSubview(profileImageImageView)
         
         cellContentView.addSubview(nameLabel)
-        cellContentView.addSubview(timestampLabel)
         cellContentView.addSubview(messageLabel)
+        cellContentView.addSubview(unreadMessagesCountLabel)
+        cellContentView.addSubview(timestampLabel)
     }
     
     func setupProfileImageViewLayout() {
@@ -220,6 +227,26 @@ private extension ChatCell {
         ])
     }
     
+    func setupMessageLabelLayout() {
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            messageLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Metrics.nameMessageSpace),
+            messageLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor),
+            messageLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor),
+        ])
+    }
+    
+    func setupUnreadMessagesCountLabelLayout() {
+        unreadMessagesCountLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            unreadMessagesCountLabel.centerYAnchor.constraint(equalTo: messageLabel.centerYAnchor),
+            unreadMessagesCountLabel.leadingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 8),
+            unreadMessagesCountLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor),
+        ])
+    }
+    
     func setupTimestampLabelLayout() {
         timestampLabel.translatesAutoresizingMaskIntoConstraints = false
         timestampLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
@@ -228,17 +255,6 @@ private extension ChatCell {
             timestampLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
             timestampLabel.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor),
             timestampLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor),
-        ])
-    }
-    
-    func setupMessageLabelLayout() {
-        messageLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Metrics.nameMessageSpace),
-            messageLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor),
-            messageLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor),
-            messageLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor),
         ])
     }
 }

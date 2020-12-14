@@ -11,6 +11,7 @@ protocol ISearchPresenter: AnyObject {
     var usersCount: Int { get }
     
     func viewDidLoad()
+    func viewWillAppear()
     
     func user(forRowAt index: Int) -> UserInfo
     
@@ -38,6 +39,7 @@ final class SearchPresenter {
     }
     
     private var isSearchExecuted = false
+    private var isViewAppear = false
     
     private var users = [UserInfo]()
     private var filteredUsers = [UserInfo]()
@@ -58,6 +60,12 @@ extension SearchPresenter: ISearchPresenter {
                 self.viewController?.showSpinnerView()
             }
         }
+    }
+    
+    func viewWillAppear() {
+        isViewAppear = true
+        
+        viewController?.reloadData()
     }
     
     func user(forRowAt index: Int) -> UserInfo {
@@ -95,11 +103,13 @@ private extension SearchPresenter {
                 return userName.contains(searchName)
             }
             
-            if filteredUsers.isEmpty {
-                viewController?.showNoResultLabel()
+            if isViewAppear {
+                if filteredUsers.isEmpty {
+                    viewController?.showNoResultLabel()
+                }
+                
+                viewController?.reloadData()
             }
-            
-            viewController?.reloadData()
         }
     }
 }

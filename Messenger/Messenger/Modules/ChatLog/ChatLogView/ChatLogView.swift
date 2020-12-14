@@ -14,8 +14,13 @@ protocol IChatLogView: AnyObject {
     
     func clearTextView()
     func reloadData()
+    func updateRowAt(index: Int)
+    func insertNewRow()
+    func startFromRowAt(index: Int)
+    func scrollToBottom()
     
-    //func contentToBottom()
+    // test
+    func viewDidLoad()
 }
 
 final class ChatLogView: UIView {
@@ -23,14 +28,14 @@ final class ChatLogView: UIView {
     
     var sendMessageButtonAction: Completions.ButtonPress?
     
-    var collectionViewDataSource: UICollectionViewDataSource? {
-        get { collectionView.dataSource }
-        set { collectionView.dataSource = newValue }
+    var tableViewDataSource: UITableViewDataSource? {
+        get { tableView.dataSource }
+        set { tableView.dataSource = newValue }
     }
     
-    var collectionViewDelegate: UICollectionViewDelegate? {
-        get { collectionView.delegate }
-        set { collectionView.delegate = newValue }
+    var tableViewDelegate: UITableViewDelegate? {
+        get { tableView.delegate }
+        set { tableView.delegate = newValue }
     }
     
     private enum Metrics {
@@ -47,7 +52,7 @@ final class ChatLogView: UIView {
     
     // MARK: Subviews
     
-    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let tableView = UITableView()
     
     // TODO: rename - inputContainer
     private let textContainerView = UIView()
@@ -60,7 +65,7 @@ final class ChatLogView: UIView {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        updateFlowLayout()
+        //updateFlowLayout()
     }
     
     // MARK: Initialization
@@ -70,13 +75,16 @@ final class ChatLogView: UIView {
 
         setupAppearance()
         setupLayout()
-        
-        //
-        textView.delegate = self
+        setupViewDelegates()
+        setupKeyboardObservers()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        removeKeyboardObservers()
     }
 }
 
@@ -88,30 +96,70 @@ extension ChatLogView: IChatLogView {
     }
     
     func clearTextView() {
-        textView.text = ""
+        textView.text = nil
     }
     
     func reloadData() {
-        collectionView.reloadData()
+        tableView.reloadData()
     }
     
-//    func contentToBottom() {
-//        var numberOfRows = 0
+    func updateRowAt(index: Int) {
+        let indexPath = IndexPath(row: index, section: 0)
+        
+        tableView.reloadRows(at: [indexPath], with: .none)
+    }
+    
+    func insertNewRow() {
+        //let lastRowIndex = tableView.numberOfRows(inSection: 0)
+        //let lastRowIndexPath = IndexPath(row: lastRowIndex, section: 0)
+        
+        //tableView.insertRows(at: [lastRowIndexPath], with: .none)
+        
+        
+        
+        
+        // test
+        let firstRowIndexPath = IndexPath(row: 0, section: 0)
+        
+        tableView.insertRows(at: [firstRowIndexPath], with: .automatic)
+    }
+    
+    func startFromRowAt(index: Int) {
+        let lastRowIndex = tableView.numberOfRows(inSection: 0) - 1
+        
+        if 1 < lastRowIndex {
+            var currentRowIndex = lastRowIndex
+            
+            if index < lastRowIndex {
+                currentRowIndex -= index
+            }
+            
+            let indexPath = IndexPath(row: currentRowIndex, section: 0)
+            
+            tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+        }
+    }
+    
+    func viewDidLoad() {
+        tableView.transform = CGAffineTransform(scaleX: 1, y: -1)
+    }
+    
+    // TODO: fix
+    func scrollToBottom() {
+//        let sectionsCount = tableView.numberOfSections
 //
-//        for section in 0..<tableView.numberOfSections {
-//            numberOfRows += tableView.numberOfRows(inSection: section)
-//        }
+//        if 0 < sectionsCount {
+//            let itemsCount = tableView.numberOfItems(inSection: sectionsCount - 1)
 //
-//        if 0 < numberOfRows {
-//            DispatchQueue.main.async {
-//                let indexPath = IndexPath(row: numberOfRows - 1, section: 0)
+//            if 0 < itemsCount {
+//                let indexPath = IndexPath(item: itemsCount - 1, section: sectionsCount - 1)
 //
-//                UIView.animate(withDuration: 0.4) {
-//                    self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+//                DispatchQueue.main.async {
+//                    self.tableView.scrollToItem(at: indexPath, at: .bottom, animated: true)
 //                }
 //            }
 //        }
-//    }
+    }
 }
 
 // MARK: - Appearance
@@ -120,20 +168,20 @@ private extension ChatLogView {
     func setupAppearance() {
         backgroundColor = .systemBackground
         
-        setupCollectionViewAppearance()
+        setupTableViewAppearance()
         
         setupTextContainerViewAppearance()
         setupTextViewAppearance()
         setupSendButtonAppearance()
-        
-        setupKeyboardObservers()
     }
     
-    func setupCollectionViewAppearance() {
-        collectionView.backgroundColor = .systemBackground
-        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+    func setupTableViewAppearance() {
+        tableView.backgroundColor = .systemBackground
+        tableView.separatorStyle = .none
         
-        collectionView.register(MessageCell.self, forCellWithReuseIdentifier: MessageCell.reuseIdentifier)
+        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        
+        tableView.register(MessageCell.self, forCellReuseIdentifier: MessageCell.reuseIdentifier)
     }
     
     func setupTextContainerViewAppearance() {
@@ -174,7 +222,7 @@ private extension ChatLogView {
     func setupLayout() {
         setupSubviews()
         
-        setupCollectionViewLayout()
+        setupTableViewLayout()
         
         setupTextContainerViewLayout()
         setupTextViewLayout()
@@ -182,30 +230,31 @@ private extension ChatLogView {
     }
     
     func setupSubviews() {
-        addSubview(collectionView)
+        addSubview(tableView)
         addSubview(textContainerView)
         
         textContainerView.addSubview(textView)
         textContainerView.addSubview(sendButton)
     }
     
-    func setupCollectionViewLayout() {
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
+    func setupTableViewLayout() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
         ])
         
-        updateFlowLayout()
+        tableView.estimatedRowHeight = 44
+        tableView.rowHeight = UITableView.automaticDimension
     }
     
     func setupTextContainerViewLayout() {
         textContainerView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            textContainerView.topAnchor.constraint(equalTo: collectionView.bottomAnchor),
+            textContainerView.topAnchor.constraint(equalTo: tableView.bottomAnchor),
             textContainerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
             textContainerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
         ])
@@ -245,11 +294,11 @@ private extension ChatLogView {
 // MARK: - Flow Layout
 
 private extension ChatLogView {
-    func updateFlowLayout() {
-        if let collectionViewFlowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            collectionViewFlowLayout.estimatedItemSize = CGSize(width: UIScreen.main.bounds.size.width, height: .zero)
-        }
-    }
+//    func updateFlowLayout() {
+//        if let collectionViewFlowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+//            collectionViewFlowLayout.estimatedItemSize = CGSize(width: UIScreen.main.bounds.size.width, height: .zero)
+//        }
+//    }
 }
 
 // MARK: - Keyboard Events
@@ -262,6 +311,10 @@ private extension ChatLogView {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillHide),
                                                name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    func removeKeyboardObservers() {
+        NotificationCenter.default.removeObserver(self)
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -282,6 +335,14 @@ private extension ChatLogView {
         UIView.animate(withDuration: 0.1) {
             self.layoutIfNeeded()
         }
+    }
+}
+
+// MARK: - View Delegates
+
+private extension ChatLogView {
+    func setupViewDelegates() {
+        textView.delegate = self
     }
 }
 

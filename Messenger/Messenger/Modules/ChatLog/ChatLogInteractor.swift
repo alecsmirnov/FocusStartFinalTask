@@ -11,14 +11,15 @@ protocol IChatLogInteractor: AnyObject {
     func createChat(withUser userIdentifier: String) -> String?
     
     func sendMessage(_ messageType: ChatsMessagesType, toChat chatIdentifier: String)
-    func readMessage(chatIdentifier: String, messageIdentifier: String)
+    func readMessage(_ message: Message, chatIdentifier: String)
     
     func fetchMessages(chatIdentifier: String)
     func observeMessages(chatIdentifier: String)
 }
 
 protocol IChatLogInteractorOutput: AnyObject {
-    func addedMessage(_ message: ChatsMessagesValue)
+    func addedMessage(_ message: Message)
+    func updateMessage(_ message: Message)
 }
 
 final class ChatLogInteractor {
@@ -29,10 +30,15 @@ final class ChatLogInteractor {
 
 extension ChatLogInteractor: IChatLogInteractor {
     func createChat(withUser userIdentifier: String) -> String? {
-        guard let identifier = FirebaseAuthService.currentUser()?.uid else { return nil }
+        guard let identifier = FirebaseAuthService.currentUser()?.uid,
+              let chatIdentifier = FirebaseDatabaseService.createChatBetween(userIdentifier1: identifier,
+                                                                             userIdentifier2: userIdentifier) else {
+            return nil
+        }
         
-        return FirebaseDatabaseService.createChatBetween(userIdentifier1: identifier,
-                                                         userIdentifier2: userIdentifier)
+        observeMessages(chatIdentifier: chatIdentifier)
+        
+        return chatIdentifier
     }
     
     func sendMessage(_ messageType: ChatsMessagesType, toChat chatIdentifier: String) {
@@ -46,8 +52,14 @@ extension ChatLogInteractor: IChatLogInteractor {
         FirebaseDatabaseService.sendMessage(message, chatIdentifier: chatIdentifier)
     }
     
-    func readMessage(chatIdentifier: String, messageIdentifier: String) {
+    func readMessage(_ message: Message, chatIdentifier: String) {        
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
         
+        if message.data.senderIdentifier != userIdentifier && !message.data.isRead {
+            FirebaseDatabaseService.markMessageAsRead(chatIdentifier: chatIdentifier,
+                                                      userIdentifier: userIdentifier,
+                                                      messageIdentifier: message.identifier)
+        }
     }
     
     func fetchMessages(chatIdentifier: String) {
@@ -60,6 +72,10 @@ extension ChatLogInteractor: IChatLogInteractor {
         FirebaseDatabaseService.observeChatMessages(userIdentifier: userIdentifier,
                                                     chatIdentifier: chatIdentifier) { [weak self] message in
             self?.presenter?.addedMessage(message)
+            
+            FirebaseDatabaseService.observeChatMessagesChange(chatIdentifier: chatIdentifier) { message in
+                self?.presenter?.updateMessage(message)
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ import UIKit
 
 protocol IMessageCell: AnyObject {}
 
-final class MessageCell: UICollectionViewCell {
+final class MessageCell: UITableViewCell {
     // MARK: Properties
     
     static let reuseIdentifier = String(describing: self)
@@ -38,19 +38,13 @@ final class MessageCell: UICollectionViewCell {
     private let messageLabel = UILabel()
     private let timestampLabel = UILabel()
     
-    // MARK: Lifecycle
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        
-        updateLayout()
-    }
+    private let isReadMessageLabel = UILabel()
     
     // MARK: Initialization
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         setupAppearance()
         setupLayout()
     }
@@ -67,10 +61,12 @@ extension MessageCell: IMessageCell {}
 // MARK: - Public Methods
 
 extension MessageCell {
-    func configure(firstName: String, lastName: String?, messageText: String) {
+    func configure(firstName: String, lastName: String?, messageText: String, isRead: Bool) {
         nameLabel.text = "\(firstName) \(lastName ?? "")"
         messageLabel.text = messageText
         timestampLabel.text = "00:00"
+        
+        isReadMessageLabel.text = isRead ? "++" : "+"
     }
 }
 
@@ -120,8 +116,6 @@ private extension MessageCell {
     func setupLayout() {
         setupSubviews()
         
-        setupContentViewLayout()
-        
         setupProfileImageViewLayout()
         setupCellContentViewLayout()
         
@@ -130,6 +124,8 @@ private extension MessageCell {
         setupNameLabelLayout()
         setupMessageLabelLayout()
         setupTimestampLabelLayout()
+        
+        setupIsReadMessageLabelLayout()
     }
     
     func setupSubviews() {
@@ -142,13 +138,7 @@ private extension MessageCell {
         bubbleView.addSubview(nameLabel)
         bubbleView.addSubview(messageLabel)
         bubbleView.addSubview(timestampLabel)
-    }
-    
-    func setupContentViewLayout() {
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        
-        contentViewWidthConstraint = contentView.widthAnchor.constraint(equalToConstant: bounds.size.width)
-        contentViewWidthConstraint?.isActive = true
+        bubbleView.addSubview(isReadMessageLabel)
     }
     
     func setupProfileImageViewLayout() {
@@ -224,27 +214,26 @@ private extension MessageCell {
         
         NSLayoutConstraint.activate([
             timestampLabel.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: Metrics.verticalSpace),
-            timestampLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -Metrics.verticalSpace),
             timestampLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor,
                                                     constant: Metrics.horizontalSpace),
             timestampLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
                                                      constant: -Metrics.horizontalSpace),
         ])
     }
-}
-
-// MARK: - Update Layout
-
-private extension MessageCell {
-    func updateLayout() {
-        contentViewWidthConstraint?.constant = UIScreen.main.bounds.width
-    }
-}
-
-extension MessageCell {
-    override func systemLayoutSizeFitting(_ targetSize: CGSize,
-                                          withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
-                                          verticalFittingPriority: UILayoutPriority) -> CGSize {
-        return contentView.systemLayoutSizeFitting(targetSize)
+    
+    
+    func setupIsReadMessageLabelLayout() {
+        isReadMessageLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            isReadMessageLabel.topAnchor.constraint(equalTo: timestampLabel.bottomAnchor,
+                                                    constant: Metrics.verticalSpace),
+            isReadMessageLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor,
+                                                       constant: -Metrics.verticalSpace),
+            isReadMessageLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor,
+                                                        constant: Metrics.horizontalSpace),
+            isReadMessageLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
+                                                         constant: -Metrics.horizontalSpace),
+        ])
     }
 }
