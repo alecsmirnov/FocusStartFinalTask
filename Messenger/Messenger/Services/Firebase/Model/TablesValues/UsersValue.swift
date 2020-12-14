@@ -5,6 +5,8 @@
 //  Created by Admin on 24.11.2020.
 //
 
+import Foundation
+
 struct UsersValue: Codable {
     // MARK: Properties
     
@@ -14,16 +16,24 @@ struct UsersValue: Codable {
     var email: String { info.email }
     var profilePhotoURL: String? { info.profilePhotoURL }
     
+    var timestamp: TimeInterval { info.timestamp }
+    
     private let info: Info
     
     // MARK: Initialization
     
-    init(firstName: String, lastName: String?, userName: String?, email: String, profilePhotoURL: String?) {
+    init(firstName: String,
+         lastName: String?,
+         userName: String?,
+         email: String,
+         profilePhotoURL: String?,
+         timestamp: TimeInterval) {
         info = Info(firstName: firstName,
                     lastName: lastName,
                     userName: userName,
                     email: email,
-                    profilePhotoURL: profilePhotoURL)
+                    profilePhotoURL: profilePhotoURL,
+                    timestamp: timestamp)
     }
 }
 
@@ -35,18 +45,25 @@ fileprivate struct Info {
     let userName: String?
     let email: String
     let profilePhotoURL: String?
+    let timestamp: TimeInterval
     
     private let queryableName: String
     private let queryableUsername: String?
     
     // MARK: Initialization
     
-    init(firstName: String, lastName: String?, userName: String?, email: String, profilePhotoURL: String?) {
+    init(firstName: String,
+         lastName: String?,
+         userName: String?,
+         email: String,
+         profilePhotoURL: String?,
+         timestamp: TimeInterval) {
         self.firstName = firstName
         self.lastName = lastName
         self.userName = userName
         self.email = email
         self.profilePhotoURL = profilePhotoURL
+        self.timestamp = timestamp
         
         queryableName = "\(firstName) \(lastName ?? "")".lowercased()
         queryableUsername = userName?.lowercased()
@@ -62,6 +79,7 @@ extension Info: Codable {
         case userName = "user_name"
         case email
         case profilePhotoURL = "profile_photo_url"
+        case timestamp
         
         case queryableName = "queryable_name"
         case queryableUsername = "queryable_user_name"

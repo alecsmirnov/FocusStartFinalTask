@@ -5,6 +5,8 @@
 //  Created by Admin on 22.11.2020.
 //
 
+import Foundation
+
 protocol IRegistrationInteractor: AnyObject {    
     func signUpAndSignIn(withUser user: RegistrationInfo)
 }
@@ -46,7 +48,7 @@ extension RegistrationInteractor: IRegistrationInteractor {
                                           lastName: user.lastName,
                                           userName: nil,
                                           email: user.email,
-                                          profilePhotoURL: nil)
+                                          profilePhotoURL: nil, timestamp: Date().timeIntervalSince1970)
             
             // TODO: Add user after signIn
             

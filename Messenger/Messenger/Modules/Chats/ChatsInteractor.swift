@@ -36,9 +36,9 @@ extension ChatsInteractor: IChatsInteractor {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
         
         //
-        //coreDataChatsManager.resetUpdateTimestamp()
-        
+        coreDataChatsManager.resetUpdateTimestamp()
         //coreDataChatsManager.removeChat(at: 0)
+        
         loadStoredChats()
         
         let latestUpdateTime = coreDataChatsManager.getLatestUpdateTimestamp()
@@ -46,7 +46,8 @@ extension ChatsInteractor: IChatsInteractor {
         print("update time: \(latestUpdateTime)")
         print("chats count: \(coreDataChatsManager.getChats().count)")
         
-        observeAddedChats(userIdentifier: userIdentifier, latestUpdateTime: latestUpdateTime)
+        //observeAddedChats(userIdentifier: userIdentifier, latestUpdateTime: latestUpdateTime)
+        observeLoadedChats(userIdentifier: userIdentifier, latestUpdateTime: latestUpdateTime)
     }
 }
 
@@ -60,14 +61,42 @@ private extension ChatsInteractor {
     }
     
     func observeLoadedChats(userIdentifier: String, latestUpdateTime: TimeInterval) {
-//        firebaseChatsManager.observeLoadedChats(userIdentifier: userIdentifier,
-//                                                chats: <#T##[ChatInfo]#>,
-//                                                chatAddedCompletion: <#T##(ChatInfo) -> Void#>,
-//                                                chatRemovedCompletion: <#T##(String) -> Void#>,
-//                                                pairChatUpdated: <#T##(String, UserInfo) -> Void#>,
-//                                                groupChatUpdated: <#T##(String, GroupInfo) -> Void#>,
-//                                                chatLatestMessageUpdated: <#T##(String, LatestMessageInfo) -> Void#>,
-//                                                chatUnreadMessagesUpdated: <#T##(String, Int) -> Void#>)
+        let chats = coreDataChatsManager.getChats()
+        
+        firebaseChatsManager.observeLoadedChats(userIdentifier: userIdentifier,
+                                                latestUpdateTime: latestUpdateTime,
+                                                chats: chats) { [weak self] chat in
+            //self?.coreDataChatsManager.appendChat(chat: chat)
+
+            //self?.presenter?.chatAdded(chat: chat)
+            print("add")
+        } chatRemovedCompletion: { [weak self] chatIdentifier in
+            // Oops
+            //self?.coreDataChatsManager.removeChat(at: index)
+
+            self?.presenter?.chatRemoved(chatIdentifier: chatIdentifier)
+        } pairChatUpdated: { [weak self] chatIdentifier, companion in
+            print("companion update")
+            // Oooooops
+            //self?.coreDataChatsManager.updateChat(at: index, with: chat)
+
+            self?.presenter?.chatCompanionUpdated(chatIdentifier: chatIdentifier, companion: companion)
+        } groupChatUpdated: { chatIdentifier, group in
+
+        } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
+            print("latest message update")
+            // Oooooops
+            //self?.coreDataChatsManager.updateChat(at: index, with: chat)
+            
+
+            self?.presenter?.chatMessageUpdated(chatIdentifier: chatIdentifier, message: message)
+        } chatUnreadMessagesUpdated: { [weak self] chatIdentifier, count in
+            print("unread update")
+            // Oooooops
+            //self?.coreDataChatsManager.updateChat(at: index, with: chat)
+
+            self?.presenter?.chatUnreadMessagesCountUpdated(chatIdentifier: chatIdentifier, count: count)
+        }
     }
     
     func observeAddedChats(userIdentifier: String, latestUpdateTime: TimeInterval) {

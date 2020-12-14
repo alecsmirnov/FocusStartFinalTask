@@ -559,7 +559,7 @@ private extension FirebaseDatabaseService {
                                                 .child(userIdentifier)
                                                 .child(chatIdentifier)
             //.child("count")
-        
+        // TODO: access to UsersChatsUnreadMessagesCountValue
         
         counterReference.runTransactionBlock { mutableDat in
             if let value = mutableDat.value as? Int {
