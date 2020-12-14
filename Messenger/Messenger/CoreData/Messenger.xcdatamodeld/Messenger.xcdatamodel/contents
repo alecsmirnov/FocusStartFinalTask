@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CoreDataChat" representedClassName="CoreDataChat" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSession" inverseName="chats" inverseEntity="CoreDataSession"/>
+    </entity>
+    <entity name="CoreDataMessage" representedClassName="CoreDataMessage" syncable="YES"/>
+    <entity name="CoreDataSession" representedClassName="CoreDataSession" syncable="YES">
+        <attribute name="update_timestamp" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="chats" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="session" inverseEntity="CoreDataChat"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataUser" inverseName="session" inverseEntity="CoreDataUser"/>
+    </entity>
+    <entity name="CoreDataUser" representedClassName="CoreDataUser" syncable="YES">
+        <attribute name="email" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="profile_image_data" optional="YES" attributeType="Binary"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSession" inverseName="user" inverseEntity="CoreDataSession"/>
+    </entity>
+    <elements>
+        <element name="CoreDataUser" positionX="-63" positionY="-18" width="128" height="103"/>
+        <element name="CoreDataChat" positionX="-54" positionY="18" width="128" height="73"/>
+        <element name="CoreDataMessage" positionX="-36" positionY="27" width="128" height="43"/>
+        <element name="CoreDataSession" positionX="-18" positionY="36" width="128" height="88"/>
+    </elements>
+</model>
