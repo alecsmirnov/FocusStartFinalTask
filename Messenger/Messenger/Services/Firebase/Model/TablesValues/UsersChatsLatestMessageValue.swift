@@ -5,10 +5,9 @@
 //  Created by Admin on 09.12.2020.
 //
 
-struct UsersChatsLatestMessageValue {
+import Foundation
+
+struct UsersChatsLatestMessageValue: Codable {
     let identifier: String
+    let timestamp: TimeInterval
 }
-
-// MARK: - Codable
-
-extension UsersChatsLatestMessageValue: Codable {}

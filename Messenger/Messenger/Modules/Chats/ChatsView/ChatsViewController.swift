@@ -121,18 +121,21 @@ extension ChatsViewController: UITableViewDataSource {
         if let chat = presenter?.chat(forRowAt: indexPath.row) {
             var messageText = ""
             
-            switch chat.latestMessage.messageType {
+            switch chat.latestMessage?.type {
             case .text(let text):
                 messageText = text
+            case .none: break
             }
             
-            cell.configure(withFirstName: chat.user.firstName, lastName: chat.user.lastName)
-            cell.configure(withText: messageText)
-            
-            cell.setUnreadMessagesCount(chat.unreadMessagesCount)
-            
-            if let urlString = chat.user.profilePhotoURL {
-                cell.setImage(urlString: urlString)
+            if let companion = chat.companion {
+                cell.configure(withFirstName: companion.firstName, lastName: companion.lastName)
+                cell.configure(withText: messageText)
+                
+                cell.setUnreadMessagesCount(chat.unreadMessagesCount ?? 0)
+                
+//                if let urlString = companion.profilePhotoURL {
+//                    cell.setImage(urlString: urlString)
+//                }
             }
         }
         

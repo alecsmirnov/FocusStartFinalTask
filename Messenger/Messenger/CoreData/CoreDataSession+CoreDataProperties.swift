@@ -14,14 +14,33 @@ extension CoreDataSession {
         return NSFetchRequest<CoreDataSession>(entityName: "CoreDataSession")
     }
 
-    @NSManaged public var user: CoreDataUser
-    @NSManaged public var chats: NSSet?
-    
-    @NSManaged public var update_timestamp: Double
+    @NSManaged public var user: CoreDataUser?
+    @NSManaged public var latestUpdateTimestamp: Double
+
+    @NSManaged public var chats: NSOrderedSet?
 }
 
 // MARK: Generated accessors for chats
+
 extension CoreDataSession {
+    @objc(insertObject:inChatsAtIndex:)
+    @NSManaged public func insertIntoChats(_ value: CoreDataChat, at idx: Int)
+
+    @objc(removeObjectFromChatsAtIndex:)
+    @NSManaged public func removeFromChats(at idx: Int)
+
+    @objc(insertChats:atIndexes:)
+    @NSManaged public func insertIntoChats(_ values: [CoreDataChat], at indexes: NSIndexSet)
+
+    @objc(removeChatsAtIndexes:)
+    @NSManaged public func removeFromChats(at indexes: NSIndexSet)
+
+    @objc(replaceObjectInChatsAtIndex:withObject:)
+    @NSManaged public func replaceChats(at idx: Int, with value: CoreDataChat)
+
+    @objc(replaceChatsAtIndexes:withChats:)
+    @NSManaged public func replaceChats(at indexes: NSIndexSet, with values: [CoreDataChat])
+
     @objc(addChatsObject:)
     @NSManaged public func addToChats(_ value: CoreDataChat)
 
@@ -29,10 +48,10 @@ extension CoreDataSession {
     @NSManaged public func removeFromChats(_ value: CoreDataChat)
 
     @objc(addChats:)
-    @NSManaged public func addToChats(_ values: NSSet)
+    @NSManaged public func addToChats(_ values: NSOrderedSet)
 
     @objc(removeChats:)
-    @NSManaged public func removeFromChats(_ values: NSSet)
+    @NSManaged public func removeFromChats(_ values: NSOrderedSet)
 }
 
 extension CoreDataSession : Identifiable {}

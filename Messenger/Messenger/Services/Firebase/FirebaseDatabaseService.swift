@@ -7,6 +7,20 @@
 
 import FirebaseDatabase
 
+enum Tables {
+    static let users = "users"
+    
+    static let chatsMessages = "chats_messages"
+    static let chatsMembers = "chats_members"
+    static let chatsInfo = "chats_info"
+    static let chatsInfoGroup = "chats_info_group"
+    
+    static let usersChats = "users_chats"
+    static let usersChatsMessages = "users_chats_messages"
+    static let usersChatsLatestMessages = "users_chats_latest_messages"
+    static let usersChatsUnread = "users_chats_unread_messages_count"
+}
+
 enum FirebaseDatabaseService {
     // MARK: Completions
     
@@ -53,17 +67,7 @@ enum FirebaseDatabaseService {
         static let anyCharacterValue = "\u{f8ff}"
     }
     
-    private enum Tables {
-        static let users = "users"
-        
-        static let chatsMessages = "chats_messages"
-        static let chatsMembers = "chats_members"
-        
-        static let usersChats = "users_chats"
-        static let usersChatsMessages = "users_chats_messages"
-        static let usersChatsLatestMessages = "users_chats_latest_messages"
-        static let usersChatsUnread = "users_chats_unread_messages_count"
-    }
+
     
     private static let databaseReference = Database.database().reference()
 }
@@ -205,16 +209,6 @@ extension FirebaseDatabaseService {
 }
 
 private extension FirebaseDatabaseService {
-    static func createChat(withMember userIdentifier: String) -> String? {
-        guard let chatIdentifier = databaseReference.child(Tables.chatsMessages).childByAutoId().key else {
-            return nil
-        }
-        
-        addChatMember(userIdentifier: userIdentifier, chatIdentifier: chatIdentifier)
-        
-        return chatIdentifier
-    }
-    
     static func addChatMember(userIdentifier: String, chatIdentifier: String) {
         databaseReference.child(Tables.chatsMembers)
                          .child(chatIdentifier)
@@ -226,6 +220,39 @@ private extension FirebaseDatabaseService {
                          .child(chatIdentifier)
                          .child("timestamp")
                          .setValue(Constants.currentTimestamp)
+    }
+    
+    static func createPairChatBetween(user userIdentifier1: String, andUser userIdentifier2: String) -> String {
+        let chatIdentifier = getPairChatIdentifier(userIdentifier1: userIdentifier1, userIdentifier2: userIdentifier2)
+        
+        addChatMember(userIdentifier: userIdentifier1, chatIdentifier: chatIdentifier)
+        addChatMember(userIdentifier: userIdentifier2, chatIdentifier: chatIdentifier)
+        
+        return chatIdentifier
+    }
+    
+    static func getPairChatIdentifier(userIdentifier1: String, userIdentifier2: String) -> String {
+        let chatIdentifier = (userIdentifier1 < userIdentifier2) ? userIdentifier1 + userIdentifier2 :
+                                                                   userIdentifier2 + userIdentifier1
+        return chatIdentifier
+    }
+    
+    // MARK: Group
+    
+    static func createGroupChat(creatorIdentifier: String, name: String) -> String {
+        
+        
+        return ""
+    }
+    
+    static func createChat(withMember userIdentifier: String) -> String? {
+        guard let chatIdentifier = databaseReference.child(Tables.chatsMessages).childByAutoId().key else {
+            return nil
+        }
+        
+        addChatMember(userIdentifier: userIdentifier, chatIdentifier: chatIdentifier)
+        
+        return chatIdentifier
     }
 }
 
@@ -500,7 +527,8 @@ extension FirebaseDatabaseService {
                                  .child(messageIdentifier)
                                  .setValue(Constants.emptyValue)
                 
-                let latestMessage = UsersChatsLatestMessageValue(identifier: messageIdentifier)
+                let latestMessage = UsersChatsLatestMessageValue(identifier: messageIdentifier,
+                                                                 timestamp: message.timestamp)
                 
                 databaseReference.child(Tables.usersChatsLatestMessages)
                     .child(memberIdentifier)
@@ -602,7 +630,7 @@ extension FirebaseDatabaseService {
 
 // MARK: - Helpers
 
-private extension FirebaseDatabaseService {
+extension FirebaseDatabaseService {
     static func encodableToDictionary<T>(_ data: T) -> [String: Any]? where T: Encodable {
         let dictionary: [String: Any]?
         

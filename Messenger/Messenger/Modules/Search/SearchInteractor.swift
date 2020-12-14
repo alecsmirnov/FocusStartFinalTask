@@ -47,7 +47,7 @@ private extension SearchInteractor {
                             firstName: user.firstName,
                             lastName: user.lastName,
                             email: user.email,
-                            profilePhotoURL: user.profilePhotoURL)
+                            profileImageData: nil)
         }
         
         return usersData

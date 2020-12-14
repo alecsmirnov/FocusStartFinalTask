@@ -14,7 +14,15 @@ extension CoreDataChat {
         return NSFetchRequest<CoreDataChat>(entityName: "CoreDataChat")
     }
 
-    @NSManaged public var name: String
+    @NSManaged public var identifier: String
+    @NSManaged public var isGroup: Bool
+    @NSManaged public var unreadMessagesCount: Int32
+    
+    @NSManaged public var group: CoreDataGroup?
+    @NSManaged public var companion: CoreDataUser?
+    
+    @NSManaged public var latestMessage: CoreDataLatestMessage?
+    
     @NSManaged public var session: CoreDataSession?
 }
 

@@ -14,9 +14,15 @@ extension CoreDataUser {
         return NSFetchRequest<CoreDataUser>(entityName: "CoreDataUser")
     }
 
-    @NSManaged public var name: String
+    @NSManaged public var identifier: String
     @NSManaged public var email: String
-    @NSManaged public var profile_image_data: Data?
+    
+    @NSManaged public var firstName: String
+    @NSManaged public var lastName: String?
+    
+    @NSManaged public var profileImageData: Data?
+
+    @NSManaged public var chat: CoreDataChat?
     @NSManaged public var session: CoreDataSession?
 }
 

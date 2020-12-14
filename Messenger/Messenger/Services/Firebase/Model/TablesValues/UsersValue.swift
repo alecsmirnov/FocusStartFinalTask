@@ -5,7 +5,7 @@
 //  Created by Admin on 24.11.2020.
 //
 
-struct UsersValue {
+struct UsersValue: Codable {
     // MARK: Properties
     
     var firstName: String { info.firstName }
@@ -54,8 +54,6 @@ fileprivate struct Info {
 }
 
 // MARK: - Codable
-
-extension UsersValue: Codable {}
 
 extension Info: Codable {
     enum CodingKeys: String, CodingKey {

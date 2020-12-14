@@ -5,105 +5,91 @@
 //  Created by Admin on 22.11.2020.
 //
 
+import Foundation
+
 protocol IChatsInteractor: AnyObject {
     func fetchChats()
 }
 
 protocol IChatsInteractorOutput: AnyObject {
-    func fetchChatsSuccess(_ chats: [FirebaseChat])
-    func fetchChatsFail()
+    func fetchChatsSuccess(chats: [ChatInfo])
     
-    // TODO: renaming
-    func addChat(_ chat: FirebaseChat)
-    func removeChat(_ chatIdentifier: String)
+    func chatAdded(chat: ChatInfo)
+    func chatRemoved(chatIdentifier: String)
     
-    // TODO: change user and message structure
-    func updateUser(_ user: UsersValue, userIdentifier: String)
-    func updateChatMessage(_ message: ChatsMessagesValue, chatIdentifier: String)
+    func chatCompanionUpdated(chatIdentifier: String, companion: UserInfo)
+    func chatMessageUpdated(chatIdentifier: String, message: LatestMessageInfo)
+    func chatUnreadMessagesCountUpdated(chatIdentifier: String, count: Int)
 }
 
 final class ChatsInteractor {
     weak var presenter: IChatsInteractorOutput?
+    
+    private let coreDataChatsManager = CoreDataChatsManager()
+    private let firebaseChatsManager = FirebaseDatabaseChatsManager()
 }
 
 // MARK: - IChatsInteractor
 
 extension ChatsInteractor: IChatsInteractor {
     func fetchChats() {
-        if let userIdentifier = FirebaseAuthService.currentUser()?.uid {
-            fetchChats(for: userIdentifier)
-            
-            observeCompanionsChanged(for: userIdentifier)
-            observeChatsLatestMessagesChanged(for: userIdentifier)
-            
-            observeChats(for: userIdentifier)
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
+        
+        //
+        coreDataChatsManager.resetUpdateTimestamp()
+        //
+        //coreDataChatsManager.removeChat(at: 0)
+        loadStoredChats()
+        
+        let latestUpdateTime = coreDataChatsManager.getLatestUpdateTimestamp()
+        
+        print("update time: \(latestUpdateTime)")
+        print("chats count: \(coreDataChatsManager.getChats().count)")
+        
+
+
+        firebaseChatsManager.observeChats(userIdentifier: userIdentifier,
+                                          latestUpdateTime: latestUpdateTime) { [weak self] chat in
+            self?.coreDataChatsManager.appendChat(chat: chat)
+
+            self?.presenter?.chatAdded(chat: chat)
+            print("add")
+        } chatRemovedCompletion: { [weak self] chatIdentifier in
+            // Oops
+            //self?.coreDataChatsManager.removeChat(at: index)
+
+            self?.presenter?.chatRemoved(chatIdentifier: chatIdentifier)
+        } pairChatUpdated: { [weak self] chatIdentifier, companion in
+            // Oooooops
+            //self?.coreDataChatsManager.updateChat(at: index, with: chat)
+
+            self?.presenter?.chatCompanionUpdated(chatIdentifier: chatIdentifier, companion: companion)
+        } groupChatUpdated: { chatIdentifier, group in
+
+        } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
+            // Oooooops
+            //self?.coreDataChatsManager.updateChat(at: index, with: chat)
+
+            self?.presenter?.chatMessageUpdated(chatIdentifier: chatIdentifier, message: message)
+        } chatUnreadMessagesUpdated: { [weak self] chatIdentifier, count in
+            // Oooooops
+            //self?.coreDataChatsManager.updateChat(at: index, with: chat)
+
+            self?.presenter?.chatUnreadMessagesCountUpdated(chatIdentifier: chatIdentifier, count: count)
         }
     }
 }
 
-// MARK: - Private Methods
-
 private extension ChatsInteractor {
-    func fetchChats(for userIdentifier: String) {
-        FirebaseDatabaseService.fetchChats(for: userIdentifier) { [weak self] chats, error in
-            guard let chats = chats, error == nil else {
-                if let error = error, error != .chatNotFound {
-                    var errorMessage: String?
-
-                    switch error {
-                    case .userNotFound: errorMessage = "user not found"
-                    case .messageNotFound: errorMessage = "message not found"
-                    case .latestMessageNotFound: errorMessage = "latest message not found"
-                    default: break
-                    }
-
-                    if let errorMessage = errorMessage {
-                        LoggingService.log(category: .chats, layer: .presenter, type: .error, with: errorMessage)
-                    }
-                } else {
-                    self?.presenter?.fetchChatsFail()
-                }
-
-                return
-            }
-            
-            self?.presenter?.fetchChatsSuccess(chats)
+    func loadStoredChats() {
+        let storedChats = coreDataChatsManager.getChats()
+        
+        if !storedChats.isEmpty {
+            presenter?.fetchChatsSuccess(chats: storedChats)
         }
     }
     
-    func observeChats(for userIdentifier: String) {
-        FirebaseDatabaseService.observeAddedChats(for: userIdentifier) { [weak self] chat, error in
-            guard let chat = chat, error == nil else {
-                return
-            }
-            
-            FirebaseDatabaseService.observeUserChanged(userIdentifier: chat.userIdentifier) { user in
-                if let user = user?.first {
-                    self?.presenter?.updateUser(user.value, userIdentifier: user.key)
-                }
-            }
-            
-            self?.presenter?.addChat(chat)
-        }
-    
-        FirebaseDatabaseService.observeRemovedChats(for: userIdentifier) { [weak self] chatIdentifier in
-            self?.presenter?.removeChat(chatIdentifier)
-        }
-    }
-    
-    func observeCompanionsChanged(for userIdentifier: String) {
-        FirebaseDatabaseService.observeUserCompanionsChanged(userIdentifier: userIdentifier) { [weak self] user in
-            if let user = user?.first {
-                self?.presenter?.updateUser(user.value, userIdentifier: user.key)
-            }
-        }
-    }
-    
-    func observeChatsLatestMessagesChanged(for userIdentifier: String) {
-        FirebaseDatabaseService.observeChatsLatestMessagesChanged(for: userIdentifier) { [weak self] message in
-            if let message = message?.first {
-                self?.presenter?.updateChatMessage(message.value, chatIdentifier: message.key)
-            }
-        }
+    func test() {
+        //coreDataChatsManager.getLatestUpdateTimestamp()
     }
 }
