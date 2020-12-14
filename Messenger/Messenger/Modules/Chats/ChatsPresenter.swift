@@ -36,8 +36,6 @@ final class ChatsPresenter {
 extension ChatsPresenter: IChatsPresenter {
     func viewDidLoad() {        
         interactor?.fetchChats()
-        
-        viewController?.reloadData()
     }
     
     var chatsCount: Int {

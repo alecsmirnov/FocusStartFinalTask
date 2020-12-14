@@ -27,6 +27,7 @@ fileprivate struct ChatsObserversInfo {
 
 extension FirebaseDatabaseChatsManager {
     func observeLoadedChats(userIdentifier: String,
+                            latestUpdateTime: TimeInterval,
                             chats: [ChatInfo],
                             chatAddedCompletion: @escaping (ChatInfo) -> Void,
                             chatRemovedCompletion: @escaping (String) -> Void,
