@@ -104,7 +104,6 @@
 		84602B60258710E3003C8F6B /* ChatInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B5F258710E3003C8F6B /* ChatInfo.swift */; };
 		84602B7525872575003C8F6B /* FirebaseDatabaseChatsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B7425872575003C8F6B /* FirebaseDatabaseChatsManager.swift */; };
 		84602B78258728EA003C8F6B /* ChatsInfoGroupValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B77258728EA003C8F6B /* ChatsInfoGroupValue.swift */; };
-		84602B7C25873ADF003C8F6B /* LatestMessageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B7B25873ADF003C8F6B /* LatestMessageInfo.swift */; };
 		84602B7F25873E17003C8F6B /* UsersChatsUnreadMessagesCountValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B7E25873E17003C8F6B /* UsersChatsUnreadMessagesCountValue.swift */; };
 		84602B832587483B003C8F6B /* FirebaseDatabaseChatLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B822587483B003C8F6B /* FirebaseDatabaseChatLogManager.swift */; };
 		84602B862587700F003C8F6B /* CoreDataChatsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84602B852587700F003C8F6B /* CoreDataChatsManager.swift */; };
@@ -211,7 +210,6 @@
 		84602B5F258710E3003C8F6B /* ChatInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInfo.swift; sourceTree = "<group>"; };
 		84602B7425872575003C8F6B /* FirebaseDatabaseChatsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDatabaseChatsManager.swift; sourceTree = "<group>"; };
 		84602B77258728EA003C8F6B /* ChatsInfoGroupValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsInfoGroupValue.swift; sourceTree = "<group>"; };
-		84602B7B25873ADF003C8F6B /* LatestMessageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestMessageInfo.swift; sourceTree = "<group>"; };
 		84602B7E25873E17003C8F6B /* UsersChatsUnreadMessagesCountValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersChatsUnreadMessagesCountValue.swift; sourceTree = "<group>"; };
 		84602B822587483B003C8F6B /* FirebaseDatabaseChatLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDatabaseChatLogManager.swift; sourceTree = "<group>"; };
 		84602B852587700F003C8F6B /* CoreDataChatsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataChatsManager.swift; sourceTree = "<group>"; };
@@ -384,7 +382,6 @@
 			children = (
 				845D979F2577B56700339DA3 /* RegistrationInfo.swift */,
 				845CFC8E257F5A4E00B2ED5F /* UserInfo.swift */,
-				84602B7B25873ADF003C8F6B /* LatestMessageInfo.swift */,
 				845DB1DF2588B2D1004EE926 /* MessageInfo.swift */,
 				845DB1D325887A0C004EE926 /* GroupInfo.swift */,
 				84602B5F258710E3003C8F6B /* ChatInfo.swift */,
@@ -831,7 +828,6 @@
 				8454DFB62570BB7D00131C1B /* SearchView.swift in Sources */,
 				845DB2152588D549004EE926 /* CoreDataChat+CoreDataClass.swift in Sources */,
 				845DB1E02588B2D1004EE926 /* MessageInfo.swift in Sources */,
-				84602B7C25873ADF003C8F6B /* LatestMessageInfo.swift in Sources */,
 				8454B658257CC132007FEBC2 /* LaunchInteractor.swift in Sources */,
 				845DB2132588D549004EE926 /* CoreDataMessage+CoreDataClass.swift in Sources */,
 				845B8ECB256E357200682D9B /* ChatsView.swift in Sources */,
