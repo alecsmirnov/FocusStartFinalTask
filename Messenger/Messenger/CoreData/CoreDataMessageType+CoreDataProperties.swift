@@ -2,7 +2,7 @@
 //  CoreDataMessageType+CoreDataProperties.swift
 //  Messenger
 //
-//  Created by Admin on 14.12.2020.
+//  Created by Admin on 15.12.2020.
 //
 //
 
@@ -16,7 +16,7 @@ extension CoreDataMessageType {
 
     @NSManaged public var text: String?
     
-    @NSManaged public var message: CoreDataLatestMessage?
+    @NSManaged public var message: CoreDataMessage?
 }
 
 extension CoreDataMessageType : Identifiable {}

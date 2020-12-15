@@ -6,8 +6,7 @@
         <attribute name="unreadMessagesCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="companion" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataUser" inverseName="chat" inverseEntity="CoreDataUser"/>
         <relationship name="group" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataGroup" inverseName="chat" inverseEntity="CoreDataGroup"/>
-        <relationship name="latestMessage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataLatestMessage" inverseName="chat" inverseEntity="CoreDataLatestMessage"/>
-        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSession" inverseName="chats" inverseEntity="CoreDataSession"/>
+        <relationship name="latestMessage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataMessage" inverseName="chat" inverseEntity="CoreDataMessage"/>
     </entity>
     <entity name="CoreDataGroup" representedClassName="CoreDataGroup" syncable="YES">
         <attribute name="creatorIdentifier" attributeType="String"/>
@@ -20,7 +19,9 @@
         <attribute name="identifier" attributeType="String"/>
         <relationship name="group" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataGroup" inverseName="moderatorsIdentifiers" inverseEntity="CoreDataGroup"/>
     </entity>
-    <entity name="CoreDataLatestMessage" representedClassName="CoreDataLatestMessage" syncable="YES">
+    <entity name="CoreDataMessage" representedClassName="CoreDataMessage" syncable="YES">
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="isRead" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="senderIdentifier" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="latestMessage" inverseEntity="CoreDataChat"/>
@@ -28,12 +29,10 @@
     </entity>
     <entity name="CoreDataMessageType" representedClassName="CoreDataMessageType" syncable="YES">
         <attribute name="text" optional="YES" attributeType="String"/>
-        <relationship name="message" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataLatestMessage" inverseName="type" inverseEntity="CoreDataLatestMessage"/>
+        <relationship name="message" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataMessage" inverseName="type" inverseEntity="CoreDataMessage"/>
     </entity>
-    <entity name="CoreDataSession" representedClassName="CoreDataSession" syncable="YES">
-        <attribute name="latestUpdateTimestamp" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <relationship name="chats" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CoreDataChat" inverseName="session" inverseEntity="CoreDataChat"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataUser" inverseName="session" inverseEntity="CoreDataUser"/>
+    <entity name="CoreDataUpdate" representedClassName="CoreDataUpdate" syncable="YES">
+        <attribute name="timestamp" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
     <entity name="CoreDataUser" representedClassName="CoreDataUser" syncable="YES">
         <attribute name="email" attributeType="String"/>
@@ -42,15 +41,14 @@
         <attribute name="lastName" optional="YES" attributeType="String"/>
         <attribute name="profileImageData" optional="YES" attributeType="Binary"/>
         <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="companion" inverseEntity="CoreDataChat"/>
-        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSession" inverseName="user" inverseEntity="CoreDataSession"/>
     </entity>
     <elements>
-        <element name="CoreDataChat" positionX="12.9765625" positionY="-118.9921875" width="128" height="148"/>
-        <element name="CoreDataSession" positionX="233.9375" positionY="231.94921875" width="128" height="88"/>
-        <element name="CoreDataUser" positionX="250.9609375" positionY="-32.99609375" width="128" height="148"/>
+        <element name="CoreDataChat" positionX="12.9765625" positionY="-118.9921875" width="128" height="133"/>
         <element name="CoreDataGroup" positionX="-5.95703125" positionY="197.01171875" width="128" height="118"/>
         <element name="CoreDataIdentifier" positionX="-191.9453125" positionY="308.99609375" width="128" height="73"/>
-        <element name="CoreDataLatestMessage" positionX="-229.99609375" positionY="142.0078125" width="128" height="103"/>
+        <element name="CoreDataMessage" positionX="-229.99609375" positionY="142.0078125" width="128" height="133"/>
         <element name="CoreDataMessageType" positionX="-225.97265625" positionY="56.00390625" width="128" height="73"/>
+        <element name="CoreDataUser" positionX="250.9609375" positionY="-32.99609375" width="128" height="133"/>
+        <element name="CoreDataUpdate" positionX="-45" positionY="27" width="128" height="58"/>
     </elements>
 </model>

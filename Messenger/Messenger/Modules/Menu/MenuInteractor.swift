@@ -41,6 +41,16 @@ extension MenuInteractor: IMenuInteractor {
     }
     
     func signOut() {
+        sendSignOutNotification()
+        
         FirebaseAuthService.signOut()
+    }
+}
+
+// MARK: - Private Methods
+
+extension MenuInteractor {
+    func sendSignOutNotification() {
+        NotificationCenter.default.post(name: .SignOut, object: nil)
     }
 }

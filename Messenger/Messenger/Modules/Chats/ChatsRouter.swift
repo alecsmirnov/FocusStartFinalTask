@@ -9,7 +9,8 @@ import UIKit
 
 protocol IChatsRouter: AnyObject {
     func openMenuViewController()
-    func openChatLogViewController(with user: UserInfo, chatIdentifier: String?)
+    func openChatLogViewController(with user: UserInfo)
+    func openChatLogViewController(with chat: ChatInfo)
     func openSearchViewController(delegate: ISearchPresenterDelegate?)
 }
 
@@ -34,8 +35,14 @@ extension ChatsRouter: IChatsRouter {
         viewController?.navigationController?.pushViewController(menuViewController, animated: true)
     }
     
-    func openChatLogViewController(with user: UserInfo, chatIdentifier: String?) {
-        let chatLogViewController = ChatLogAssembly.createChatLogViewController(with: user, chatIdentifier: chatIdentifier)
+    func openChatLogViewController(with user: UserInfo) {
+        let chatLogViewController = ChatLogAssembly.createChatLogViewController(with: user)
+        
+        viewController?.navigationController?.pushViewController(chatLogViewController, animated: true)
+    }
+    
+    func openChatLogViewController(with chat: ChatInfo) {
+        let chatLogViewController = ChatLogAssembly.createChatLogViewController(with: chat)
         
         viewController?.navigationController?.pushViewController(chatLogViewController, animated: true)
     }

@@ -33,24 +33,24 @@ extension FirebaseDatabaseChatsManager {
                          .child(userIdentifier)
                          .queryOrdered(byChild: "timestamp")
                          .queryStarting(atValue: latestUpdateTime)
-                         .observeSingleEvent(of: .value) { snapshot in
+                         .observeSingleEvent(of: .childAdded) { snapshot in
             guard let value = snapshot.value as? [String: Any] else {
                 completion(nil)
 
                 return
             }
-            
-            let userValue = FirebaseDatabaseService.dictionaryToDecodable(value, type: UsersValue.self)
+
+            let userValue = FirebaseDatabaseService.dictionaryToDecodable([snapshot.key: value], type: UsersValue.self)
             let userInfo = UserInfo(identifier: userIdentifier,
                                     firstName: userValue.firstName,
                                     lastName: userValue.lastName,
                                     email: userValue.email,
                                     profileImageData: nil)
-                            
+
             completion(userInfo)
         }
     }
-    
+
     func fetchChatUnreadMessagesCountWithUpdateTime(chatIdentifier: String,
                                                     userIdentifier: String,
                                                     latestUpdateTime: TimeInterval,
@@ -60,34 +60,34 @@ extension FirebaseDatabaseChatsManager {
                          .child(chatIdentifier)
                          .queryOrdered(byChild: "timestamp")
                          .queryStarting(atValue: latestUpdateTime)
-                         .observeSingleEvent(of: .value) { [weak self] snapshot in
+                         .observeSingleEvent(of: .childAdded) { [weak self] snapshot in
             self?.fetchChatUnreadMessagesCount(chatIdentifier: chatIdentifier,
                                                userIdentifier: userIdentifier) { count in
                 guard let count = count else { return }
-                
+
                 completion(count)
             }
         }
     }
-    
+
     func fetchUserChatLatestMessageWithUpdateTime(chatIdentifier: String,
                                                   userIdentifier: String,
                                                   latestUpdateTime: TimeInterval,
-                                                  completion: @escaping (LatestMessageInfo?) -> Void) {
+                                                  completion: @escaping (MessageInfo?) -> Void) {
         databaseReference.child(Tables.usersChatsLatestMessages)
                          .child(userIdentifier)
                          .child(chatIdentifier)
                          .queryOrdered(byChild: "timestamp")
                          .queryStarting(atValue: latestUpdateTime)
-                         .observeSingleEvent(of: .value) { [weak self] snapshot in
+                         .observeSingleEvent(of: .childAdded) { [weak self] snapshot in
             self?.fetchUserChatLatestMessage(chatIdentifier: chatIdentifier,
                                              userIdentifier: userIdentifier) { latestMessage in
                 guard let latestMessage = latestMessage else {
                     completion(nil)
-                    
+
                     return
                 }
-                
+
                 completion(latestMessage)
             }
         }
@@ -104,21 +104,21 @@ extension FirebaseDatabaseChatsManager {
                             chatRemovedCompletion: @escaping (String) -> Void,
                             pairChatUpdated: @escaping (String, UserInfo) -> Void,
                             groupChatUpdated: @escaping (String, GroupInfo) -> Void,
-                            chatLatestMessageUpdated: @escaping (String, LatestMessageInfo) -> Void,
+                            chatLatestMessageUpdated: @escaping (String, MessageInfo) -> Void,
                             chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
         chats.forEach { chat in
             if chat.isGroup {
                 
             } else {
                 guard let companion = chat.companion else { return }
-                
+
                 fetchUserWithUpdateTime(userIdentifier: companion.identifier,
                                         latestUpdateTime: latestUpdateTime) { companion in
                     guard let companion = companion else { return }
-                    
+
                     pairChatUpdated(chat.identifier, companion)
                 }
-                
+
                 fetchUserChatLatestMessageWithUpdateTime(chatIdentifier: chat.identifier,
                                                          userIdentifier: userIdentifier,
                                                          latestUpdateTime: latestUpdateTime) { latestMessage in
@@ -126,12 +126,12 @@ extension FirebaseDatabaseChatsManager {
 
                     chatLatestMessageUpdated(chat.identifier, latestMessage)
                 }
-                
+
                 fetchChatUnreadMessagesCountWithUpdateTime(chatIdentifier: chat.identifier,
                                                            userIdentifier: userIdentifier,
                                                            latestUpdateTime: latestUpdateTime) { count in
                     guard let count = count else { return }
-                    
+
                     chatUnreadMessagesUpdated(chat.identifier, count)
                 }
                 
@@ -151,7 +151,7 @@ extension FirebaseDatabaseChatsManager {
                       chatRemovedCompletion: @escaping (String) -> Void,
                       pairChatUpdated: @escaping (String, UserInfo) -> Void,
                       groupChatUpdated: @escaping (String, GroupInfo) -> Void,
-                      chatLatestMessageUpdated: @escaping (String, LatestMessageInfo) -> Void,
+                      chatLatestMessageUpdated: @escaping (String, MessageInfo) -> Void,
                       chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
         observeAddedChats(for: userIdentifier, latestUpdateTime: latestUpdateTime) { [weak self] chat in
             chatAddedCompletion(chat)
@@ -181,7 +181,7 @@ private extension FirebaseDatabaseChatsManager {
                          userIdentifier: String,
                          companionIdentifier: String,
                          pairChatUpdated: @escaping (String, UserInfo) -> Void,
-                         chatLatestMessageUpdated: @escaping (String, LatestMessageInfo) -> Void,
+                         chatLatestMessageUpdated: @escaping (String, MessageInfo) -> Void,
                          chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
         observeCompanionChanged(companionIdentifier: companionIdentifier) { companion in
             pairChatUpdated(chatIdentifier, companion)
@@ -193,6 +193,72 @@ private extension FirebaseDatabaseChatsManager {
         
         observeUnreadMessagesChanged(chatIdentifier: chatIdentifier, userIdentifier: userIdentifier) { count in
             chatUnreadMessagesUpdated(chatIdentifier, count)
+        }
+    }
+    
+    func observeRemovedChats(for userIdentifier: String, completion: @escaping (String) -> Void) {
+        databaseReference.child(Tables.usersChats)
+                         .child(userIdentifier)
+                         .observe(.childRemoved) { snapshot in
+            completion(snapshot.key)
+        }
+    }
+    
+    func observeCompanionChanged(companionIdentifier: String, completion: @escaping (UserInfo) -> Void) {
+        databaseReference.child(Tables.users)
+                         .child(companionIdentifier)
+                         .observe(.childChanged) { snapshot in
+            guard let value = snapshot.value as? [String: Any] else { return }
+                            
+            let userValue = FirebaseDatabaseService.dictionaryToDecodable([snapshot.key: value], type: UsersValue.self)
+            let userInfo = UserInfo(identifier: companionIdentifier,
+                                    firstName: userValue.firstName,
+                                    lastName: userValue.lastName,
+                                    email: userValue.email,
+                                    profileImageData: nil)
+
+            completion(userInfo)
+        }
+    }
+    
+    func observeLatestMessagesChanged(chatIdentifier: String,
+                                      userIdentifier: String,
+                                      completion: @escaping (MessageInfo) -> Void) {
+        databaseReference.child(Tables.usersChatsLatestMessages)
+                         .child(userIdentifier)
+                         .child(chatIdentifier)
+                         .observe(.childChanged) { [weak self] snapshot in
+            guard let value = snapshot.value as? [String: Any] else { return }
+                
+            let latestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
+                [snapshot.key: value],
+                type: UsersChatsLatestMessageValue.self
+            )
+
+            self?.fetchChatMessage(chatIdentifier: chatIdentifier,
+                                   messageIdentifier: latestMessageValue.identifier) { message in
+                guard let message = message else { return }
+
+                completion(message)
+            }
+        }
+    }
+    
+    func observeUnreadMessagesChanged(chatIdentifier: String,
+                                      userIdentifier: String,
+                                      completion: @escaping (Int) -> Void) {
+        databaseReference.child(Tables.usersChatsUnread)
+                         .child(userIdentifier)
+                         .child(chatIdentifier)
+                         .observe(.childChanged) { snapshot in
+            guard let value = snapshot.value as? [String: Any] else { return }
+                        
+            let latestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
+                [snapshot.key: value],
+                type: UsersChatsUnreadMessagesCountValue.self
+            )
+                            
+            completion(latestMessageValue.count)
         }
     }
     
@@ -238,68 +304,6 @@ private extension FirebaseDatabaseChatsManager {
         
         chatsObserversInfo.addedChatsHandler = observerHandler
     }
-    
-    func observeRemovedChats(for userIdentifier: String, completion: @escaping (String) -> Void) {
-        databaseReference.child(Tables.usersChats)
-                         .child(userIdentifier)
-                         .observe(.childRemoved) { snapshot in
-            completion(snapshot.key)
-        }
-    }
-    
-    func observeCompanionChanged(companionIdentifier: String, completion: @escaping (UserInfo) -> Void) {
-        databaseReference.child(Tables.users)
-                         .child(companionIdentifier)
-                         .observe(.childChanged) { snapshot in
-            guard let value = snapshot.value as? [String: Any] else { return }
-
-            let userValue = FirebaseDatabaseService.dictionaryToDecodable([snapshot.key: value], type: UsersValue.self)
-            let userInfo = UserInfo(identifier: companionIdentifier,
-                                    firstName: userValue.firstName,
-                                    lastName: userValue.lastName,
-                                    email: userValue.email,
-                                    profileImageData: nil)
-
-            completion(userInfo)
-        }
-    }
-    
-    func observeLatestMessagesChanged(chatIdentifier: String,
-                                      userIdentifier: String,
-                                      completion: @escaping (LatestMessageInfo) -> Void) {
-        databaseReference.child(Tables.usersChatsLatestMessages)
-                         .child(userIdentifier)
-                         .child(chatIdentifier)
-                         .observe(.childChanged) { [weak self] snapshot in
-            guard let value = snapshot.value as? [String: Any] else { return }
-                
-            let chatIdentifier = snapshot.key
-            let latestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
-                value,
-                type: UsersChatsLatestMessageValue.self
-            )
-
-            self?.fetchChatMessage(chatIdentifier: chatIdentifier,
-                                   messageIdentifier: latestMessageValue.identifier) { message in
-                guard let message = message else { return }
-                
-                completion(message)
-            }
-        }
-    }
-    
-    func observeUnreadMessagesChanged(chatIdentifier: String,
-                                      userIdentifier: String,
-                                      completion: @escaping (Int) -> Void) {
-        databaseReference.child(Tables.usersChatsUnread)
-                         .child(userIdentifier)
-                         .child(chatIdentifier)
-                         .observe(.childChanged) { snapshot in
-            guard let count = snapshot.value as? Int else { return }
-                            
-            completion(count)
-        }
-    }
 }
 
 // MARK: - Private Fetch Methods
@@ -325,12 +329,6 @@ private extension FirebaseDatabaseChatsManager {
                 
                 self?.fetchUserChatLatestMessage(chatIdentifier: chatIdentifier,
                                                  userIdentifier: userIdentifier) { latestMessage in
-                    guard let latestMessage = latestMessage else {
-                        completion(nil, .latestMessageNotFound)
-                        
-                        return
-                    }
-                    
                     self?.fetchChatUnreadMessagesCount(chatIdentifier: chatIdentifier,
                                                        userIdentifier: userIdentifier) { unreadCount in
                         let chat = ChatInfo(identifier: chatIdentifier,
@@ -411,7 +409,7 @@ private extension FirebaseDatabaseChatsManager {
     
     func fetchUserChatLatestMessage(chatIdentifier: String,
                                     userIdentifier: String,
-                                    completion: @escaping (LatestMessageInfo?) -> Void) {
+                                    completion: @escaping (MessageInfo?) -> Void) {
         fetchChatLatestMessageIdentifier(chatIdentifier: chatIdentifier,
                                          userIdentifier: userIdentifier) { [weak self] latestMessageIdentifier in
             guard let latestMessageIdentifier = latestMessageIdentifier else {
@@ -435,7 +433,7 @@ private extension FirebaseDatabaseChatsManager {
     
     func fetchChatMessage(chatIdentifier: String,
                           messageIdentifier: String,
-                          completion: @escaping (LatestMessageInfo?) -> Void) {
+                          completion: @escaping (MessageInfo?) -> Void) {
         databaseReference.child(Tables.chatsMessages)
                                .child(chatIdentifier)
                                .child(messageIdentifier)
@@ -447,9 +445,11 @@ private extension FirebaseDatabaseChatsManager {
             }
     
             let messageValue = FirebaseDatabaseService.dictionaryToDecodable(value, type: ChatsMessagesValue.self)
-            let message = LatestMessageInfo(senderIdentifier: messageValue.senderIdentifier,
-                                            type: messageValue.messageType,
-                                            timestamp: messageValue.timestamp)
+            let message = MessageInfo(identifier: messageIdentifier,
+                                      senderIdentifier: messageValue.senderIdentifier,
+                                      type: messageValue.messageType,
+                                      isRead: messageValue.isRead,
+                                      timestamp: messageValue.timestamp)
             completion(message)
         }
     }

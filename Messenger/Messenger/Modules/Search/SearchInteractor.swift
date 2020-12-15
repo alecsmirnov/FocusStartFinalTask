@@ -5,8 +5,6 @@
 //  Created by Admin on 27.11.2020.
 //
 
-import Dispatch
-
 protocol ISearchInteractor: AnyObject {
     func fetchUsers()
 }
@@ -18,6 +16,8 @@ protocol ISearchInteractorOutput: AnyObject {
 
 final class SearchInteractor {
     weak var presenter: ISearchInteractorOutput?
+    
+    private let firebaseSearchManager = FirebaseDatabaseSearchManager()
 }
 
 // MARK: - ISearchInteractor
@@ -26,30 +26,14 @@ extension SearchInteractor: ISearchInteractor {
     func fetchUsers() {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
         
-        FirebaseDatabaseService.fetchUsers { users in
-            guard let users = users?.filter({ $0.key != userIdentifier }), !users.isEmpty else {
-                self.presenter?.fetchUsersFail()
+        firebaseSearchManager.fetchUsers { [weak self] users in
+            guard let users = users?.filter({ $0.identifier != userIdentifier }), !users.isEmpty else {
+                self?.presenter?.fetchUsersFail()
 
                 return
             }
             
-            self.presenter?.fetchUsersSuccess(SearchInteractor.firebaseUsersToUsersData(users))
+            self?.presenter?.fetchUsersSuccess(users)
         }
-    }
-}
-
-// MARK: - Private Methods
-
-private extension SearchInteractor {
-    static func firebaseUsersToUsersData(_ users: [String: UsersValue]) -> [UserInfo] {
-        let usersData = users.map { identifier, user in
-            return UserInfo(identifier: identifier,
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            email: user.email,
-                            profileImageData: nil)
-        }
-        
-        return usersData
     }
 }

@@ -15,10 +15,11 @@ protocol IChatLogPresenter: AnyObject {
     func viewWillAppear()
     func viewDidAppear()
     
-    func didPressSendButton(messageType: ChatsMessagesType)
+    func messageAt(index: Int) -> MessageInfo
     
-    func messageAt(index: Int) -> ChatsMessagesValue
-    func displayMessageAt(index: Int)
+    func didPressSendButton(messageType: ChatsMessagesType)
+    func didReadMessageAt(index: Int)
+    func didPullToRefresh()
 }
 
 final class ChatLogPresenter {
@@ -26,12 +27,19 @@ final class ChatLogPresenter {
     var interactor: IChatLogInteractor?
     var router: IChatLogRouter?
     
-    var chatIdentifier: String?
-    var companion: UserInfo?
+    var chat: ChatInfo?
     
+    private var messages = [MessageInfo]()
+    
+    private var topInsertOffset = 0
     private var isViewAppear = false
+}
 
-    private var messages = [Message]()
+extension ChatLogPresenter {
+    var companion: UserInfo? {
+        get { chat?.companion }
+        set { chat = interactor?.registerPairChat(with: newValue) }
+    }
 }
 
 // MARK: - IChatLogPresenter
@@ -48,48 +56,58 @@ extension ChatLogPresenter: IChatLogPresenter {
 
 extension ChatLogPresenter {
     func viewDidLoad() {
-        if let chatIdentifier = chatIdentifier {
-            interactor?.observeMessages(chatIdentifier: chatIdentifier)
+        if let chat = chat {
+            interactor?.observeMessages(chatIdentifier: chat.identifier)
         }
     }
     
     func viewWillAppear() {
-        isViewAppear = true
+        guard let chat = chat else { return }
         
-        //viewController?.reloadData()
-        
-        if let companion = companion {
-            let receiverName = "\(companion.firstName) \(companion.lastName ?? "")"
+        if !chat.isGroup {
             
-            viewController?.setTitle(text: receiverName)
+        } else {
+            if let companion = chat.companion {
+                let receiverName = "\(companion.firstName) \(companion.lastName ?? "")"
+                
+                viewController?.setTitle(text: receiverName)
+            }
         }
     }
     
     func viewDidAppear() {
-
+        var unreadMessagesCount = 0
+        if let chatUnreadMessagesCount = chat?.unreadMessagesCount {
+            unreadMessagesCount = chatUnreadMessagesCount
+        }
+        
+        viewController?.startFromRowAt(index: messages.count - unreadMessagesCount)
+    }
+    
+    func messageAt(index: Int) -> MessageInfo {
+        return messages[index]
     }
     
     func didPressSendButton(messageType: ChatsMessagesType) {
-        if chatIdentifier == nil {
-            if let companionIdentifier = companion?.identifier {
-                chatIdentifier = interactor?.createChat(withUser: companionIdentifier)
-            }
-        }
-        
-        if let chatIdentifier = chatIdentifier {
-            interactor?.sendMessage(messageType, toChat: chatIdentifier)
+        if let chat = chat {
+            interactor?.sendMessage(messageType, to: chat)
         }
     }
     
-    func messageAt(index: Int) -> ChatsMessagesValue {
-        return messages[index].data
-    }
-    
-    func displayMessageAt(index: Int) {
-        if let chatIdentifier = chatIdentifier {
+    func didReadMessageAt(index: Int) {
+        //if let chatIdentifier = chatIdentifier {
             //print(index)
-            
-            interactor?.readMessage(messages[index], chatIdentifier: chatIdentifier)
+         //
+        //    interactor?.readMessage(messages[index], chatIdentifier: chatIdentifier)
+        //}
+    }
+    
+    func didPullToRefresh() {
+        if let chatIdentifier = chat?.identifier {
+            if !messages.isEmpty {
+                interactor?.loadLastMessages(chatIdentifier: chatIdentifier,
+                                             topMessageIdentifier: messages[0].identifier)
+            }
         }
     }
 }
@@ -97,17 +115,15 @@ extension ChatLogPresenter {
 // MARK: - IChatLogInteractorOutput
 
 extension ChatLogPresenter: IChatLogInteractorOutput {
-    func addedMessage(_ message: Message) {
+    func addedMessage(_ message: MessageInfo) {
         messages.append(message)
         
-        if isViewAppear {
-            viewController?.insertNewRow()
-            //viewController?.startFromRowAt(index: 10)
-            //viewController?.scrollToBottom()
-        }
+        viewController?.reloadData()
+        //viewController?.insertNewRow()
+        //viewController?.scrollToBottom()
     }
     
-    func updateMessage(_ message: Message) {
+    func updateMessage(_ message: MessageInfo) {
         if let index = messages.firstIndex(where: { $0.identifier == message.identifier }) {
             messages[index] = message
             
@@ -115,9 +131,17 @@ extension ChatLogPresenter: IChatLogInteractorOutput {
             
             guard let identifier = FirebaseAuthService.currentUser()?.uid else { return }
             
-            if isViewAppear, message.data.senderIdentifier == identifier {
+            if isViewAppear, message.senderIdentifier == identifier {
                 viewController?.updateRowAt(index: index)
             }
         }
+    }
+    
+    func addedPreviousMessage(_ message: MessageInfo) {
+        messages.insert(message, at: topInsertOffset)
+        topInsertOffset += 1
+        
+        viewController?.reloadData()
+        viewController?.endRefreshing()
     }
 }

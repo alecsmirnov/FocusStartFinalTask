@@ -2,7 +2,7 @@
 //  CoreDataGroup+CoreDataProperties.swift
 //  Messenger
 //
-//  Created by Admin on 14.12.2020.
+//  Created by Admin on 15.12.2020.
 //
 //
 
@@ -21,7 +21,6 @@ extension CoreDataGroup {
     @NSManaged public var moderatorsIdentifiers: NSSet?
     
     @NSManaged public var chat: CoreDataChat?
-
 }
 
 // MARK: Generated accessors for moderatorsIdentifiers
@@ -38,6 +37,7 @@ extension CoreDataGroup {
 
     @objc(removeModeratorsIdentifiers:)
     @NSManaged public func removeFromModeratorsIdentifiers(_ values: NSSet)
+
 }
 
 extension CoreDataGroup : Identifiable {}

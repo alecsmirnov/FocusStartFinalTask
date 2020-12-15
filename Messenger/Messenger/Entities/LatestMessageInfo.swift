@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct LatestMessageInfo {
-    let senderIdentifier: String
-    
-    let type: ChatsMessagesType
-    let timestamp: TimeInterval
-}
+//struct LatestMessageInfo {
+//    let senderIdentifier: String
+//    
+//    let type: ChatsMessagesType
+//    let timestamp: TimeInterval
+//}

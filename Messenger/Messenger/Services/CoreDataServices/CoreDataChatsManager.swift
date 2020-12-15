@@ -18,7 +18,8 @@ final class CoreDataChatsManager {
         return managedContext
     }()
     
-    private var session: CoreDataSession?
+    private var update: CoreDataUpdate?
+    private var chats = [CoreDataChat]()
     
     // MARK: Initialization
     
@@ -27,72 +28,78 @@ final class CoreDataChatsManager {
     }
 }
 
-// MARK: - TEST
-
-extension CoreDataChatsManager {
-    func resetUpdateTimestamp() {
-        session?.latestUpdateTimestamp = 0
-    }
-}
-
 // MARK: - Public Methods
 
 extension CoreDataChatsManager {
     func getLatestUpdateTimestamp() -> TimeInterval {
-        return session?.latestUpdateTimestamp ?? 0
-    }
-    
-    func setUser(_ user: UserInfo) {
-        guard let coreDataUser = session?.user else { return }
-        
-        CoreDataChatsManager.userToCoreDataUser(user, coreDataUser: coreDataUser)
-        
-        updateTimestamp()
-        saveContext()
-    }
-    
-    func getUser() -> UserInfo? {
-        guard let coreDataUser = session?.user else { return nil }
-        
-        return CoreDataChatsManager.coreDataUserToUser(coreDataUser: coreDataUser)
-    }
-    
-    func appendChat(chat: ChatInfo) {
-        let coreDataChat = chatToCoreDataChat(chat)
-        
-        session?.addToChats(coreDataChat)
-        
-        updateTimestamp()
-        saveContext()
-    }
-    
-    func updateChat(at index: Int, with chat: ChatInfo) {
-        let coreDataChat = chatToCoreDataChat(chat)
-        
-        session?.replaceChats(at: index, with: coreDataChat)
-        
-        updateTimestamp()
-        saveContext()
-    }
-    
-    func removeChat(at index: Int) {
-        session?.removeFromChats(at: index)
-        
-        updateTimestamp()
-        saveContext()
+        return update?.timestamp ?? 0
     }
     
     func getChats() -> [ChatInfo] {
-        guard let orderedSet = session?.chats,
-              let coreDataChats = orderedSet.array as? [CoreDataChat] else { return [] }
+        return chats.map { coreDataChatToChat(coreDataChat: $0) }
+    }
+    
+    func getChatIndex(by identifier: String) -> Int? {
+        return chats.firstIndex { $0.identifier == identifier }
+    }
+    
+    func appendChat(chat: ChatInfo) {
+        chats.append(chatToCoreDataChat(chat))
         
-        var chats = [ChatInfo]()
+        saveAndUpdate()
+    }
+    
+    func updateChat(at index: Int, with chat: ChatInfo) {
+        chats[index] = chatToCoreDataChat(chat)
         
-        coreDataChats.forEach { coreDataChat in
-            chats.append(coreDataChatToChat(coreDataChat: coreDataChat))
+        saveAndUpdate()
+    }
+    
+    func removeChat(at index: Int) {
+        chats.remove(at: index)
+        
+        saveAndUpdate()
+    }
+    
+    func updateChatCompanion(at index: Int, companion: UserInfo) {
+        CoreDataChatsManager.userToCoreDataUser(companion, coreDataUser: chats[index].companion)
+        
+        saveAndUpdate()
+    }
+    
+    func updateChatLatestMessage(at index: Int, message: MessageInfo) {
+        CoreDataChatsManager.messageToCoreDataMessage(message, coreDataMessage: chats[index].latestMessage)
+        
+        saveAndUpdate()
+    }
+    
+    func updateChatUnreadMessagesCount(at index: Int, count: Int) {
+        chats[index].unreadMessagesCount = Int32(count)
+        
+        saveAndUpdate()
+    }
+    
+    func resetUpdateTimestamp() {
+        update?.timestamp = 0
+        
+        saveContext()
+    }
+    
+    func clear() {
+        let deleteUpdateFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CoreDataUpdate")
+        let deleteUpdateRequest = NSBatchDeleteRequest(fetchRequest: deleteUpdateFetch)
+        
+        let deleteChatFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CoreDataChat")
+        let deleteChatRequest = NSBatchDeleteRequest(fetchRequest: deleteChatFetch)
+
+        do {
+            try managedContext.execute(deleteUpdateRequest)
+            try managedContext.execute(deleteChatRequest)
+            
+            try managedContext.save()
+        } catch let error as NSError {
+            fatalError("could not fetch. \(error), \(error.userInfo)")
         }
-        
-        return chats
     }
 }
 
@@ -100,17 +107,26 @@ extension CoreDataChatsManager {
 
 private extension CoreDataChatsManager {
     func fetchData() {
-        let fetchRequest: NSFetchRequest<CoreDataSession> = CoreDataSession.fetchRequest()
+        let updateFetchRequest: NSFetchRequest<CoreDataUpdate> = CoreDataUpdate.fetchRequest()
+        let chatsFetchRequest: NSFetchRequest<CoreDataChat> = CoreDataChat.fetchRequest()
 
         do {
-            session = try managedContext.fetch(fetchRequest).first
+            update = try managedContext.fetch(updateFetchRequest).first
             
-            if session == nil {
-                session = CoreDataSession(context: managedContext)
+            if update == nil {
+                update = CoreDataUpdate(context: managedContext)
+                update?.timestamp = 0
             }
+            
+            chats = try managedContext.fetch(chatsFetchRequest)
         } catch let error as NSError {
             fatalError("could not fetch. \(error), \(error.userInfo)")
         }
+    }
+    
+    func saveAndUpdate() {
+        updateTimestamp()
+        saveContext()
     }
     
     func saveContext() {
@@ -122,7 +138,7 @@ private extension CoreDataChatsManager {
     }
     
     func updateTimestamp() {
-        session?.latestUpdateTimestamp = currentTimestamp
+        update?.timestamp = currentTimestamp
         
         do {
             try managedContext.save()
@@ -141,12 +157,12 @@ private extension CoreDataChatsManager {
 }
 
 private extension CoreDataChatsManager {
-    static func userToCoreDataUser(_ user: UserInfo, coreDataUser: CoreDataUser) {
-        coreDataUser.identifier = user.identifier
-        coreDataUser.email = user.email
-        coreDataUser.firstName = user.firstName
-        coreDataUser.lastName = user.lastName
-        coreDataUser.profileImageData = user.profileImageData
+    static func userToCoreDataUser(_ user: UserInfo, coreDataUser: CoreDataUser?) {
+        coreDataUser?.identifier = user.identifier
+        coreDataUser?.email = user.email
+        coreDataUser?.firstName = user.firstName
+        coreDataUser?.lastName = user.lastName
+        coreDataUser?.profileImageData = user.profileImageData
     }
     
     static func coreDataUserToUser(coreDataUser: CoreDataUser) -> UserInfo {
@@ -155,6 +171,17 @@ private extension CoreDataChatsManager {
                         lastName: coreDataUser.lastName,
                         email: coreDataUser.email,
                         profileImageData: coreDataUser.profileImageData)
+    }
+    
+    static func messageToCoreDataMessage(_ message: MessageInfo, coreDataMessage: CoreDataMessage?) {
+        coreDataMessage?.identifier = message.identifier
+        coreDataMessage?.senderIdentifier = message.senderIdentifier
+        coreDataMessage?.isRead = message.isRead
+        coreDataMessage?.timestamp = message.timestamp
+        
+        switch message.type {
+        case .text(let text): coreDataMessage?.type.text = text
+        }
     }
     
     func chatToCoreDataChat(_ chat: ChatInfo) -> CoreDataChat {
@@ -192,9 +219,11 @@ private extension CoreDataChatsManager {
         }
         
         if let latestMessage = chat.latestMessage {
-            let coreDataLatestMessage = CoreDataLatestMessage(context: managedContext)
+            let coreDataLatestMessage = CoreDataMessage(context: managedContext)
             
+            coreDataLatestMessage.identifier = latestMessage.identifier
             coreDataLatestMessage.senderIdentifier = latestMessage.senderIdentifier
+            coreDataLatestMessage.isRead = latestMessage.isRead
             coreDataLatestMessage.timestamp = latestMessage.timestamp
             
             let coreDataMessageType = CoreDataMessageType(context: managedContext)
@@ -240,20 +269,22 @@ private extension CoreDataChatsManager {
             }
         }
         
-        var latestMessage: LatestMessageInfo?
+        var latestMessage: MessageInfo?
         
         if let coreDataLatestMessage = coreDataChat.latestMessage {
             let messageType: ChatsMessagesType
             
-            if let text = coreDataLatestMessage.type?.text {
+            if let text = coreDataLatestMessage.type.text {
                 messageType = ChatsMessagesType.text(text)
             } else {
                 messageType = ChatsMessagesType.text("error")
             }
             
-            latestMessage = LatestMessageInfo(senderIdentifier: coreDataLatestMessage.senderIdentifier,
-                                              type: messageType,
-                                              timestamp: coreDataLatestMessage.timestamp)
+            latestMessage = MessageInfo(identifier: coreDataLatestMessage.identifier,
+                                        senderIdentifier: coreDataLatestMessage.senderIdentifier,
+                                        type: messageType,
+                                        isRead: coreDataLatestMessage.isRead,
+                                        timestamp: coreDataLatestMessage.timestamp)
         }
         
         let unreadMessagesCount = Int(coreDataChat.unreadMessagesCount)

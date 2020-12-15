@@ -2,7 +2,7 @@
 //  CoreDataUser+CoreDataProperties.swift
 //  Messenger
 //
-//  Created by Admin on 14.12.2020.
+//  Created by Admin on 15.12.2020.
 //
 //
 
@@ -21,9 +21,8 @@ extension CoreDataUser {
     @NSManaged public var lastName: String?
     
     @NSManaged public var profileImageData: Data?
-
+    
     @NSManaged public var chat: CoreDataChat?
-    @NSManaged public var session: CoreDataSession?
 }
 
 extension CoreDataUser : Identifiable {}

@@ -9,19 +9,21 @@ import Foundation
 
 struct UsersValue: Codable {
     // MARK: Properties
-    
+
     var firstName: String { info.firstName }
     var lastName: String? { info.lastName }
     var userName: String? { info.userName }
     var email: String { info.email }
     var profilePhotoURL: String? { info.profilePhotoURL }
-    
+
     var timestamp: TimeInterval { info.timestamp }
+
+    // MARK: Additional Node
     
     private let info: Info
-    
+
     // MARK: Initialization
-    
+
     init(firstName: String,
          lastName: String?,
          userName: String?,
@@ -39,19 +41,19 @@ struct UsersValue: Codable {
 
 fileprivate struct Info {
     // MARK: Properties
-    
+
     let firstName: String
     let lastName: String?
     let userName: String?
     let email: String
     let profilePhotoURL: String?
     let timestamp: TimeInterval
-    
+
     private let queryableName: String
     private let queryableUsername: String?
-    
+
     // MARK: Initialization
-    
+
     init(firstName: String,
          lastName: String?,
          userName: String?,
@@ -64,7 +66,7 @@ fileprivate struct Info {
         self.email = email
         self.profilePhotoURL = profilePhotoURL
         self.timestamp = timestamp
-        
+
         queryableName = "\(firstName) \(lastName ?? "")".lowercased()
         queryableUsername = userName?.lowercased()
     }
@@ -80,7 +82,7 @@ extension Info: Codable {
         case email
         case profilePhotoURL = "profile_photo_url"
         case timestamp
-        
+
         case queryableName = "queryable_name"
         case queryableUsername = "queryable_user_name"
     }

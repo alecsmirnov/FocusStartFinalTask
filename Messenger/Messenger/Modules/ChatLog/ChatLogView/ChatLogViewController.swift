@@ -10,6 +10,8 @@ import UIKit
 protocol IChatLogViewController: AnyObject {
     func setTitle(text: String)
     
+    func endRefreshing()
+    
     func reloadData()
     func updateRowAt(index: Int)
     func insertNewRow()
@@ -41,7 +43,7 @@ final class ChatLogViewController: UIViewController {
         
         presenter?.viewDidLoad()
         
-        setupView()
+        setupView()           
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,7 +56,6 @@ final class ChatLogViewController: UIViewController {
         super.viewDidAppear(animated)
         
         presenter?.viewDidAppear()
-        
     }
 }
 
@@ -63,6 +64,10 @@ final class ChatLogViewController: UIViewController {
 extension ChatLogViewController: IChatLogViewController {
     func setTitle(text: String) {
         navigationItem.title = text
+    }
+    
+    func endRefreshing() {
+        chatLogView.endRefreshing()
     }
     
     func reloadData() {
@@ -107,6 +112,10 @@ private extension ChatLogViewController {
                 self?.chatLogView.clearTextView()
             }
         }
+        
+        chatLogView.pullToRefreshAction = { [weak self] in
+            self?.presenter?.didPullToRefresh()
+        }
     }
 }
 
@@ -124,7 +133,7 @@ extension ChatLogViewController: UITableViewDataSource {
         
         if let message = presenter?.messageAt(index: indexPath.row) {
             var messageText = ""
-            switch message.messageType {
+            switch message.type {
             case .text(let text):
                 messageText = text
             }
@@ -142,8 +151,7 @@ extension ChatLogViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             if tableView.visibleCells.contains(cell) {
-                self.presenter?.displayMessageAt(index: indexPath.row)
-                print(indexPath.row)
+                self.presenter?.didReadMessageAt(index: indexPath.row)
             }
         }
     }

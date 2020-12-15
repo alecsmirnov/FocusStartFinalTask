@@ -12,7 +12,6 @@ protocol IChatsPresenter: AnyObject {
 
     func viewDidLoad()
     
-    //func chat(forRowAt index: Int) -> FirebaseChat?
     func chat(forRowAt index: Int) -> ChatInfo?
     
     func didPressMenuButton()
@@ -21,14 +20,11 @@ protocol IChatsPresenter: AnyObject {
 }
 
 final class ChatsPresenter {
-    // MARK: Properties
-    
     weak var viewController: IChatsViewController?
     var interactor: IChatsInteractor?
     var router: IChatsRouter?
     
     private var chats = [ChatInfo]()
-    //private var chats = [FirebaseChat]()
 }
 
 // MARK: - IChatsPresenter
@@ -42,19 +38,12 @@ extension ChatsPresenter: IChatsPresenter {
         return chats.count
     }
     
-    //func chat(forRowAt index: Int) -> FirebaseChat? {
     func chat(forRowAt index: Int) -> ChatInfo? {
         return chats[index]
     }
     
     func didSelectChatAt(index: Int) {
-//        let user = UserInfo(identifier: chats[index].companion.userIdentifier,
-//                            firstName: chats[index].user.firstName,
-//                            lastName: chats[index].user.lastName,
-//                            email: chats[index].user.email,
-//                            profilePhotoURL: chats[index].user.profilePhotoURL)
-//
-//        router?.openChatLogViewController(with: user, chatIdentifier: chats[index].chatIdentifier)
+        router?.openChatLogViewController(with: chats[index])
     }
     
     func didPressSearchButton() {
@@ -71,8 +60,6 @@ extension ChatsPresenter: IChatsPresenter {
 extension ChatsPresenter: IChatsInteractorOutput {
     func fetchChatsSuccess(chats: [ChatInfo]) {
         self.chats = chats
-        
-        print(chats)
         
         viewController?.reloadData()
     }
@@ -99,7 +86,7 @@ extension ChatsPresenter: IChatsInteractorOutput {
         }
     }
     
-    func chatMessageUpdated(chatIdentifier: String, message: LatestMessageInfo) {
+    func chatMessageUpdated(chatIdentifier: String, message: MessageInfo) {
         if let index = chats.firstIndex(where: { $0.identifier == chatIdentifier }) {
             chats[index].latestMessage = message
             
@@ -120,12 +107,6 @@ extension ChatsPresenter: IChatsInteractorOutput {
 
 extension ChatsPresenter: ISearchPresenterDelegate {
     func iSearchPresenter(_ searchPresenter: ISearchPresenter, didSelectUser user: UserInfo) {
-       // var chatIdentifier: String?
-        
-//        if let index = chats.firstIndex(where: { $0.userIdentifier == user.identifier }) {
-//            chatIdentifier = chats[index].chatIdentifier
-//        }
-//
-//        router?.openChatLogViewController(with: user, chatIdentifier: chatIdentifier)
+        router?.openChatLogViewController(with: user)
     }
 }

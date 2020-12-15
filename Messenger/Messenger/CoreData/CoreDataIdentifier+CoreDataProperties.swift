@@ -2,7 +2,7 @@
 //  CoreDataIdentifier+CoreDataProperties.swift
 //  Messenger
 //
-//  Created by Admin on 14.12.2020.
+//  Created by Admin on 15.12.2020.
 //
 //
 
@@ -19,6 +19,4 @@ extension CoreDataIdentifier {
     @NSManaged public var group: CoreDataGroup?
 }
 
-extension CoreDataIdentifier : Identifiable {
-
-}
+extension CoreDataIdentifier : Identifiable {}

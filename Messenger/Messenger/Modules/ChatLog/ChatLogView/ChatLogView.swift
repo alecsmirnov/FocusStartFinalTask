@@ -9,8 +9,11 @@ import UIKit
 
 protocol IChatLogView: AnyObject {
     var sendMessageButtonAction: Completions.ButtonPress? { get set }
+    var pullToRefreshAction: Completions.ButtonPress? { get set }
 
     var messageText: String? { get }
+    
+    func endRefreshing()
     
     func clearTextView()
     func reloadData()
@@ -27,6 +30,7 @@ final class ChatLogView: UIView {
     // MARK: Properties
     
     var sendMessageButtonAction: Completions.ButtonPress?
+    var pullToRefreshAction: Completions.ButtonPress?
     
     var tableViewDataSource: UITableViewDataSource? {
         get { tableView.dataSource }
@@ -95,6 +99,10 @@ extension ChatLogView: IChatLogView {
         return textView.text
     }
     
+    func endRefreshing() {
+        tableView.refreshControl?.endRefreshing()
+    }
+    
     func clearTextView() {
         textView.text = nil
     }
@@ -110,18 +118,10 @@ extension ChatLogView: IChatLogView {
     }
     
     func insertNewRow() {
-        //let lastRowIndex = tableView.numberOfRows(inSection: 0)
-        //let lastRowIndexPath = IndexPath(row: lastRowIndex, section: 0)
+        let lastRowIndex = tableView.numberOfRows(inSection: 0)
+        let lastRowIndexPath = IndexPath(row: lastRowIndex, section: 0)
         
-        //tableView.insertRows(at: [lastRowIndexPath], with: .none)
-        
-        
-        
-        
-        // test
-        let firstRowIndexPath = IndexPath(row: 0, section: 0)
-        
-        tableView.insertRows(at: [firstRowIndexPath], with: .automatic)
+        tableView.insertRows(at: [lastRowIndexPath], with: .none)
     }
     
     func startFromRowAt(index: Int) {
@@ -136,7 +136,7 @@ extension ChatLogView: IChatLogView {
             
             let indexPath = IndexPath(row: currentRowIndex, section: 0)
             
-            tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
         }
     }
     
@@ -182,6 +182,10 @@ private extension ChatLogView {
         tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         
         tableView.register(MessageCell.self, forCellReuseIdentifier: MessageCell.reuseIdentifier)
+        
+        tableView.refreshControl = UIRefreshControl()
+        //tableView.refreshControl?.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        tableView.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
     }
     
     func setupTextContainerViewAppearance() {
@@ -213,6 +217,10 @@ private extension ChatLogView {
 private extension ChatLogView {
     @objc func didPressSendButton() {
         sendMessageButtonAction?()
+    }
+    
+    @objc func didPullToRefresh() {
+        pullToRefreshAction?()
     }
 }
 
@@ -324,6 +332,8 @@ private extension ChatLogView {
         let keyboardTop = safeAreaInsets.bottom - keyboardSize.cgRectValue.height
         textContainerViewBottomConstraint?.constant = keyboardTop
         
+        //tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.cgRectValue.height + 8, right: 0)
+        
         UIView.animate(withDuration: Settings.keyboardAnimationDuration) {
             self.layoutIfNeeded()
         }
@@ -331,6 +341,8 @@ private extension ChatLogView {
     
     @objc func keyboardWillHide(notification: NSNotification) {
         textContainerViewBottomConstraint?.constant = 0
+        
+        //tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
         
         UIView.animate(withDuration: 0.1) {
             self.layoutIfNeeded()
