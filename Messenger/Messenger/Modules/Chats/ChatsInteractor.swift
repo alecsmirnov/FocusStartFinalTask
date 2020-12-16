@@ -32,7 +32,7 @@ final class ChatsInteractor {
     private let firebaseChatsManager = FirebaseDatabaseChatsManager()
     
     init() {
-        observeNotifications()
+        observeSignOutNotification()
     }
 }
 
@@ -74,7 +74,7 @@ extension ChatsInteractor: IChatsInteractor {
 // MARK: - Private Methods
 
 private extension ChatsInteractor {
-    func observeNotifications() {
+    func observeSignOutNotification() {
         NotificationCenter.default.addObserver(self, selector: #selector(userSignedOut), name: .SignOut, object: nil)
     }
     

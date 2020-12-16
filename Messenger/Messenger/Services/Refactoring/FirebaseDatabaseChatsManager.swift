@@ -23,15 +23,6 @@ final class FirebaseDatabaseChatsManager {
     private var observedChatsData = [String: [ObserverData]]()
 }
 
-fileprivate struct ObserverData {
-    let reference: DatabaseReference
-    let handle: UInt
-    
-    func remove() {
-        reference.removeObserver(withHandle: handle)
-    }
-}
-
 // MARK: - Public Editing Methods
 
 extension FirebaseDatabaseChatsManager {
@@ -43,7 +34,7 @@ extension FirebaseDatabaseChatsManager {
         
         let emptyChatLatestMessage = UsersChatsLatestMessageValue(timestamp: Constants.timestampClearValue)
         
-        if let latestChatLatestMessageValue = FirebaseDatabaseService.encodableToDictionary(emptyChatLatestMessage) {
+        if let latestChatLatestMessageValue = FirebaseDatabaseCoding.toDictionary(emptyChatLatestMessage) {
             databaseReference.child(Tables.usersChatsLatestMessages)
                              .child(userIdentifier)
                              .child(chatIdentifier)
@@ -52,7 +43,7 @@ extension FirebaseDatabaseChatsManager {
         
         let emptyUnreadMessagesCount = UsersChatsUnreadMessagesCountValue(timestamp: Constants.timestampClearValue)
         
-        if let emptyUnreadMessagesCountValue = FirebaseDatabaseService.encodableToDictionary(emptyUnreadMessagesCount) {
+        if let emptyUnreadMessagesCountValue = FirebaseDatabaseCoding.toDictionary(emptyUnreadMessagesCount) {
             databaseReference.child(Tables.usersChatsUnread)
                              .child(userIdentifier)
                              .child(chatIdentifier)
@@ -193,8 +184,8 @@ private extension FirebaseDatabaseChatsManager {
         let companionReference = databaseReference.child(Tables.users).child(companionIdentifier)
         let companionHandle = companionReference.observe(.childChanged) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let userValue = FirebaseDatabaseService.dictionaryToDecodable([snapshot.key: value],
-                                                                                type: UsersValue.self) else { return }
+                  let userValue = FirebaseDatabaseCoding.fromDictionary([snapshot.key: value],
+                                                                        type: UsersValue.self) else { return }
             
             let userInfo = UserInfo(identifier: companionIdentifier,
                                     firstName: userValue.firstName,
@@ -216,7 +207,7 @@ private extension FirebaseDatabaseChatsManager {
                                                       .child(chatIdentifier)
         let latestMessageHandle = latestMessageReference.observe(.childChanged) { [weak self] snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let latestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
+                  let latestMessageValue = FirebaseDatabaseCoding.fromDictionary(
                       [snapshot.key: value],
                       type: UsersChatsLatestMessageValue.self
                   ),
@@ -243,7 +234,7 @@ private extension FirebaseDatabaseChatsManager {
                                                        .child(chatIdentifier)
         let unreadMessagesHandle = unreadMessagesReference.observe(.childChanged) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let latestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
+                  let latestMessageValue = FirebaseDatabaseCoding.fromDictionary(
                       [snapshot.key: value],
                       type: UsersChatsUnreadMessagesCountValue.self
                   ) else { return }
@@ -332,7 +323,7 @@ private extension FirebaseDatabaseChatsManager {
                          .child(userIdentifier)
                          .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let userValue = FirebaseDatabaseService.dictionaryToDecodable(value, type: UsersValue.self) else {
+                  let userValue = FirebaseDatabaseCoding.fromDictionary(value, type: UsersValue.self) else {
                 completion(nil)
 
                 return
@@ -357,7 +348,7 @@ private extension FirebaseDatabaseChatsManager {
                          .queryStarting(atValue: latestUpdateTime)
                          .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let userValue = FirebaseDatabaseService.dictionaryToDecodable(value, type: UsersValue.self) else {
+                  let userValue = FirebaseDatabaseCoding.fromDictionary(value, type: UsersValue.self) else {
                 completion(nil)
 
                 return
@@ -450,7 +441,7 @@ private extension FirebaseDatabaseChatsManager {
                          .queryStarting(atValue: latestUpdateTime)
                          .observeSingleEvent(of: .value) { [weak self] snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let userChatLatestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
+                  let userChatLatestMessageValue = FirebaseDatabaseCoding.fromDictionary(
                     value,
                     type: UsersChatsLatestMessageValue.self
                   ),
@@ -481,10 +472,7 @@ private extension FirebaseDatabaseChatsManager {
                                .child(messageIdentifier)
                                .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let messageValue = FirebaseDatabaseService.dictionaryToDecodable(
-                    value,
-                    type: ChatsMessagesValue.self
-                  ) else {
+                  let messageValue = FirebaseDatabaseCoding.fromDictionary(value, type: ChatsMessagesValue.self) else {
                 completion(nil)
                 
                 return
@@ -508,7 +496,7 @@ private extension FirebaseDatabaseChatsManager {
                          .child(chatIdentifier)
                          .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let latestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
+                  let latestMessageValue = FirebaseDatabaseCoding.fromDictionary(
                       value,
                       type: UsersChatsLatestMessageValue.self
                   ) else {
@@ -529,7 +517,7 @@ private extension FirebaseDatabaseChatsManager {
                          .child(chatIdentifier)
                          .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let unreadMessage = FirebaseDatabaseService.dictionaryToDecodable(
+                  let unreadMessage = FirebaseDatabaseCoding.fromDictionary(
                       value,
                       type: UsersChatsUnreadMessagesCountValue.self
                   ) else {
@@ -553,7 +541,7 @@ private extension FirebaseDatabaseChatsManager {
                          .queryStarting(atValue: latestUpdateTime)
                          .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let unreadMessage = FirebaseDatabaseService.dictionaryToDecodable(
+                  let unreadMessage = FirebaseDatabaseCoding.fromDictionary(
                       value,
                       type: UsersChatsUnreadMessagesCountValue.self
                   ) else {

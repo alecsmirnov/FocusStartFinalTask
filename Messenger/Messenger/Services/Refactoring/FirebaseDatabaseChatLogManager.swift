@@ -81,7 +81,7 @@ extension FirebaseDatabaseChatLogManager {
                 return
             }
                             
-            let message = FirebaseDatabaseService.dictionaryToDecodable(value, type: ChatsMessagesValue.self)
+            let message = FirebaseDatabaseCoding.fromDictionary(value, type: ChatsMessagesValue.self)
                             
             completion(message)
         }
@@ -106,7 +106,7 @@ extension FirebaseDatabaseChatLogManager {
             self?.databaseReference.child(Tables.chatsMessages)
                                    .child(chatIdentifier)
                                    .child(messageIdentifier)
-                                   .setValue(FirebaseDatabaseService.encodableToDictionary(message))
+                                   .setValue(FirebaseDatabaseCoding.toDictionary(message))
             
             membersIdentifiers.forEach { memberIdentifier in
                 self?.databaseReference.child(Tables.usersChatsMessages)
@@ -121,7 +121,7 @@ extension FirebaseDatabaseChatLogManager {
                 self?.databaseReference.child(Tables.usersChatsLatestMessages)
                                        .child(memberIdentifier)
                                        .child(chatIdentifier)
-                                       .setValue(FirebaseDatabaseService.encodableToDictionary(latestMessage))
+                                       .setValue(FirebaseDatabaseCoding.toDictionary(latestMessage))
                     
                 if message.senderIdentifier != memberIdentifier {
                     self?.increaseUnreadMessagesCount(userIdentifier: memberIdentifier, chatIdentifier: chatIdentifier)
@@ -223,15 +223,15 @@ private extension FirebaseDatabaseChatLogManager {
             var count = 1
             
             if let value = mutableDat.value as? [String: Any],
-               let unreadMessagesCount = FirebaseDatabaseService.dictionaryToDecodable(
-                   value,
-                   type: UsersChatsUnreadMessagesCountValue.self
+               let unreadMessagesCount = FirebaseDatabaseCoding.fromDictionary(
+                value,
+                type: UsersChatsUnreadMessagesCountValue.self
                ) {
                 count = unreadMessagesCount.count + 1
             }
             
             let newValue = UsersChatsUnreadMessagesCountValue(count: count, timestamp: Date().timeIntervalSince1970)
-            mutableDat.value = FirebaseDatabaseService.encodableToDictionary(newValue)
+            mutableDat.value = FirebaseDatabaseCoding.toDictionary(newValue)
             
             return TransactionResult.success(withValue: mutableDat)
         }
@@ -244,14 +244,14 @@ private extension FirebaseDatabaseChatLogManager {
         
         counterReference.runTransactionBlock { mutableDat in
             if let value = mutableDat.value as? [String: Any],
-               let unreadMessagesCount = FirebaseDatabaseService.dictionaryToDecodable(
+               let unreadMessagesCount = FirebaseDatabaseCoding.fromDictionary(
                    value,
                    type: UsersChatsUnreadMessagesCountValue.self
                ) {
                 if 0 < unreadMessagesCount.count {
                     let newValue = UsersChatsUnreadMessagesCountValue(count: unreadMessagesCount.count - 1,
                                                                       timestamp: Date().timeIntervalSince1970)
-                    mutableDat.value = FirebaseDatabaseService.encodableToDictionary(newValue)
+                    mutableDat.value = FirebaseDatabaseCoding.toDictionary(newValue)
                 }
             }
             
@@ -270,7 +270,7 @@ private extension FirebaseDatabaseChatLogManager {
         let chatsInfoGroupValue = ChatsInfoGroupValue(name: name,
                                                       photoURL: imagePath,
                                                       creatorIdentifier: creatorIdentifier)
-        let value = FirebaseDatabaseService.encodableToDictionary(chatsInfoGroupValue)
+        let value = FirebaseDatabaseCoding.toDictionary(chatsInfoGroupValue)
         
         databaseReference.child(Tables.chatsInfoGroup)
                          .child(chatIdentifier)
