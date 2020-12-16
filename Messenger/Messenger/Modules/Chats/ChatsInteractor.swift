@@ -151,6 +151,10 @@ private extension ChatsInteractor {
                 self?.coreDataChatsManager.updateChatUnreadMessagesCount(at: chatIdentifier, count: count)
                 self?.presenter?.chatUnreadMessagesCountUpdated(at: index, count: count)
             }
+        } chatOnlineStatusUpdate: { [weak self] chatIdentifier, isOnline in
+            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
+                self?.presenter?.chatOnlineStatusUpdate(at: index, isOnline: isOnline)
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ extension FirebaseDatabaseUserStatusService {
                                                    .child(userIdentifier)
         let userStatusHandle = userStatusReference.observe(.childChanged) { snapshot in
             guard let value = snapshot.value as? [String: Bool],
-                  let isOnline = value.map({ $0.value }).first else { return }
+                  let isOnline = value.first?.value else { return }
             
             completion(isOnline)
         }
@@ -47,8 +47,11 @@ extension FirebaseDatabaseUserStatusService {
         databaseReference.child(Tables.usersStatus)
                           .child(userIdentifier)
                           .observeSingleEvent(of: .value) { snapshot in
-            print("Fetch: \(snapshot)")
-                
+            guard let value = snapshot.value as? [String: Any],
+                  let status = FirebaseDatabaseCoding.fromDictionary(value,
+                                                                     type: UsersStatusValue.self) else { return }
+                            
+            completion(status.isOnline)
         }
     }
 }

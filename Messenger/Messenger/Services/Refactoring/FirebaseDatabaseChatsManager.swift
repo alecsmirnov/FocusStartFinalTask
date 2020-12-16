@@ -81,38 +81,34 @@ extension FirebaseDatabaseChatsManager {
         chats.forEach { chat in
             if chat.isGroup {
                 
-            } else {
-                guard let companion = chat.companion else { return }
-
+            } else if let companion = chat.companion {
                 fetchUserWithUpdateTime(userIdentifier: companion.identifier,
                                         latestUpdateTime: latestUpdateTime) { companion in
-                    guard let companion = companion else { return }
-
-                    pairChatUpdated(chat.identifier, companion)
+                    if let companion = companion {
+                        pairChatUpdated(chat.identifier, companion)
+                    }
                 }
 
                 fetchUserChatLatestMessageWithUpdateTime(chatIdentifier: chat.identifier,
                                                          userIdentifier: userIdentifier,
                                                          latestUpdateTime: latestUpdateTime) { latestMessage in
-                    guard let latestMessage = latestMessage else { return }
-
-                    chatLatestMessageUpdated(chat.identifier, latestMessage)
+                    if let latestMessage = latestMessage {
+                        chatLatestMessageUpdated(chat.identifier, latestMessage)
+                    }
                 }
 
                 fetchChatUnreadMessagesCountWithUpdateTime(chatIdentifier: chat.identifier,
                                                            userIdentifier: userIdentifier,
                                                            latestUpdateTime: latestUpdateTime) { count in
-                    guard let count = count else { return }
-
-                    chatUnreadMessagesUpdated(chat.identifier, count)
+                    if let count = count {
+                        chatUnreadMessagesUpdated(chat.identifier, count)
+                    }
                 }
                 
-                // TEST Begin
-                
                 FirebaseDatabaseUserStatusService.fetchUserStatus(userIdentifier: companion.identifier) { isOnline in
-                    guard let isOnline = isOnline else { return }
-                    
-                    chatOnlineStatusUpdate(chat.identifier, isOnline)
+                    if let isOnline = isOnline {
+                        chatOnlineStatusUpdate(chat.identifier, isOnline)
+                    }
                 }
                 
                 let userStatusObserver = FirebaseDatabaseUserStatusService.observeUserStatus(
@@ -123,8 +119,6 @@ extension FirebaseDatabaseChatsManager {
                 
                 observedChatsData[chat.identifier] = (observedChatsData[companion.identifier] ?? []) +
                                                      [userStatusObserver]
-                
-                // TEST End
                 
                 observePairChat(chatIdentifier: chat.identifier,
                                 userIdentifier: userIdentifier,
@@ -143,14 +137,22 @@ extension FirebaseDatabaseChatsManager {
                       pairChatUpdated: @escaping (String, UserInfo) -> Void,
                       groupChatUpdated: @escaping (String, GroupInfo) -> Void,
                       chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
-                      chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
+                      chatUnreadMessagesUpdated: @escaping (String, Int) -> Void,
+                      chatOnlineStatusUpdate: @escaping (String, Bool) -> Void) {
         observeAddedChats(for: userIdentifier, latestUpdateTime: latestUpdateTime) { [weak self] chat in
             chatAddedCompletion(chat)
             
             if chat.isGroup {
                 
-            } else {
-                guard let companion = chat.companion else { return }
+            } else if let companion = chat.companion {
+                let userStatusObserver = FirebaseDatabaseUserStatusService.observeUserStatus(
+                    userIdentifier: companion.identifier
+                ) { isOnline in
+                    chatOnlineStatusUpdate(chat.identifier, isOnline)
+                }
+                
+                self?.observedChatsData[chat.identifier] = (self?.observedChatsData[companion.identifier] ?? []) +
+                                                           [userStatusObserver]
                 
                 self?.observePairChat(chatIdentifier: chat.identifier,
                                       userIdentifier: userIdentifier,
