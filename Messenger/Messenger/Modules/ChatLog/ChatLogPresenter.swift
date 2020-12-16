@@ -77,10 +77,10 @@ extension ChatLogPresenter {
     
     func viewDidAppear() {
         var unreadMessagesCount = 0
-        if let chatUnreadMessagesCount = chat?.unreadMessagesCount {
-            unreadMessagesCount = chatUnreadMessagesCount
-        }
-        
+//        if let chatUnreadMessagesCount = chat?.unreadMessagesCount {
+//            unreadMessagesCount = chatUnreadMessagesCount
+//        }
+//
         viewController?.startFromRowAt(index: messages.count - unreadMessagesCount)
     }
     

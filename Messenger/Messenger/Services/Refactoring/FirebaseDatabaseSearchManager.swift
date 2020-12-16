@@ -25,13 +25,16 @@ extension FirebaseDatabaseSearchManager {
     func fetchUsers(completion: @escaping ([UserInfo]?) -> Void) {
         databaseReference.child(Tables.users)
                          .observeSingleEvent(of: .value) { snapshot in
-            guard let value = snapshot.value as? [String: Any] else {
+            guard let value = snapshot.value as? [String: Any],
+                  let usersValues = FirebaseDatabaseService.dictionaryToDecodable(
+                    value,
+                    type: [String: UsersValue].self
+                  ) else {
                 completion(nil)
                 
                 return
             }
             
-            let usersValues = FirebaseDatabaseService.dictionaryToDecodable(value, type: [String: UsersValue].self)
             completion(FirebaseDatabaseSearchManager.usersValuesToUsers(usersValues))
         }
     }
@@ -44,13 +47,16 @@ extension FirebaseDatabaseSearchManager {
                          .queryStarting(atValue: queryableParameter)
                          .queryEnding(atValue: queryableParameter + Constants.anyCharacterValue)
                          .observeSingleEvent(of: .value) { snapshot in
-            guard let value = snapshot.value as? [String: Any] else {
+            guard let value = snapshot.value as? [String: Any],
+                  let usersValues = FirebaseDatabaseService.dictionaryToDecodable(
+                    value,
+                    type: [String: UsersValue].self
+                  ) else {
                 completion(nil)
                 
                 return
             }
-                
-            let usersValues = FirebaseDatabaseService.dictionaryToDecodable(value, type: [String: UsersValue].self)
+            
             completion(FirebaseDatabaseSearchManager.usersValuesToUsers(usersValues))
         }
     }

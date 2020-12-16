@@ -38,7 +38,7 @@ enum FirebaseDatabaseService {
 
 extension FirebaseDatabaseService {
     static func encodableToDictionary<T>(_ data: T) -> [String: Any]? where T: Encodable {
-        let dictionary: [String: Any]?
+        var dictionary: [String: Any]?
         
         do {
             let jsonEncoder = JSONEncoder()
@@ -47,14 +47,14 @@ extension FirebaseDatabaseService {
             
             dictionary = dictionaryData as? [String: Any]
         } catch let error {
-            fatalError(error.localizedDescription)
+            LoggingService.log(category: .database, layer: .none, type: .error, with: error.localizedDescription)
         }
         
         return dictionary
     }
     
-    static func dictionaryToDecodable<T>(_ dictionary: [String: Any], type: T.Type) -> T where T: Decodable {
-        let jsonType: T
+    static func dictionaryToDecodable<T>(_ dictionary: [String: Any], type: T.Type) -> T? where T: Decodable {
+        var jsonType: T?
         
         do {
             let jsonDecoder = JSONDecoder()
@@ -62,7 +62,7 @@ extension FirebaseDatabaseService {
             
             jsonType = try jsonDecoder.decode(T.self, from: jsonData)
         } catch let error {
-            fatalError(error.localizedDescription)
+            LoggingService.log(category: .database, layer: .none, type: .error, with: error.localizedDescription)
         }
         
         return jsonType

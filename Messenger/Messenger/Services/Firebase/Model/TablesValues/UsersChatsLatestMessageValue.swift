@@ -10,7 +10,7 @@ import Foundation
 struct UsersChatsLatestMessageValue: Codable {
     // MARK: Properties
     
-    var identifier: String { info.identifier }
+    var identifier: String? { info.identifier }
     var timestamp: TimeInterval { info.timestamp }
     
     // MARK: Additional Node
@@ -19,12 +19,12 @@ struct UsersChatsLatestMessageValue: Codable {
     
     // MARK: Initialization
     
-    init(identifier: String, timestamp: TimeInterval) {
+    init(identifier: String? = nil, timestamp: TimeInterval) {
         info = Info(identifier: identifier, timestamp: timestamp)
     }
 }
 
 fileprivate struct Info: Codable {
-    let identifier: String
+    let identifier: String?
     let timestamp: TimeInterval
 }

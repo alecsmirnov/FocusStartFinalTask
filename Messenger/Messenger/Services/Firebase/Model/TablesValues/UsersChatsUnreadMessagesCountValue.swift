@@ -10,7 +10,7 @@ import Foundation
 struct UsersChatsUnreadMessagesCountValue: Codable {
     // MARK: Properties
     
-    var count: Int { info.count }
+    var count: Int { info.count ?? 0 }
     var timestamp: TimeInterval { info.timestamp }
     
     // MARK: Additional Node
@@ -19,12 +19,12 @@ struct UsersChatsUnreadMessagesCountValue: Codable {
     
     // MARK: Initialization
     
-    init(count: Int, timestamp: TimeInterval) {
+    init(count: Int? = nil, timestamp: TimeInterval) {
         info = Info(count: count, timestamp: timestamp)
     }
 }
 
 fileprivate struct Info: Codable {
-    let count: Int
+    let count: Int?
     let timestamp: TimeInterval
 }

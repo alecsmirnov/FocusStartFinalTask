@@ -17,6 +17,7 @@ enum LoggingService {
         case chats
         case dataReceiving
         case search
+        case database
     }
     
     enum LayerType: String {
@@ -25,6 +26,7 @@ enum LoggingService {
         case interactor
         case presenter
         case router
+        case none
     }
     
     enum RecordType: String  {

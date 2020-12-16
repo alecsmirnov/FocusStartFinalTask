@@ -209,12 +209,11 @@ private extension FirebaseDatabaseChatLogManager {
         counterReference.runTransactionBlock { mutableDat in
             var count = 1
             
-            if let value = mutableDat.value as? [String: Any] {
-                let unreadMessagesCount = FirebaseDatabaseService.dictionaryToDecodable(
-                    value,
-                    type: UsersChatsUnreadMessagesCountValue.self
-                )
-                
+            if let value = mutableDat.value as? [String: Any],
+               let unreadMessagesCount = FirebaseDatabaseService.dictionaryToDecodable(
+                   value,
+                   type: UsersChatsUnreadMessagesCountValue.self
+               ) {
                 count = unreadMessagesCount.count + 1
             }
             
@@ -231,12 +230,11 @@ private extension FirebaseDatabaseChatLogManager {
                                                 .child(chatIdentifier)
         
         counterReference.runTransactionBlock { mutableDat in
-            if let value = mutableDat.value as? [String: Any] {
-                let unreadMessagesCount = FirebaseDatabaseService.dictionaryToDecodable(
-                    value,
-                    type: UsersChatsUnreadMessagesCountValue.self
-                )
-                
+            if let value = mutableDat.value as? [String: Any],
+               let unreadMessagesCount = FirebaseDatabaseService.dictionaryToDecodable(
+                   value,
+                   type: UsersChatsUnreadMessagesCountValue.self
+               ) {
                 if 0 < unreadMessagesCount.count {
                     let newValue = UsersChatsUnreadMessagesCountValue(count: unreadMessagesCount.count - 1,
                                                                       timestamp: Date().timeIntervalSince1970)

@@ -11,6 +11,10 @@ import CoreData
 final class CoreDataChatsManager {
     // MARK: Properties
     
+    private enum Constants {
+        static let timestampInitialValue = 0.0
+    }
+    
     private lazy var managedContext: NSManagedObjectContext = {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let managedContext = appDelegate.persistentContainer.viewContext
@@ -34,7 +38,7 @@ final class CoreDataChatsManager {
 
 extension CoreDataChatsManager {
     func getLatestUpdateTimestamp() -> TimeInterval {
-        return update?.timestamp ?? 0
+        return update?.timestamp ?? Constants.timestampInitialValue
     }
     
     func getChats() -> [ChatInfo] {
@@ -104,6 +108,7 @@ extension CoreDataChatsManager {
             CoreDataChatsManager.messageToCoreDataMessage(message, coreDataMessage: chats[index].latestMessage)
         } else {
             chats[index].latestMessage = nil
+            chats[index].unreadMessagesCount = 0
         }
         
         saveAndUpdate()
@@ -118,7 +123,7 @@ extension CoreDataChatsManager {
     }
     
     func resetUpdateTimestamp() {
-        update?.timestamp = 0
+        update?.timestamp = Constants.timestampInitialValue
         
         saveContext()
     }
@@ -153,7 +158,7 @@ private extension CoreDataChatsManager {
             
             if update == nil {
                 update = CoreDataUpdate(context: managedContext)
-                update?.timestamp = 0
+                update?.timestamp = Constants.timestampInitialValue
             }
             
             chats = try managedContext.fetch(chatsFetchRequest)
