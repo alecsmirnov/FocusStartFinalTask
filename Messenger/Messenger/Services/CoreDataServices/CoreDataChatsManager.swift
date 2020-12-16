@@ -53,38 +53,6 @@ extension CoreDataChatsManager {
         saveAndUpdate()
     }
     
-//    func updateChat(at index: Int, with chat: ChatInfo) {
-//        chats[index] = chatToCoreDataChat(chat)
-//        
-//        saveAndUpdate()
-//    }
-//    
-//    func removeChat(at index: Int) {
-//        chats.remove(at: index)
-//        
-//        saveAndUpdate()
-//    }
-//    
-//    func updateChatCompanion(at index: Int, companion: UserInfo) {
-//        CoreDataChatsManager.userToCoreDataUser(companion, coreDataUser: chats[index].companion)
-//        
-//        saveAndUpdate()
-//    }
-//    
-//    func updateChatLatestMessage(at index: Int, message: MessageInfo) {
-//        CoreDataChatsManager.messageToCoreDataMessage(message, coreDataMessage: chats[index].latestMessage)
-//        
-//        saveAndUpdate()
-//    }
-//    
-//    func updateChatUnreadMessagesCount(at index: Int, count: Int) {
-//        chats[index].unreadMessagesCount = Int32(count)
-//        
-//        saveAndUpdate()
-//    }
-//    
-    //
-    
     func updateChat(at identifier: String, with chat: ChatInfo) {
         if let index = identifiers[identifier] {
             chats[index] = chatToCoreDataChat(chat)
