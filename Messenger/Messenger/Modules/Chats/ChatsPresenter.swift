@@ -93,7 +93,6 @@ extension ChatsPresenter: IChatsInteractorOutput {
     }
     
     func chatMessageUpdated(at index: Int, message: MessageInfo?) {
-        print("chatMessageUpdated")
         chats[index].latestMessage = message
         
         viewController?.reloadData()

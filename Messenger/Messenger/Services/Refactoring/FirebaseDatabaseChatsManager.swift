@@ -341,10 +341,9 @@ private extension FirebaseDatabaseChatsManager {
                          .child(userIdentifier)
                          .queryOrdered(byChild: Constants.timestampKey)
                          .queryStarting(atValue: latestUpdateTime)
-                         .observeSingleEvent(of: .childAdded) { snapshot in
+                         .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let userValue = FirebaseDatabaseService.dictionaryToDecodable([snapshot.key: value],
-                                                                                type: UsersValue.self) else {
+                  let userValue = FirebaseDatabaseService.dictionaryToDecodable(value, type: UsersValue.self) else {
                 completion(nil)
 
                 return
@@ -435,16 +434,27 @@ private extension FirebaseDatabaseChatsManager {
                          .child(chatIdentifier)
                          .queryOrdered(byChild: Constants.timestampKey)
                          .queryStarting(atValue: latestUpdateTime)
-                         .observeSingleEvent(of: .childAdded) { [weak self] snapshot in
-            self?.fetchUserChatLatestMessage(chatIdentifier: chatIdentifier,
-                                             userIdentifier: userIdentifier) { latestMessage in
-                guard let latestMessage = latestMessage else {
+                         .observeSingleEvent(of: .value) { [weak self] snapshot in
+            guard let value = snapshot.value as? [String: Any],
+                  let userChatLatestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
+                    value,
+                    type: UsersChatsLatestMessageValue.self
+                  ),
+                  let latestMessageIdentifier = userChatLatestMessageValue.identifier else {
+                completion(nil)
+                
+                return
+            }
+            
+            self?.fetchChatMessage(chatIdentifier: chatIdentifier,
+                                   messageIdentifier: latestMessageIdentifier) { message in
+                guard let message = message else {
                     completion(nil)
-
+                    
                     return
                 }
-
-                completion(latestMessage)
+                
+                completion(message)
             }
         }
     }
@@ -457,8 +467,10 @@ private extension FirebaseDatabaseChatsManager {
                                .child(messageIdentifier)
                                .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let messageValue = FirebaseDatabaseService.dictionaryToDecodable(value,
-                                                                                   type: ChatsMessagesValue.self) else {
+                  let messageValue = FirebaseDatabaseService.dictionaryToDecodable(
+                    value,
+                    type: ChatsMessagesValue.self
+                  ) else {
                 completion(nil)
                 
                 return
@@ -525,13 +537,18 @@ private extension FirebaseDatabaseChatsManager {
                          .child(chatIdentifier)
                          .queryOrdered(byChild: Constants.timestampKey)
                          .queryStarting(atValue: latestUpdateTime)
-                         .observeSingleEvent(of: .childAdded) { [weak self] snapshot in
-            self?.fetchChatUnreadMessagesCount(chatIdentifier: chatIdentifier,
-                                               userIdentifier: userIdentifier) { count in
-                guard let count = count else { return }
-
-                completion(count)
+                         .observeSingleEvent(of: .value) { snapshot in
+            guard let value = snapshot.value as? [String: Any],
+                  let unreadMessage = FirebaseDatabaseService.dictionaryToDecodable(
+                      value,
+                      type: UsersChatsUnreadMessagesCountValue.self
+                  ) else {
+                completion(nil)
+                
+                return
             }
+            
+            completion(unreadMessage.count)
         }
     }
 }
