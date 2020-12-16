@@ -15,6 +15,7 @@ final class ChatCell: UITableViewCell {
     static let reuseIdentifier = String(describing: self)
     
     private enum Metrics {
+        static let cellContentHeight: CGFloat = 50
         static let cellContentTopSpace: CGFloat = 16
         static let cellContentBottomSpace: CGFloat = 14
         static let cellContentRightSpace: CGFloat = 10
@@ -85,6 +86,10 @@ extension ChatCell {
         unreadMessagesCountLabel.text = count.description
     }
     
+    func setTimestamp(_ timestamp: TimeInterval) {
+        timestampLabel.text = timestamp.description
+    }
+    
     func setImage(urlString: String) {
         FirebaseStorageService.downloadProfileImageData(urlString: urlString) { data in
             print("here")
@@ -114,6 +119,7 @@ private extension ChatCell {
         setupProfileImageImageViewAppearance()
         setupNameLabelAppearance()
         setupMessageLabelAppearance()
+        setupUnreadMessagesCountLabelAppearance()
         setupTimestampLabelAppearance()
         
         setupSeparatorAppearance()
@@ -133,6 +139,10 @@ private extension ChatCell {
     func setupMessageLabelAppearance() {
         messageLabel.font = .systemFont(ofSize: Metrics.messageLabelFontSize)
         messageLabel.numberOfLines = 1
+    }
+    
+    func setupUnreadMessagesCountLabelAppearance() {
+        unreadMessagesCountLabel.textAlignment = .right
     }
     
     func setupTimestampLabelAppearance() {
@@ -199,6 +209,7 @@ private extension ChatCell {
             cellContentView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor),
             cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
                                                       constant: -Metrics.cellContentRightSpace),
+            cellContentView.heightAnchor.constraint(equalToConstant: Metrics.cellContentHeight),
         ])
     }
     

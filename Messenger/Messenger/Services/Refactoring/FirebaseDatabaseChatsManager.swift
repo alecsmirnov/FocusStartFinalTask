@@ -23,6 +23,17 @@ fileprivate struct ChatsObserversInfo {
     var chatsDataHandlers = [String: [UInt]]()
 }
 
+// MARK: - Edit
+
+extension FirebaseDatabaseChatsManager {
+    func clearChat(userIdentifier: String, chatIdentifier: String) {
+        databaseReference.child(Tables.usersChatsMessages)
+                         .child(userIdentifier)
+                         .child(chatIdentifier)
+                         .removeValue()
+    }
+}
+
 // MARK: - TEST
 
 extension FirebaseDatabaseChatsManager {

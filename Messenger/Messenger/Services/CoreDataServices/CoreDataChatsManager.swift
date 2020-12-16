@@ -45,6 +45,12 @@ extension CoreDataChatsManager {
         return identifiers[identifier]
     }
     
+    func getChatIdentifier(by index: Int) -> String? {
+        guard chats.indices.contains(index) else { return nil }
+        
+        return chats[index].identifier
+    }
+    
     func appendChat(chat: ChatInfo) {
         identifiers[chat.identifier] = chats.count
         
@@ -63,10 +69,16 @@ extension CoreDataChatsManager {
     
     func removeChat(at identifier: String) {
         if let index = identifiers[identifier] {
-            chats.remove(at: index)
-            
-            saveAndUpdate()
+            removeChat(at: index)
         }
+    }
+    
+    func removeChat(at index: Int) {
+        guard chats.indices.contains(index) else { return }
+        
+        chats.remove(at: index)
+        
+        saveAndUpdate()
     }
     
     func updateChatCompanion(at identifier: String, companion: UserInfo) {
@@ -77,12 +89,24 @@ extension CoreDataChatsManager {
         }
     }
     
-    func updateChatLatestMessage(at identifier: String, message: MessageInfo) {
+    func updateChatLatestMessage(at identifier: String, message: MessageInfo?) {
         if let index = identifiers[identifier] {
-            CoreDataChatsManager.messageToCoreDataMessage(message, coreDataMessage: chats[index].latestMessage)
-            
-            saveAndUpdate()
+            updateChatLatestMessage(at: index, message: message)
         }
+    }
+    
+    func updateChatLatestMessage(at index: Int, message: MessageInfo?) {
+        guard chats.indices.contains(index) else { return }
+        
+        if let message = message {
+            initLatestMessageIfEmpty(at: index)
+            
+            CoreDataChatsManager.messageToCoreDataMessage(message, coreDataMessage: chats[index].latestMessage)
+        } else {
+            chats[index].latestMessage = nil
+        }
+        
+        saveAndUpdate()
     }
     
     func updateChatUnreadMessagesCount(at identifier: String, count: Int) {
@@ -137,6 +161,13 @@ private extension CoreDataChatsManager {
             chats.enumerated().forEach { identifiers[$1.identifier] = $0 }
         } catch let error as NSError {
             fatalError("could not fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
+    func initLatestMessageIfEmpty(at index: Int) {
+        if chats[index].latestMessage == nil {
+            chats[index].latestMessage = CoreDataMessage(context: managedContext)
+            chats[index].latestMessage?.type = CoreDataMessageType(context: managedContext)
         }
     }
     

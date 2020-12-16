@@ -118,7 +118,7 @@ extension ChatsViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier,
                                                        for: indexPath) as? ChatCell else { return UITableViewCell() }
         
-        if let chat = presenter?.chat(forRowAt: indexPath.row) {
+        if let chat = presenter?.chat(at: indexPath.row) {
             var messageText = ""
             
             switch chat.latestMessage?.type {
@@ -132,6 +132,7 @@ extension ChatsViewController: UITableViewDataSource {
                 cell.configure(withText: messageText)
                 
                 cell.setUnreadMessagesCount(chat.unreadMessagesCount ?? 0)
+                cell.setTimestamp(chat.latestMessage?.timestamp ?? 0)
                 
 //                if let urlString = companion.profilePhotoURL {
 //                    cell.setImage(urlString: urlString)
@@ -149,6 +150,25 @@ extension ChatsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        presenter?.didSelectChatAt(index: indexPath.row)
+        presenter?.didSelectChat(at: indexPath.row)
+    }
+    
+    func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        let clear = UIContextualAction(style: .normal, title: "Clear") { [weak self] _, _, completionHandler in
+            self?.presenter?.didClearChat(at: indexPath.row)
+
+            completionHandler(true)
+        }
+        
+        let remove = UIContextualAction(style: .destructive, title: "Remove") { [weak self] _, _, completionHandler in
+            self?.presenter?.didRemoveChat(at: indexPath.row)
+
+            completionHandler(true)
+        }
+
+        return UISwipeActionsConfiguration(actions: [remove, clear])
     }
 }

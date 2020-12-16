@@ -12,10 +12,12 @@ protocol IChatsPresenter: AnyObject {
 
     func viewDidLoad()
     
-    func chat(forRowAt index: Int) -> ChatInfo?
+    func chat(at index: Int) -> ChatInfo?
     
     func didPressMenuButton()
-    func didSelectChatAt(index: Int)
+    func didSelectChat(at index: Int)
+    func didClearChat(at index: Int)
+    func didRemoveChat(at index: Int)
     func didPressSearchButton()
 }
 
@@ -38,12 +40,20 @@ extension ChatsPresenter: IChatsPresenter {
         return chats.count
     }
     
-    func chat(forRowAt index: Int) -> ChatInfo? {
+    func chat(at index: Int) -> ChatInfo? {
         return chats[index]
     }
     
-    func didSelectChatAt(index: Int) {
+    func didSelectChat(at index: Int) {
         router?.openChatLogViewController(with: chats[index])
+    }
+    
+    func didClearChat(at index: Int) {
+        interactor?.clearChat(at: index)
+    }
+    
+    func didRemoveChat(at index: Int) {
+        interactor?.removeChat(at: index)
     }
     
     func didPressSearchButton() {
@@ -66,6 +76,12 @@ extension ChatsPresenter: IChatsInteractorOutput {
     
     func chatAdded(chat: ChatInfo) {
         chats.append(chat)
+        
+        viewController?.reloadData()
+    }
+    
+    func chatCleared(at index: Int) {
+        chats[index].latestMessage = nil
         
         viewController?.reloadData()
     }
