@@ -111,6 +111,13 @@ extension FirebaseDatabaseChatsManager {
                     }
                 }
                 
+                observePairChat(chatIdentifier: chat.identifier,
+                                userIdentifier: userIdentifier,
+                                companionIdentifier: companion.identifier,
+                                pairChatUpdated: pairChatUpdated,
+                                chatLatestMessageUpdated: chatLatestMessageUpdated,
+                                chatUnreadMessagesUpdated: chatUnreadMessagesUpdated)
+                
                 let userStatusObserver = FirebaseDatabaseUserStatusService.observeUserStatus(
                     userIdentifier: companion.identifier
                 ) { isOnline in
@@ -119,13 +126,6 @@ extension FirebaseDatabaseChatsManager {
                 
                 observedChatsData[chat.identifier] = (observedChatsData[companion.identifier] ?? []) +
                                                      [userStatusObserver]
-                
-                observePairChat(chatIdentifier: chat.identifier,
-                                userIdentifier: userIdentifier,
-                                companionIdentifier: companion.identifier,
-                                pairChatUpdated: pairChatUpdated,
-                                chatLatestMessageUpdated: chatLatestMessageUpdated,
-                                chatUnreadMessagesUpdated: chatUnreadMessagesUpdated)
             }
         }
     }
@@ -145,6 +145,13 @@ extension FirebaseDatabaseChatsManager {
             if chat.isGroup {
                 
             } else if let companion = chat.companion {
+                self?.observePairChat(chatIdentifier: chat.identifier,
+                                      userIdentifier: userIdentifier,
+                                      companionIdentifier: companion.identifier,
+                                      pairChatUpdated: pairChatUpdated,
+                                      chatLatestMessageUpdated: chatLatestMessageUpdated,
+                                      chatUnreadMessagesUpdated: chatUnreadMessagesUpdated)
+                
                 let userStatusObserver = FirebaseDatabaseUserStatusService.observeUserStatus(
                     userIdentifier: companion.identifier
                 ) { isOnline in
@@ -153,13 +160,6 @@ extension FirebaseDatabaseChatsManager {
                 
                 self?.observedChatsData[chat.identifier] = (self?.observedChatsData[companion.identifier] ?? []) +
                                                            [userStatusObserver]
-                
-                self?.observePairChat(chatIdentifier: chat.identifier,
-                                      userIdentifier: userIdentifier,
-                                      companionIdentifier: companion.identifier,
-                                      pairChatUpdated: pairChatUpdated,
-                                      chatLatestMessageUpdated: chatLatestMessageUpdated,
-                                      chatUnreadMessagesUpdated: chatUnreadMessagesUpdated)
             }
         }
         
@@ -181,18 +181,18 @@ private extension FirebaseDatabaseChatsManager {
         }
         
         let latestMessageObserver = observeLatestMessagesChanged(chatIdentifier: chatIdentifier,
-                                                               userIdentifier: userIdentifier) { message in
+                                                                 userIdentifier: userIdentifier) { message in
             chatLatestMessageUpdated(chatIdentifier, message)
         }
         
         let unreadMessagesObserver = observeUnreadMessagesChanged(chatIdentifier: chatIdentifier,
-                                                                userIdentifier: userIdentifier) { count in
+                                                                  userIdentifier: userIdentifier) { count in
             chatUnreadMessagesUpdated(chatIdentifier, count)
         }
         
-        observedChatsData[chatIdentifier] = (observedChatsData[chatIdentifier] ?? []) + [companionObserver,
-                                                                                         latestMessageObserver,
-                                                                                         unreadMessagesObserver]
+        let observers = [companionObserver, latestMessageObserver, unreadMessagesObserver]
+        
+        observedChatsData[chatIdentifier] = (observedChatsData[chatIdentifier] ?? []) + observers
     }
     
     func observeRemovedChats(for userIdentifier: String, completion: @escaping (String) -> Void) {

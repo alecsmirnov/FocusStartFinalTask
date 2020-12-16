@@ -48,8 +48,10 @@ extension FirebaseDatabaseUserStatusService {
                           .child(userIdentifier)
                           .observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: Any],
-                  let status = FirebaseDatabaseCoding.fromDictionary(value,
-                                                                     type: UsersStatusValue.self) else { return }
+                  let status = FirebaseDatabaseCoding.fromDictionary(
+                    value,
+                    type: UsersStatusValue.self
+                  ) else { return }
                             
             completion(status.isOnline)
         }
