@@ -57,7 +57,6 @@ extension CoreDataChatsManager {
     
     func appendChat(chat: ChatInfo) {
         identifiers[chat.identifier] = chats.count
-        
         chats.append(chatToCoreDataChat(chat))
         
         saveAndUpdate()
@@ -80,6 +79,8 @@ extension CoreDataChatsManager {
     func removeChat(at index: Int) {
         guard chats.indices.contains(index) else { return }
         
+        identifiers[chats[index].identifier] = nil
+        managedContext.delete(chats[index])
         chats.remove(at: index)
         
         saveAndUpdate()

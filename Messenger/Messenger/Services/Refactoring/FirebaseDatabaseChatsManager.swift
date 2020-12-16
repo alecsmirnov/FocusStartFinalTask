@@ -20,18 +20,22 @@ final class FirebaseDatabaseChatsManager {
     }
     
     private let databaseReference = Database.database().reference()
-    private var chatsObserversInfo = ChatsObserversInfo()
+    private var observedChatsData = [String: [ObserverData]]()
 }
 
-fileprivate struct ChatsObserversInfo {
-    var addedChatsHandler: UInt?
-    var chatsDataHandlers = [String: [UInt]]()
+fileprivate struct ObserverData {
+    let reference: DatabaseReference
+    let handle: UInt
+    
+    func remove() {
+        reference.removeObserver(withHandle: handle)
+    }
 }
 
 // MARK: - Public Editing Methods
 
 extension FirebaseDatabaseChatsManager {
-    func clearChat(userIdentifier: String, chatIdentifier: String) {
+    func clearChat(chatIdentifier: String, userIdentifier: String) {
         databaseReference.child(Tables.usersChatsMessages)
                          .child(userIdentifier)
                          .child(chatIdentifier)
@@ -41,23 +45,32 @@ extension FirebaseDatabaseChatsManager {
         
         if let latestChatLatestMessageValue = FirebaseDatabaseService.encodableToDictionary(emptyChatLatestMessage) {
             databaseReference.child(Tables.usersChatsLatestMessages)
-                .child(userIdentifier)
-                .child(chatIdentifier)
-                .setValue(latestChatLatestMessageValue)
+                             .child(userIdentifier)
+                             .child(chatIdentifier)
+                             .setValue(latestChatLatestMessageValue)
         }
         
         let emptyUnreadMessagesCount = UsersChatsUnreadMessagesCountValue(timestamp: Constants.timestampClearValue)
         
         if let emptyUnreadMessagesCountValue = FirebaseDatabaseService.encodableToDictionary(emptyUnreadMessagesCount) {
             databaseReference.child(Tables.usersChatsUnread)
-                .child(userIdentifier)
-                .child(chatIdentifier)
-                .setValue(emptyUnreadMessagesCountValue)
+                             .child(userIdentifier)
+                             .child(chatIdentifier)
+                             .setValue(emptyUnreadMessagesCountValue)
         }
     }
     
-    func removeChat() {
+    func removeChat(chatIdentifier: String, userIdentifier: String) {
+        if let chatObservers = observedChatsData[chatIdentifier] {
+            chatObservers.forEach { $0.remove() }
+        }
         
+        databaseReference.child(Tables.usersChats)
+                         .child(userIdentifier)
+                         .child(chatIdentifier)
+                         .removeValue()
+        
+        clearChat(chatIdentifier: chatIdentifier, userIdentifier: userIdentifier)
     }
 }
 
@@ -150,17 +163,21 @@ private extension FirebaseDatabaseChatsManager {
                          pairChatUpdated: @escaping (String, UserInfo) -> Void,
                          chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
                          chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
-        observeCompanionChanged(companionIdentifier: companionIdentifier) { companion in
+        let companionHandle = observeCompanionChanged(companionIdentifier: companionIdentifier) { companion in
             pairChatUpdated(chatIdentifier, companion)
         }
         
-        observeLatestMessagesChanged(chatIdentifier: chatIdentifier, userIdentifier: userIdentifier) { message in
+        let latestMessageHandle = observeLatestMessagesChanged(chatIdentifier: chatIdentifier,
+                                                               userIdentifier: userIdentifier) { message in
             chatLatestMessageUpdated(chatIdentifier, message)
         }
         
-        observeUnreadMessagesChanged(chatIdentifier: chatIdentifier, userIdentifier: userIdentifier) { count in
+        let unreadMessagesHandle = observeUnreadMessagesChanged(chatIdentifier: chatIdentifier,
+                                                                userIdentifier: userIdentifier) { count in
             chatUnreadMessagesUpdated(chatIdentifier, count)
         }
+        
+        observedChatsData[chatIdentifier] = [companionHandle, latestMessageHandle, unreadMessagesHandle]
     }
     
     func observeRemovedChats(for userIdentifier: String, completion: @escaping (String) -> Void) {
@@ -171,10 +188,10 @@ private extension FirebaseDatabaseChatsManager {
         }
     }
     
-    func observeCompanionChanged(companionIdentifier: String, completion: @escaping (UserInfo) -> Void) {
-        databaseReference.child(Tables.users)
-                         .child(companionIdentifier)
-                         .observe(.childChanged) { snapshot in
+    func observeCompanionChanged(companionIdentifier: String,
+                                 completion: @escaping (UserInfo) -> Void) -> ObserverData {
+        let companionReference = databaseReference.child(Tables.users).child(companionIdentifier)
+        let companionHandle = companionReference.observe(.childChanged) { snapshot in
             guard let value = snapshot.value as? [String: Any],
                   let userValue = FirebaseDatabaseService.dictionaryToDecodable([snapshot.key: value],
                                                                                 type: UsersValue.self) else { return }
@@ -187,15 +204,17 @@ private extension FirebaseDatabaseChatsManager {
             
             completion(userInfo)
         }
+        
+        return ObserverData(reference: companionReference, handle: companionHandle)
     }
     
     func observeLatestMessagesChanged(chatIdentifier: String,
                                       userIdentifier: String,
-                                      completion: @escaping (MessageInfo?) -> Void) {
-        databaseReference.child(Tables.usersChatsLatestMessages)
-                         .child(userIdentifier)
-                         .child(chatIdentifier)
-                         .observe(.childChanged) { [weak self] snapshot in
+                                      completion: @escaping (MessageInfo?) -> Void) -> ObserverData {
+        let latestMessageReference = databaseReference.child(Tables.usersChatsLatestMessages)
+                                                      .child(userIdentifier)
+                                                      .child(chatIdentifier)
+        let latestMessageHandle = latestMessageReference.observe(.childChanged) { [weak self] snapshot in
             guard let value = snapshot.value as? [String: Any],
                   let latestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
                       [snapshot.key: value],
@@ -212,15 +231,17 @@ private extension FirebaseDatabaseChatsManager {
                 completion(message)
             }
         }
+        
+        return ObserverData(reference: latestMessageReference, handle: latestMessageHandle)
     }
     
     func observeUnreadMessagesChanged(chatIdentifier: String,
                                       userIdentifier: String,
-                                      completion: @escaping (Int) -> Void) {
-        databaseReference.child(Tables.usersChatsUnread)
-                         .child(userIdentifier)
-                         .child(chatIdentifier)
-                         .observe(.childChanged) { snapshot in
+                                      completion: @escaping (Int) -> Void) -> ObserverData {
+        let unreadMessagesReference = databaseReference.child(Tables.usersChatsUnread)
+                                                       .child(userIdentifier)
+                                                       .child(chatIdentifier)
+        let unreadMessagesHandle = unreadMessagesReference.observe(.childChanged) { snapshot in
             guard let value = snapshot.value as? [String: Any],
                   let latestMessageValue = FirebaseDatabaseService.dictionaryToDecodable(
                       [snapshot.key: value],
@@ -229,20 +250,18 @@ private extension FirebaseDatabaseChatsManager {
 
             completion(latestMessageValue.count)
         }
+        
+        return ObserverData(reference: unreadMessagesReference, handle: unreadMessagesHandle)
     }
     
     func observeAddedChats(for userIdentifier: String,
                            latestUpdateTime: TimeInterval,
                            completion: @escaping (ChatInfo) -> Void) {
-        if let addedChatsHandler = chatsObserversInfo.addedChatsHandler {
-            databaseReference.removeObserver(withHandle: addedChatsHandler)
-        }
-        
-        let observerHandler = databaseReference.child(Tables.usersChats)
-                                               .child(userIdentifier)
-                                               .queryOrdered(byChild: Constants.timestampKey)
-                                               .queryStarting(atValue: latestUpdateTime)
-                                               .observe(.childAdded) { [weak self] snapshot in
+        databaseReference.child(Tables.usersChats)
+                         .child(userIdentifier)
+                         .queryOrdered(byChild: Constants.timestampKey)
+                         .queryStarting(atValue: latestUpdateTime)
+                         .observe(.childAdded) { [weak self] snapshot in
             let chatIdentifier = snapshot.key
             
             self?.fetchGroupChatStatus(chatIdentifier: chatIdentifier) { isGroup in
@@ -254,13 +273,10 @@ private extension FirebaseDatabaseChatsManager {
                     self?.fetchPairChat(chatIdentifier: chatIdentifier,
                                         userIdentifier: userIdentifier) { chat, error in
                         guard let chat = chat, error == nil else {
-                            if let error = error {
-                                switch error {
-                                case .chatCompanionNotFound: print("chatCompanionNotFound")
-                                case .userNotFound:          print("userNotFound")
-                                case .latestMessageNotFound: print("latestMessageNotFound")
-                                }
-                            }
+                            LoggingService.log(category: .database,
+                                               layer: .none,
+                                               type: .error,
+                                               with: error?.localizedDescription)
                             
                             return
                         }
@@ -270,8 +286,6 @@ private extension FirebaseDatabaseChatsManager {
                 }
             }
         }
-        
-        chatsObserversInfo.addedChatsHandler = observerHandler
     }
 }
 

@@ -57,12 +57,15 @@ extension ChatsInteractor: IChatsInteractor {
               let chatIdentifier = coreDataChatsManager.getChatIdentifier(by: index) else { return }
         
         coreDataChatsManager.updateChatLatestMessage(at: index, message: nil)
-        firebaseChatsManager.clearChat(userIdentifier: userIdentifier, chatIdentifier: chatIdentifier)
+        firebaseChatsManager.clearChat(chatIdentifier: chatIdentifier, userIdentifier: userIdentifier)
     }
     
     func removeChat(at index: Int) {
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+              let chatIdentifier = coreDataChatsManager.getChatIdentifier(by: index) else { return }
+        
         coreDataChatsManager.removeChat(at: index)
-        // Later: clear messages
+        firebaseChatsManager.removeChat(chatIdentifier: chatIdentifier, userIdentifier: userIdentifier)
         
         presenter?.chatRemoved(at: index)
     }

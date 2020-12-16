@@ -119,12 +119,25 @@ extension FirebaseDatabaseChatLogManager {
                                                                  timestamp: message.timestamp)
                 
                 self?.databaseReference.child(Tables.usersChatsLatestMessages)
-                    .child(memberIdentifier)
-                    .child(chatIdentifier)
-                    .setValue(FirebaseDatabaseService.encodableToDictionary(latestMessage))
+                                       .child(memberIdentifier)
+                                       .child(chatIdentifier)
+                                       .setValue(FirebaseDatabaseService.encodableToDictionary(latestMessage))
                     
                 if message.senderIdentifier != memberIdentifier {
                     self?.increaseUnreadMessagesCount(userIdentifier: memberIdentifier, chatIdentifier: chatIdentifier)
+                    
+                    self?.databaseReference.child(Tables.usersChats)
+                                           .child(memberIdentifier)
+                                           .child(chatIdentifier)
+                                           .observeSingleEvent(of: .value) { snapshot in
+                        if !snapshot.exists() {
+                            self?.databaseReference.child(Tables.usersChats)
+                                                   .child(memberIdentifier)
+                                                   .child(chatIdentifier)
+                                                   .child("timestamp")
+                                                   .setValue(Date().timeIntervalSince1970)
+                        }
+                    }
                 }
             }
         }
