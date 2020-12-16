@@ -14,4 +14,6 @@ struct ChatInfo {
     
     var latestMessage: MessageInfo?
     var unreadMessagesCount: Int?
+    
+    var isOnline: Bool?
 }

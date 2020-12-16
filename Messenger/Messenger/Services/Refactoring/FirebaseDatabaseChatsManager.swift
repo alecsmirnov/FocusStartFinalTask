@@ -76,7 +76,8 @@ extension FirebaseDatabaseChatsManager {
                             pairChatUpdated: @escaping (String, UserInfo) -> Void,
                             groupChatUpdated: @escaping (String, GroupInfo) -> Void,
                             chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
-                            chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
+                            chatUnreadMessagesUpdated: @escaping (String, Int) -> Void,
+                            chatOnlineStatusUpdate: @escaping (String, Bool) -> Void) {
         chats.forEach { chat in
             if chat.isGroup {
                 
@@ -105,6 +106,25 @@ extension FirebaseDatabaseChatsManager {
 
                     chatUnreadMessagesUpdated(chat.identifier, count)
                 }
+                
+                // TEST Begin
+                
+                FirebaseDatabaseUserStatusService.fetchUserStatus(userIdentifier: companion.identifier) { isOnline in
+                    guard let isOnline = isOnline else { return }
+                    
+                    chatOnlineStatusUpdate(chat.identifier, isOnline)
+                }
+                
+                let userStatusObserver = FirebaseDatabaseUserStatusService.observeUserStatus(
+                    userIdentifier: companion.identifier
+                ) { isOnline in
+                    chatOnlineStatusUpdate(chat.identifier, isOnline)
+                }
+                
+                observedChatsData[chat.identifier] = (observedChatsData[companion.identifier] ?? []) +
+                                                     [userStatusObserver]
+                
+                // TEST End
                 
                 observePairChat(chatIdentifier: chat.identifier,
                                 userIdentifier: userIdentifier,
@@ -154,21 +174,23 @@ private extension FirebaseDatabaseChatsManager {
                          pairChatUpdated: @escaping (String, UserInfo) -> Void,
                          chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
                          chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
-        let companionHandle = observeCompanionChanged(companionIdentifier: companionIdentifier) { companion in
+        let companionObserver = observeCompanionChanged(companionIdentifier: companionIdentifier) { companion in
             pairChatUpdated(chatIdentifier, companion)
         }
         
-        let latestMessageHandle = observeLatestMessagesChanged(chatIdentifier: chatIdentifier,
+        let latestMessageObserver = observeLatestMessagesChanged(chatIdentifier: chatIdentifier,
                                                                userIdentifier: userIdentifier) { message in
             chatLatestMessageUpdated(chatIdentifier, message)
         }
         
-        let unreadMessagesHandle = observeUnreadMessagesChanged(chatIdentifier: chatIdentifier,
+        let unreadMessagesObserver = observeUnreadMessagesChanged(chatIdentifier: chatIdentifier,
                                                                 userIdentifier: userIdentifier) { count in
             chatUnreadMessagesUpdated(chatIdentifier, count)
         }
         
-        observedChatsData[chatIdentifier] = [companionHandle, latestMessageHandle, unreadMessagesHandle]
+        observedChatsData[chatIdentifier] = (observedChatsData[chatIdentifier] ?? []) + [companionObserver,
+                                                                                         latestMessageObserver,
+                                                                                         unreadMessagesObserver]
     }
     
     func observeRemovedChats(for userIdentifier: String, completion: @escaping (String) -> Void) {

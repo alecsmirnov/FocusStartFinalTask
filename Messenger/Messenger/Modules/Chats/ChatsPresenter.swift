@@ -103,6 +103,12 @@ extension ChatsPresenter: IChatsInteractorOutput {
         
         viewController?.reloadData()
     }
+    
+    func chatOnlineStatusUpdate(at index: Int, isOnline: Bool) {
+        chats[index].isOnline = isOnline
+        
+        viewController?.reloadData()
+    }
 }
 
 // MARK: - ISearchPresenterDelegate

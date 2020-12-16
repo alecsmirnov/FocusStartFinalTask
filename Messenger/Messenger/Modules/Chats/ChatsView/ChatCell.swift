@@ -90,6 +90,12 @@ extension ChatCell {
         timestampLabel.text = timestamp.description
     }
     
+    func setOnlineStatus(isOnline: Bool?) {
+        if let isOnline = isOnline {
+            nameLabel.textColor = isOnline ? .green : .black
+        }
+    }
+    
     func setImage(urlString: String) {
         FirebaseStorageService.downloadProfileImageData(urlString: urlString) { data in
             print("here")

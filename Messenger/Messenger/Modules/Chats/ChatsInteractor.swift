@@ -23,6 +23,7 @@ protocol IChatsInteractorOutput: AnyObject {
     func chatCompanionUpdated(at index: Int, companion: UserInfo)
     func chatMessageUpdated(at index: Int, message: MessageInfo?)
     func chatUnreadMessagesCountUpdated(at index: Int, count: Int)
+    func chatOnlineStatusUpdate(at index: Int, isOnline: Bool)
 }
 
 final class ChatsInteractor {
@@ -115,6 +116,10 @@ private extension ChatsInteractor {
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
                 self?.coreDataChatsManager.updateChatUnreadMessagesCount(at: chatIdentifier, count: count)
                 self?.presenter?.chatUnreadMessagesCountUpdated(at: index, count: count)
+            }
+        } chatOnlineStatusUpdate: { [weak self] chatIdentifier, isOnline in
+            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
+                self?.presenter?.chatOnlineStatusUpdate(at: index, isOnline: isOnline)
             }
         }
     }

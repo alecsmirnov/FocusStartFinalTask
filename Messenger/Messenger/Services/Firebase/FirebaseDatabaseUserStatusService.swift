@@ -30,10 +30,10 @@ extension FirebaseDatabaseUserStatusService {
         let userStatusReference = databaseReference.child(Tables.usersStatus)
                                                    .child(userIdentifier)
         let userStatusHandle = userStatusReference.observe(.childChanged) { snapshot in
-            print("Observe: \(snapshot)")
-            //guard let value = snapshot.value else { return }
+            guard let value = snapshot.value as? [String: Bool],
+                  let isOnline = value.map({ $0.value }).first else { return }
             
-            
+            completion(isOnline)
         }
         
         return ObserverData(reference: userStatusReference, handle: userStatusHandle)
