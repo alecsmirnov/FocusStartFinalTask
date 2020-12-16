@@ -21,6 +21,8 @@ final class CoreDataChatsManager {
     private var update: CoreDataUpdate?
     private var chats = [CoreDataChat]()
     
+    private var identifiers = [String: Int]()
+    
     // MARK: Initialization
     
     init() {
@@ -40,43 +42,87 @@ extension CoreDataChatsManager {
     }
     
     func getChatIndex(by identifier: String) -> Int? {
-        return chats.firstIndex { $0.identifier == identifier }
+        return identifiers[identifier]
     }
     
     func appendChat(chat: ChatInfo) {
+        identifiers[chat.identifier] = chats.count
+        
         chats.append(chatToCoreDataChat(chat))
         
         saveAndUpdate()
     }
     
-    func updateChat(at index: Int, with chat: ChatInfo) {
-        chats[index] = chatToCoreDataChat(chat)
-        
-        saveAndUpdate()
+//    func updateChat(at index: Int, with chat: ChatInfo) {
+//        chats[index] = chatToCoreDataChat(chat)
+//        
+//        saveAndUpdate()
+//    }
+//    
+//    func removeChat(at index: Int) {
+//        chats.remove(at: index)
+//        
+//        saveAndUpdate()
+//    }
+//    
+//    func updateChatCompanion(at index: Int, companion: UserInfo) {
+//        CoreDataChatsManager.userToCoreDataUser(companion, coreDataUser: chats[index].companion)
+//        
+//        saveAndUpdate()
+//    }
+//    
+//    func updateChatLatestMessage(at index: Int, message: MessageInfo) {
+//        CoreDataChatsManager.messageToCoreDataMessage(message, coreDataMessage: chats[index].latestMessage)
+//        
+//        saveAndUpdate()
+//    }
+//    
+//    func updateChatUnreadMessagesCount(at index: Int, count: Int) {
+//        chats[index].unreadMessagesCount = Int32(count)
+//        
+//        saveAndUpdate()
+//    }
+//    
+    //
+    
+    func updateChat(at identifier: String, with chat: ChatInfo) {
+        if let index = identifiers[identifier] {
+            chats[index] = chatToCoreDataChat(chat)
+            
+            saveAndUpdate()
+        }
     }
     
-    func removeChat(at index: Int) {
-        chats.remove(at: index)
-        
-        saveAndUpdate()
+    func removeChat(at identifier: String) {
+        if let index = identifiers[identifier] {
+            chats.remove(at: index)
+            
+            saveAndUpdate()
+        }
     }
     
-    func updateChatCompanion(at index: Int, companion: UserInfo) {
-        CoreDataChatsManager.userToCoreDataUser(companion, coreDataUser: chats[index].companion)
+    func updateChatCompanion(at identifier: String, companion: UserInfo) {
+        if let index = identifiers[identifier] {
+            CoreDataChatsManager.userToCoreDataUser(companion, coreDataUser: chats[index].companion)
         
-        saveAndUpdate()
+            saveAndUpdate()
+        }
     }
     
-    func updateChatLatestMessage(at index: Int, message: MessageInfo) {
-        CoreDataChatsManager.messageToCoreDataMessage(message, coreDataMessage: chats[index].latestMessage)
-        
-        saveAndUpdate()
+    func updateChatLatestMessage(at identifier: String, message: MessageInfo) {
+        if let index = identifiers[identifier] {
+            CoreDataChatsManager.messageToCoreDataMessage(message, coreDataMessage: chats[index].latestMessage)
+            
+            saveAndUpdate()
+        }
     }
     
-    func updateChatUnreadMessagesCount(at index: Int, count: Int) {
-        chats[index].unreadMessagesCount = Int32(count)
-        
-        saveAndUpdate()
+    func updateChatUnreadMessagesCount(at identifier: String, count: Int) {
+        if let index = identifiers[identifier] {
+            chats[index].unreadMessagesCount = Int32(count)
+            
+            saveAndUpdate()
+        }
     }
     
     func resetUpdateTimestamp() {
@@ -119,6 +165,8 @@ private extension CoreDataChatsManager {
             }
             
             chats = try managedContext.fetch(chatsFetchRequest)
+            
+            chats.enumerated().forEach { identifiers[$1.identifier] = $0 }
         } catch let error as NSError {
             fatalError("could not fetch. \(error), \(error.userInfo)")
         }

@@ -70,36 +70,28 @@ extension ChatsPresenter: IChatsInteractorOutput {
         viewController?.reloadData()
     }
     
-    func chatRemoved(chatIdentifier: String) {
-        if let index = chats.firstIndex(where: { $0.identifier == chatIdentifier }) {
-            chats.remove(at: index)
-            
-            viewController?.reloadData()
-        }
+    func chatRemoved(at index: Int) {
+        chats.remove(at: index)
+        
+        viewController?.reloadData()
     }
     
-    func chatCompanionUpdated(chatIdentifier: String, companion: UserInfo) {
-        if let index = chats.firstIndex(where: { $0.identifier == chatIdentifier }) {
-            chats[index].companion = companion
-            
-            viewController?.reloadData()
-        }
+    func chatCompanionUpdated(at index: Int, companion: UserInfo) {
+        chats[index].companion = companion
+        
+        viewController?.reloadData()
     }
     
-    func chatMessageUpdated(chatIdentifier: String, message: MessageInfo) {
-        if let index = chats.firstIndex(where: { $0.identifier == chatIdentifier }) {
-            chats[index].latestMessage = message
-            
-            viewController?.reloadData()
-        }
+    func chatMessageUpdated(at index: Int, message: MessageInfo) {
+        chats[index].latestMessage = message
+        
+        viewController?.reloadData()
     }
     
-    func chatUnreadMessagesCountUpdated(chatIdentifier: String, count: Int) {
-        if let index = chats.firstIndex(where: { $0.identifier == chatIdentifier }) {
-            chats[index].unreadMessagesCount = count
-            
-            viewController?.reloadData()
-        }
+    func chatUnreadMessagesCountUpdated(at index: Int, count: Int) {
+        chats[index].unreadMessagesCount = count
+        
+        viewController?.reloadData()
     }
 }
 

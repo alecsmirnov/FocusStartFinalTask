@@ -15,11 +15,11 @@ protocol IChatsInteractorOutput: AnyObject {
     func fetchChatsSuccess(chats: [ChatInfo])
     
     func chatAdded(chat: ChatInfo)
-    func chatRemoved(chatIdentifier: String)
+    func chatRemoved(at index: Int)
     
-    func chatCompanionUpdated(chatIdentifier: String, companion: UserInfo)
-    func chatMessageUpdated(chatIdentifier: String, message: MessageInfo)
-    func chatUnreadMessagesCountUpdated(chatIdentifier: String, count: Int)
+    func chatCompanionUpdated(at index: Int, companion: UserInfo)
+    func chatMessageUpdated(at index: Int, message: MessageInfo)
+    func chatUnreadMessagesCountUpdated(at index: Int, count: Int)
 }
 
 final class ChatsInteractor {
@@ -75,25 +75,25 @@ private extension ChatsInteractor {
             self?.presenter?.chatAdded(chat: chat)
         } chatRemovedCompletion: { [weak self] chatIdentifier in
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.removeChat(at: index)
-                self?.presenter?.chatRemoved(chatIdentifier: chatIdentifier)
+                self?.coreDataChatsManager.removeChat(at: chatIdentifier)
+                self?.presenter?.chatRemoved(at: index)
             }
         } pairChatUpdated: { [weak self] chatIdentifier, companion in
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatCompanion(at: index, companion: companion)
-                self?.presenter?.chatCompanionUpdated(chatIdentifier: chatIdentifier, companion: companion)
+                self?.coreDataChatsManager.updateChatCompanion(at: chatIdentifier, companion: companion)
+                self?.presenter?.chatCompanionUpdated(at: index, companion: companion)
             }
         } groupChatUpdated: { chatIdentifier, group in
 
         } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatLatestMessage(at: index, message: message)
-                self?.presenter?.chatMessageUpdated(chatIdentifier: chatIdentifier, message: message)
+                self?.coreDataChatsManager.updateChatLatestMessage(at: chatIdentifier, message: message)
+                self?.presenter?.chatMessageUpdated(at: index, message: message)
             }
         } chatUnreadMessagesUpdated: { [weak self] chatIdentifier, count in
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatUnreadMessagesCount(at: index, count: count)
-                self?.presenter?.chatUnreadMessagesCountUpdated(chatIdentifier: chatIdentifier, count: count)
+                self?.coreDataChatsManager.updateChatUnreadMessagesCount(at: chatIdentifier, count: count)
+                self?.presenter?.chatUnreadMessagesCountUpdated(at: index, count: count)
             }
         }
     }
@@ -105,25 +105,25 @@ private extension ChatsInteractor {
             self?.presenter?.chatAdded(chat: chat)
         } chatRemovedCompletion: { [weak self] chatIdentifier in
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.removeChat(at: index)
-                self?.presenter?.chatRemoved(chatIdentifier: chatIdentifier)
+                self?.coreDataChatsManager.removeChat(at: chatIdentifier)
+                self?.presenter?.chatRemoved(at: index)
             }
         } pairChatUpdated: { [weak self] chatIdentifier, companion in
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatCompanion(at: index, companion: companion)
-                self?.presenter?.chatCompanionUpdated(chatIdentifier: chatIdentifier, companion: companion)
+                self?.coreDataChatsManager.updateChatCompanion(at: chatIdentifier, companion: companion)
+                self?.presenter?.chatCompanionUpdated(at: index, companion: companion)
             }
         } groupChatUpdated: { chatIdentifier, group in
 
         } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatLatestMessage(at: index, message: message)
-                self?.presenter?.chatMessageUpdated(chatIdentifier: chatIdentifier, message: message)
+                self?.coreDataChatsManager.updateChatLatestMessage(at: chatIdentifier, message: message)
+                self?.presenter?.chatMessageUpdated(at: index, message: message)
             }
         } chatUnreadMessagesUpdated: { [weak self] chatIdentifier, count in
             if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatUnreadMessagesCount(at: index, count: count)
-                self?.presenter?.chatUnreadMessagesCountUpdated(chatIdentifier: chatIdentifier, count: count)
+                self?.coreDataChatsManager.updateChatUnreadMessagesCount(at: chatIdentifier, count: count)
+                self?.presenter?.chatUnreadMessagesCountUpdated(at: index, count: count)
             }
         }
     }
