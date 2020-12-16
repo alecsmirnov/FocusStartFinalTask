@@ -80,12 +80,6 @@ extension ChatsPresenter: IChatsInteractorOutput {
         viewController?.reloadData()
     }
     
-    func chatCleared(at index: Int) {
-        chats[index].latestMessage = nil
-        
-        viewController?.reloadData()
-    }
-    
     func chatRemoved(at index: Int) {
         chats.remove(at: index)
         
@@ -98,7 +92,8 @@ extension ChatsPresenter: IChatsInteractorOutput {
         viewController?.reloadData()
     }
     
-    func chatMessageUpdated(at index: Int, message: MessageInfo) {
+    func chatMessageUpdated(at index: Int, message: MessageInfo?) {
+        print("chatMessageUpdated")
         chats[index].latestMessage = message
         
         viewController?.reloadData()

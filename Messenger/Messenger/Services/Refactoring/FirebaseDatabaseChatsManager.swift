@@ -71,7 +71,7 @@ extension FirebaseDatabaseChatsManager {
                             chatRemovedCompletion: @escaping (String) -> Void,
                             pairChatUpdated: @escaping (String, UserInfo) -> Void,
                             groupChatUpdated: @escaping (String, GroupInfo) -> Void,
-                            chatLatestMessageUpdated: @escaping (String, MessageInfo) -> Void,
+                            chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
                             chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
         chats.forEach { chat in
             if chat.isGroup {
@@ -118,7 +118,7 @@ extension FirebaseDatabaseChatsManager {
                       chatRemovedCompletion: @escaping (String) -> Void,
                       pairChatUpdated: @escaping (String, UserInfo) -> Void,
                       groupChatUpdated: @escaping (String, GroupInfo) -> Void,
-                      chatLatestMessageUpdated: @escaping (String, MessageInfo) -> Void,
+                      chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
                       chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
         observeAddedChats(for: userIdentifier, latestUpdateTime: latestUpdateTime) { [weak self] chat in
             chatAddedCompletion(chat)
@@ -148,7 +148,7 @@ private extension FirebaseDatabaseChatsManager {
                          userIdentifier: String,
                          companionIdentifier: String,
                          pairChatUpdated: @escaping (String, UserInfo) -> Void,
-                         chatLatestMessageUpdated: @escaping (String, MessageInfo) -> Void,
+                         chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
                          chatUnreadMessagesUpdated: @escaping (String, Int) -> Void) {
         observeCompanionChanged(companionIdentifier: companionIdentifier) { companion in
             pairChatUpdated(chatIdentifier, companion)
@@ -191,7 +191,7 @@ private extension FirebaseDatabaseChatsManager {
     
     func observeLatestMessagesChanged(chatIdentifier: String,
                                       userIdentifier: String,
-                                      completion: @escaping (MessageInfo) -> Void) {
+                                      completion: @escaping (MessageInfo?) -> Void) {
         databaseReference.child(Tables.usersChatsLatestMessages)
                          .child(userIdentifier)
                          .child(chatIdentifier)
@@ -201,12 +201,14 @@ private extension FirebaseDatabaseChatsManager {
                       [snapshot.key: value],
                       type: UsersChatsLatestMessageValue.self
                   ),
-                  let latestMessageIdentifier = latestMessageValue.identifier else { return }
+                  let latestMessageIdentifier = latestMessageValue.identifier else {
+                completion(nil)
+                
+                return
+            }
             
             self?.fetchChatMessage(chatIdentifier: chatIdentifier,
                                    messageIdentifier: latestMessageIdentifier) { message in
-                guard let message = message else { return }
-
                 completion(message)
             }
         }

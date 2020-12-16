@@ -18,11 +18,10 @@ protocol IChatsInteractorOutput: AnyObject {
     func fetchChatsSuccess(chats: [ChatInfo])
     
     func chatAdded(chat: ChatInfo)
-    func chatCleared(at index: Int)
     func chatRemoved(at index: Int)
     
     func chatCompanionUpdated(at index: Int, companion: UserInfo)
-    func chatMessageUpdated(at index: Int, message: MessageInfo)
+    func chatMessageUpdated(at index: Int, message: MessageInfo?)
     func chatUnreadMessagesCountUpdated(at index: Int, count: Int)
 }
 
@@ -59,8 +58,6 @@ extension ChatsInteractor: IChatsInteractor {
         
         coreDataChatsManager.updateChatLatestMessage(at: index, message: nil)
         firebaseChatsManager.clearChat(userIdentifier: userIdentifier, chatIdentifier: chatIdentifier)
-        
-        presenter?.chatCleared(at: index)
     }
     
     func removeChat(at index: Int) {
