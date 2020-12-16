@@ -19,6 +19,14 @@ struct UsersStatusValue: Codable {
     }
 }
 
-fileprivate struct Info: Codable {
+fileprivate struct Info {
     let isOnline: Bool
+}
+
+// MARK: - Codable
+
+extension Info: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case isOnline = "is_online"
+    }
 }
