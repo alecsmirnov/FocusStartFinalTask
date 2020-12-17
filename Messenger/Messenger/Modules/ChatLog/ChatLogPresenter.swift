@@ -27,19 +27,10 @@ final class ChatLogPresenter {
     var interactor: IChatLogInteractor?
     var router: IChatLogRouter?
     
-    var chat: ChatInfo?
-    
     private var messages = [MessageInfo]()
     
     private var topInsertOffset = 0
     private var isViewAppear = false
-}
-
-extension ChatLogPresenter {
-    var companion: UserInfo? {
-        get { chat?.companion }
-        set { chat = interactor?.registerPairChat(with: newValue) }
-    }
 }
 
 // MARK: - IChatLogPresenter
@@ -56,23 +47,11 @@ extension ChatLogPresenter: IChatLogPresenter {
 
 extension ChatLogPresenter {
     func viewDidLoad() {
-        if let chat = chat {
-            interactor?.observeMessages(chatIdentifier: chat.identifier)
-        }
+        interactor?.fetchMessages()
     }
     
     func viewWillAppear() {
-        guard let chat = chat else { return }
-        
-        if !chat.isGroup {
-            
-        } else {
-            if let companion = chat.companion {
-                let receiverName = "\(companion.firstName) \(companion.lastName ?? "")"
-                
-                viewController?.setTitle(text: receiverName)
-            }
-        }
+        interactor?.fetchChatTitleInfo()
     }
     
     func viewDidAppear() {
@@ -89,25 +68,17 @@ extension ChatLogPresenter {
     }
     
     func didPressSendButton(messageType: ChatsMessagesType) {
-        if let chat = chat {
-            interactor?.sendMessage(messageType, to: chat)
-        }
+        interactor?.sendMessage(messageType)
+        viewController?.scrollToBottom()
     }
     
     func didReadMessageAt(index: Int) {
-        //if let chatIdentifier = chatIdentifier {
-            //print(index)
-         //
-        //    interactor?.readMessage(messages[index], chatIdentifier: chatIdentifier)
-        //}
+        interactor?.readMessage(messages[index])
     }
     
     func didPullToRefresh() {
-        if let chatIdentifier = chat?.identifier {
-            if !messages.isEmpty {
-                interactor?.loadLastMessages(chatIdentifier: chatIdentifier,
-                                             topMessageIdentifier: messages[0].identifier)
-            }
+        if !messages.isEmpty {
+            interactor?.fetchPreviousMessages()
         }
     }
 }
@@ -115,6 +86,25 @@ extension ChatLogPresenter {
 // MARK: - IChatLogInteractorOutput
 
 extension ChatLogPresenter: IChatLogInteractorOutput {
+    func fetchMessagesSuccess(_ messages: [MessageInfo]) {
+        self.messages = messages
+    }
+    
+    func fetchPreviousMessagesSuccess(_ previousMessages: [MessageInfo]) {
+        messages.insert(contentsOf: previousMessages, at: 0)
+        
+        viewController?.reloadData()
+        viewController?.endRefreshing()
+    }
+    
+    func fetchPreviousMessagesFail() {
+        viewController?.endRefreshing()
+    }
+    
+    func fetchChatTitleInfoSuccess(title: String) {
+        viewController?.setTitle(text: title)
+    }
+    
     func addedMessage(_ message: MessageInfo) {
         messages.append(message)
         
@@ -124,24 +114,16 @@ extension ChatLogPresenter: IChatLogInteractorOutput {
     }
     
     func updateMessage(_ message: MessageInfo) {
-        if let index = messages.firstIndex(where: { $0.identifier == message.identifier }) {
-            messages[index] = message
-            
-            // check if sender is not me and update
-            
-            guard let identifier = FirebaseAuthService.currentUser()?.uid else { return }
-            
-            if isViewAppear, message.senderIdentifier == identifier {
-                viewController?.updateRowAt(index: index)
-            }
-        }
-    }
-    
-    func addedPreviousMessage(_ message: MessageInfo) {
-        messages.insert(message, at: topInsertOffset)
-        topInsertOffset += 1
-        
-        viewController?.reloadData()
-        viewController?.endRefreshing()
+//        if let index = messages.firstIndex(where: { $0.identifier == message.identifier }) {
+//            messages[index] = message
+//
+//            // check if sender is not me and update
+//
+//            guard let identifier = FirebaseAuthService.currentUser()?.uid else { return }
+//
+//            if isViewAppear, message.senderIdentifier == identifier {
+//                viewController?.updateRowAt(index: index)
+//            }
+//        }
     }
 }

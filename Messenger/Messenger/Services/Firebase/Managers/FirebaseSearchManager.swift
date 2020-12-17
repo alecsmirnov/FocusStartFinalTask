@@ -1,5 +1,5 @@
 //
-//  FirebaseDatabaseSearchManager.swift
+//  FirebaseSearchManager.swift
 //  Messenger
 //
 //  Created by Admin on 15.12.2020.
@@ -7,7 +7,7 @@
 
 import FirebaseDatabase
 
-final class FirebaseDatabaseSearchManager {
+final class FirebaseSearchManager {
     enum SearchKey: String {
         case name = "info/queryable_name"
         case userName = "info/queryable_user_name"
@@ -21,7 +21,7 @@ final class FirebaseDatabaseSearchManager {
     private let databaseReference = Database.database().reference()
 }
 
-extension FirebaseDatabaseSearchManager {
+extension FirebaseSearchManager {
     func fetchUsers(completion: @escaping ([UserInfo]?) -> Void) {
         databaseReference.child(Tables.users)
                          .observeSingleEvent(of: .value) { snapshot in
@@ -32,7 +32,7 @@ extension FirebaseDatabaseSearchManager {
                 return
             }
             
-            completion(FirebaseDatabaseSearchManager.usersValuesToUsers(usersValues))
+            completion(FirebaseSearchManager.usersValuesToUsers(usersValues))
         }
     }
     
@@ -51,14 +51,14 @@ extension FirebaseDatabaseSearchManager {
                 return
             }
             
-            completion(FirebaseDatabaseSearchManager.usersValuesToUsers(usersValues))
+            completion(FirebaseSearchManager.usersValuesToUsers(usersValues))
         }
     }
 }
 
 // MARK: - Helper Methods
 
-private extension FirebaseDatabaseSearchManager {
+private extension FirebaseSearchManager {
     static func usersValuesToUsers(_ usersValues: [String: UsersValue]) -> [UserInfo] {
         let users = usersValues.map { userIdentifier, userValue in
             return UserInfo(identifier: userIdentifier,

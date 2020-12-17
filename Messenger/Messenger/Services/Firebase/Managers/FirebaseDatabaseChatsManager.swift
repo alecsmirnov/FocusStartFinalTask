@@ -1,5 +1,5 @@
 //
-//  FirebaseDatabaseChatsManager.swift
+//  FirebaseChatsManager.swift
 //  Messenger
 //
 //  Created by Admin on 14.12.2020.
@@ -7,7 +7,7 @@
 
 import FirebaseDatabase
 
-final class FirebaseDatabaseChatsManager {
+final class FirebaseChatsManager {
     enum PairChatsError: Error {
         case chatCompanionNotFound
         case userNotFound
@@ -25,7 +25,7 @@ final class FirebaseDatabaseChatsManager {
 
 // MARK: - Public Editing Methods
 
-extension FirebaseDatabaseChatsManager {
+extension FirebaseChatsManager {
     func clearChat(chatIdentifier: String, userIdentifier: String) {
         databaseReference.child(Tables.usersChatsMessages)
                          .child(userIdentifier)
@@ -67,7 +67,7 @@ extension FirebaseDatabaseChatsManager {
 
 // MARK: - Public Observe Methods
 
-extension FirebaseDatabaseChatsManager {
+extension FirebaseChatsManager {
     func observeLoadedChats(userIdentifier: String,
                             latestUpdateTime: TimeInterval,
                             chats: [ChatInfo],
@@ -172,7 +172,7 @@ extension FirebaseDatabaseChatsManager {
 
 // MARK: - Private Observe Methods
 
-private extension FirebaseDatabaseChatsManager {
+private extension FirebaseChatsManager {
     func observePairChat(chatIdentifier: String,
                          userIdentifier: String,
                          companionIdentifier: String,
@@ -301,7 +301,7 @@ private extension FirebaseDatabaseChatsManager {
 
 // MARK: - Private Fetch Methods
 
-private extension FirebaseDatabaseChatsManager {
+private extension FirebaseChatsManager {
     func fetchPairChat(chatIdentifier: String,
                        userIdentifier: String,
                        completion: @escaping (ChatInfo?, PairChatsError?) -> Void) {

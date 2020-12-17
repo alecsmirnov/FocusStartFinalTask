@@ -20,7 +20,7 @@ protocol IRegistrationInteractorOutput: AnyObject {
 final class RegistrationInteractor {
     weak var presenter: IRegistrationInteractorOutput?
     
-    private let firebaseRegistrationManager = FirebaseDatabaseRegistrationManager()
+    private let firebaseRegistrationManager = FirebaseRegistrationManager()
 }
 
 // MARK: - IRegistrationInteractor

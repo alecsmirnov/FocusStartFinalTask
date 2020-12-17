@@ -17,7 +17,7 @@ protocol IChatsInteractor: AnyObject {
 protocol IChatsInteractorOutput: AnyObject {
     func fetchChatsSuccess(chats: [ChatInfo])
     
-    func chatAdded(chat: ChatInfo)
+    func chatAdded(_ chat: ChatInfo)
     func chatRemoved(at index: Int)
     
     func chatCompanionUpdated(at index: Int, companion: UserInfo)
@@ -30,7 +30,7 @@ final class ChatsInteractor {
     weak var presenter: IChatsInteractorOutput?
     
     private let coreDataChatsManager = CoreDataChatsManager()
-    private let firebaseChatsManager = FirebaseDatabaseChatsManager()
+    private let firebaseChatsManager = FirebaseChatsManager()
     
     init() {
         observeSignOutNotification()
@@ -123,8 +123,8 @@ private extension ChatsInteractor {
     }
     
     func chatAdded(chat: ChatInfo) {
-        coreDataChatsManager.appendChat(chat: chat)
-        presenter?.chatAdded(chat: chat)
+        coreDataChatsManager.appendChat(chat)
+        presenter?.chatAdded(chat)
     }
     
     func chatRemoved(chatIdentifier: String) {

@@ -15,5 +15,6 @@ struct MessageInfo {
     let isRead: Bool
     let timestamp: TimeInterval
     
+    var senderName: String?
     var isIncoming: Bool?
 }

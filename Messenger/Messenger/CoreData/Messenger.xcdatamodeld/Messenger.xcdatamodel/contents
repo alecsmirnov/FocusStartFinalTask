@@ -4,9 +4,16 @@
         <attribute name="identifier" attributeType="String"/>
         <attribute name="isGroup" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="unreadMessagesCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="companion" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataUser" inverseName="chat" inverseEntity="CoreDataUser"/>
-        <relationship name="group" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataGroup" inverseName="chat" inverseEntity="CoreDataGroup"/>
-        <relationship name="latestMessage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataMessage" inverseName="chat" inverseEntity="CoreDataMessage"/>
+        <relationship name="chatLog" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataChatLog" inverseName="chat" inverseEntity="CoreDataChatLog"/>
+        <relationship name="companion" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataUser" inverseName="chat" inverseEntity="CoreDataUser"/>
+        <relationship name="group" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataGroup" inverseName="chat" inverseEntity="CoreDataGroup"/>
+        <relationship name="latestMessage" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataMessage" inverseName="chat" inverseEntity="CoreDataMessage"/>
+    </entity>
+    <entity name="CoreDataChatLog" representedClassName="CoreDataChatLog" syncable="YES">
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="timestamp" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="chatLog" inverseEntity="CoreDataChat"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="CoreDataMessage" inverseName="chatLog" inverseEntity="CoreDataMessage"/>
     </entity>
     <entity name="CoreDataGroup" representedClassName="CoreDataGroup" syncable="YES">
         <attribute name="creatorIdentifier" attributeType="String"/>
@@ -25,6 +32,7 @@
         <attribute name="senderIdentifier" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="latestMessage" inverseEntity="CoreDataChat"/>
+        <relationship name="chatLog" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChatLog" inverseName="messages" inverseEntity="CoreDataChatLog"/>
         <relationship name="type" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataMessageType" inverseName="message" inverseEntity="CoreDataMessageType"/>
     </entity>
     <entity name="CoreDataMessageType" representedClassName="CoreDataMessageType" syncable="YES">
@@ -43,12 +51,13 @@
         <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="companion" inverseEntity="CoreDataChat"/>
     </entity>
     <elements>
-        <element name="CoreDataChat" positionX="12.9765625" positionY="-118.9921875" width="128" height="133"/>
+        <element name="CoreDataChat" positionX="12.9765625" positionY="-118.9921875" width="128" height="148"/>
         <element name="CoreDataGroup" positionX="-5.95703125" positionY="197.01171875" width="128" height="118"/>
         <element name="CoreDataIdentifier" positionX="-191.9453125" positionY="308.99609375" width="128" height="73"/>
-        <element name="CoreDataMessage" positionX="-229.99609375" positionY="142.0078125" width="128" height="133"/>
+        <element name="CoreDataMessage" positionX="-229.99609375" positionY="142.0078125" width="128" height="148"/>
         <element name="CoreDataMessageType" positionX="-225.97265625" positionY="56.00390625" width="128" height="73"/>
-        <element name="CoreDataUser" positionX="250.9609375" positionY="-32.99609375" width="128" height="133"/>
         <element name="CoreDataUpdate" positionX="-45" positionY="27" width="128" height="58"/>
+        <element name="CoreDataUser" positionX="250.9609375" positionY="-32.99609375" width="128" height="133"/>
+        <element name="CoreDataChatLog" positionX="-36" positionY="36" width="128" height="103"/>
     </elements>
 </model>

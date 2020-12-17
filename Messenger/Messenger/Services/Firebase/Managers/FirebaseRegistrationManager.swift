@@ -1,5 +1,5 @@
 //
-//  FirebaseDatabaseRegistrationManager.swift
+//  FirebaseRegistrationManager.swift
 //  Messenger
 //
 //  Created by Admin on 15.12.2020.
@@ -7,13 +7,13 @@
 
 import FirebaseDatabase
 
-final class FirebaseDatabaseRegistrationManager {
+final class FirebaseRegistrationManager {
     private let databaseReference = Database.database().reference()
 }
 
 // MARK: - Public Methods
 
-extension FirebaseDatabaseRegistrationManager {
+extension FirebaseRegistrationManager {
     func signUpAndSignIn(withUser user: RegistrationInfo,
                          signUpSuccessCompletion: (() -> Void)?,
                          signUpFailCompletion: (() -> Void)?,
@@ -52,7 +52,7 @@ extension FirebaseDatabaseRegistrationManager {
 
 // MARK: - Private Methods
 
-extension FirebaseDatabaseRegistrationManager {
+extension FirebaseRegistrationManager {
     func signUp(withEmail email: String, password: String, completion: @escaping (String?) -> Void) {
         FirebaseAuthService.createUser(withEmail: email,
                                        password: password) { authResult, error in
@@ -104,7 +104,7 @@ extension FirebaseDatabaseRegistrationManager {
                              .child(identifier)
                              .setValue(userRecord)
             
-            FirebaseDatabaseUserStatusService.setUserStatus(userIdentifier: identifier, isOnline: true)
+            FirebaseUserStatusService.setUserStatus(userIdentifier: identifier, isOnline: true)
             
             LoggingService.log(category: .registration,
                                layer: .interactor,

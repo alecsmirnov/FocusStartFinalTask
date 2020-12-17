@@ -72,7 +72,7 @@ extension ChatsPresenter: IChatsInteractorOutput {
         viewController?.reloadData()
     }
     
-    func chatAdded(chat: ChatInfo) {
+    func chatAdded(_ chat: ChatInfo) {
         chats.append(chat)
         
         viewController?.reloadData()

@@ -17,7 +17,7 @@ protocol ISearchInteractorOutput: AnyObject {
 final class SearchInteractor {
     weak var presenter: ISearchInteractorOutput?
     
-    private let firebaseSearchManager = FirebaseDatabaseSearchManager()
+    private let firebaseSearchManager = FirebaseSearchManager()
 }
 
 // MARK: - ISearchInteractor

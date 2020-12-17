@@ -25,8 +25,6 @@ final class CoreDataChatsManager {
     private var update: CoreDataUpdate?
     private var chats = [CoreDataChat]()
     
-    private var identifiers = [String: Int]()
-    
     // MARK: Initialization
     
     init() {
@@ -46,7 +44,7 @@ extension CoreDataChatsManager {
     }
     
     func getChatIndex(by identifier: String) -> Int? {
-        return identifiers[identifier]
+        return chats.firstIndex { $0.identifier == identifier }
     }
     
     func getChatIdentifier(by index: Int) -> String? {
@@ -55,15 +53,14 @@ extension CoreDataChatsManager {
         return chats[index].identifier
     }
     
-    func appendChat(chat: ChatInfo) {
-        identifiers[chat.identifier] = chats.count
+    func appendChat(_ chat: ChatInfo) {
         chats.append(chatToCoreDataChat(chat))
         
         saveAndUpdate()
     }
     
     func updateChat(at identifier: String, with chat: ChatInfo) {
-        if let index = identifiers[identifier] {
+        if let index = getChatIndex(by: identifier) {
             chats[index] = chatToCoreDataChat(chat)
             
             saveAndUpdate()
@@ -71,7 +68,7 @@ extension CoreDataChatsManager {
     }
     
     func removeChat(at identifier: String) {
-        if let index = identifiers[identifier] {
+        if let index = getChatIndex(by: identifier) {
             removeChat(at: index)
         }
     }
@@ -79,7 +76,6 @@ extension CoreDataChatsManager {
     func removeChat(at index: Int) {
         guard chats.indices.contains(index) else { return }
         
-        identifiers[chats[index].identifier] = nil
         managedContext.delete(chats[index])
         chats.remove(at: index)
         
@@ -87,7 +83,7 @@ extension CoreDataChatsManager {
     }
     
     func updateChatCompanion(at identifier: String, companion: UserInfo) {
-        if let index = identifiers[identifier] {
+        if let index = getChatIndex(by: identifier) {
             CoreDataChatsManager.userToCoreDataUser(companion, coreDataUser: chats[index].companion)
         
             saveAndUpdate()
@@ -95,7 +91,7 @@ extension CoreDataChatsManager {
     }
     
     func updateChatLatestMessage(at identifier: String, message: MessageInfo?) {
-        if let index = identifiers[identifier] {
+        if let index = getChatIndex(by: identifier) {
             updateChatLatestMessage(at: index, message: message)
         }
     }
@@ -116,7 +112,7 @@ extension CoreDataChatsManager {
     }
     
     func updateChatUnreadMessagesCount(at identifier: String, count: Int) {
-        if let index = identifiers[identifier] {
+        if let index = getChatIndex(by: identifier) {
             chats[index].unreadMessagesCount = Int32(count)
             
             saveAndUpdate()
@@ -130,15 +126,15 @@ extension CoreDataChatsManager {
     }
     
     func clear() {
-        let deleteUpdateFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CoreDataUpdate")
-        let deleteUpdateRequest = NSBatchDeleteRequest(fetchRequest: deleteUpdateFetch)
+        let updateDeleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CoreDataUpdate")
+        let updateDeleteRequest = NSBatchDeleteRequest(fetchRequest: updateDeleteFetch)
         
-        let deleteChatFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CoreDataChat")
-        let deleteChatRequest = NSBatchDeleteRequest(fetchRequest: deleteChatFetch)
+        let chatDeleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CoreDataChat")
+        let chatDeleteRequest = NSBatchDeleteRequest(fetchRequest: chatDeleteFetch)
 
         do {
-            try managedContext.execute(deleteUpdateRequest)
-            try managedContext.execute(deleteChatRequest)
+            try managedContext.execute(updateDeleteRequest)
+            try managedContext.execute(chatDeleteRequest)
             
             try managedContext.save()
         } catch let error as NSError {
@@ -163,8 +159,6 @@ private extension CoreDataChatsManager {
             }
             
             chats = try managedContext.fetch(chatsFetchRequest)
-            
-            chats.enumerated().forEach { identifiers[$1.identifier] = $0 }
         } catch let error as NSError {
             fatalError("could not fetch. \(error), \(error.userInfo)")
         }
@@ -202,12 +196,6 @@ private extension CoreDataChatsManager {
 }
 
 // MARK: - Helper Methods
-
-private extension CoreDataChatsManager {
-    var currentTimestamp: TimeInterval {
-        return Date().timeIntervalSince1970
-    }
-}
 
 private extension CoreDataChatsManager {
     static func userToCoreDataUser(_ user: UserInfo, coreDataUser: CoreDataUser?) {
@@ -293,6 +281,12 @@ private extension CoreDataChatsManager {
             coreDataChat.unreadMessagesCount = Int32(unreadMessagesCount)
         }
         
+        let coreDataChatLog = CoreDataChatLog(context: managedContext)
+        coreDataChatLog.identifier = chat.identifier
+        coreDataChatLog.timestamp = Constants.timestampInitialValue
+        
+        coreDataChat.chatLog = coreDataChatLog
+        
         return coreDataChat
     }
     
@@ -349,5 +343,9 @@ private extension CoreDataChatsManager {
                             latestMessage: latestMessage,
                             unreadMessagesCount: unreadMessagesCount)
         return chat
+    }
+    
+    var currentTimestamp: TimeInterval {
+        return Date().timeIntervalSince1970
     }
 }

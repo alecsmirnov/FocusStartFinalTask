@@ -1,5 +1,5 @@
 //
-//  FirebaseDatabaseUserStatusService.swift
+//  FirebaseUserStatusService.swift
 //  Messenger
 //
 //  Created by Admin on 16.12.2020.
@@ -7,13 +7,13 @@
 
 import FirebaseDatabase
 
-enum FirebaseDatabaseUserStatusService {
+enum FirebaseUserStatusService {
     private static let databaseReference = Database.database().reference()
 }
 
 // MARK: - Public Editing Methods
 
-extension FirebaseDatabaseUserStatusService {    
+extension FirebaseUserStatusService {    
     static func setUserStatus(userIdentifier: String, isOnline: Bool) {
         let user = FirebaseDatabaseCoding.toDictionary(UsersStatusValue(isOnline: isOnline,
                                                                         timestamp: Date().timeIntervalSince1970))
@@ -26,7 +26,7 @@ extension FirebaseDatabaseUserStatusService {
 
 // MARK: - Public Observe Methods
 
-extension FirebaseDatabaseUserStatusService {
+extension FirebaseUserStatusService {
     static func observeUserStatus(userIdentifier: String, completion: @escaping (Bool) -> Void) -> ObserverData {
         let userStatusReference = databaseReference.child(Tables.usersStatus)
                                                    .child(userIdentifier)
@@ -44,7 +44,7 @@ extension FirebaseDatabaseUserStatusService {
 
 // MARK: - Private Fetch Methods
 
-extension FirebaseDatabaseUserStatusService {
+extension FirebaseUserStatusService {
     static func fetchUserStatus(userIdentifier: String, completion: @escaping (Bool?) -> Void) {
         databaseReference.child(Tables.usersStatus)
                          .child(userIdentifier)

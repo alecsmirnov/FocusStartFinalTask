@@ -2,7 +2,7 @@
 //  CoreDataChat+CoreDataProperties.swift
 //  Messenger
 //
-//  Created by Admin on 15.12.2020.
+//  Created by Admin on 17.12.2020.
 //
 //
 
@@ -17,11 +17,11 @@ extension CoreDataChat {
     @NSManaged public var identifier: String
     @NSManaged public var isGroup: Bool
     @NSManaged public var unreadMessagesCount: Int32
-    
     @NSManaged public var companion: CoreDataUser?
     @NSManaged public var group: CoreDataGroup?
-    
     @NSManaged public var latestMessage: CoreDataMessage?
+    
+    @NSManaged public var chatLog: CoreDataChatLog?
 }
 
 extension CoreDataChat : Identifiable {}
