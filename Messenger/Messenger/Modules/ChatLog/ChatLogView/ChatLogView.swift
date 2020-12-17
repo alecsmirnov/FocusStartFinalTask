@@ -184,7 +184,6 @@ private extension ChatLogView {
         tableView.register(MessageCell.self, forCellReuseIdentifier: MessageCell.reuseIdentifier)
         
         tableView.refreshControl = UIRefreshControl()
-        //tableView.refreshControl?.attributedTitle = NSAttributedString(string: "Pull to refresh")
         tableView.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
     }
     

@@ -152,42 +152,10 @@ extension FirebaseChatLogManager {
             }
         }
     }
-    
-//    func observeLastAddedMessages(chatIdentifier: String,
-//                                  userIdentifier: String,
-//                                  latestUpdateTime: TimeInterval,
-//                                  startAt messageIdentifier: String,
-//                                  limit: UInt,
-//                                  completion: @escaping (MessageInfo) -> Void) {
-//        databaseReference.child(Tables.usersChatsMessages)
-//                         .child(userIdentifier)
-//                         .child(chatIdentifier)
-//                         .queryOrderedByValue()
-//                         .queryStarting(atValue: latestUpdateTime)
-//                         .queryEnding(atValue: messageIdentifier)
-//                         .queryLimited(toLast: limit)
-//                         .observe(.childAdded) { [weak self] snapshot in
-//            let messageIdentifier = snapshot.key
-//                            
-//            self?.fetchChatMessage(chatIdentifier: chatIdentifier,
-//                                   messageIdentifier: messageIdentifier) { messageValue in
-//                if let messageValue = messageValue {
-//                    let message = MessageInfo(identifier: messageIdentifier,
-//                                              senderIdentifier: messageValue.senderIdentifier,
-//                                              type: messageValue.messageType,
-//                                              isRead: messageValue.isRead,
-//                                              timestamp: messageValue.timestamp)
-//                    completion(message)
-//                }
-//            }
-//        }
-//    }
-//    
     func observeUpdatedMessages(chatIdentifier: String) {
         databaseReference.child(Tables.chatsMessages)
                          .child(chatIdentifier)
                          .observe(.childChanged) { snapshot in
-                            var test = 1
             //print("snapshot: \(snapshot)")
         }
     }
@@ -196,37 +164,6 @@ extension FirebaseChatLogManager {
 // MARK: - Public Fetch Methods
 
 extension FirebaseChatLogManager {
-    func fetchLatestMessages(chatIdentifier: String,
-                             userIdentifier: String,
-                             latestUpdateTime: TimeInterval,
-                             limit: Int,
-                             completion: @escaping (MessageInfo) -> Void) {
-        databaseReference.child(Tables.usersChatsMessages)
-                         .child(userIdentifier)
-                         .child(chatIdentifier)
-                         .queryOrderedByValue()
-                         .queryStarting(atValue: latestUpdateTime)
-                         .queryLimited(toLast: UInt(limit))
-                         .observeSingleEvent(of: .value) { [weak self] snapshot in
-            guard let value = snapshot.value as? [String: Any] else { return }
-
-            value.forEach { messageIdentifier, timestamp in
-                self?.fetchChatMessage(chatIdentifier: chatIdentifier,
-                                       messageIdentifier: messageIdentifier) { messageValue in
-                    if let messageValue = messageValue {
-                        let message = MessageInfo(identifier: messageIdentifier,
-                                                  senderIdentifier: messageValue.senderIdentifier,
-                                                  type: messageValue.messageType,
-                                                  isRead: messageValue.isRead,
-                                                  timestamp: messageValue.timestamp,
-                                                  isIncoming: messageValue.senderIdentifier != userIdentifier)
-                        completion(message)
-                    }
-                }
-            }
-        }
-    }
-    
     func fetchPreviousMessages(chatIdentifier: String,
                                userIdentifier: String,
                                endingAt lastMessageTimestamp: TimeInterval,

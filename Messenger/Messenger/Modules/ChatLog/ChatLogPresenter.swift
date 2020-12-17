@@ -77,9 +77,7 @@ extension ChatLogPresenter {
     }
     
     func didPullToRefresh() {
-        if !messages.isEmpty {
-            interactor?.fetchPreviousMessages()
-        }
+        interactor?.fetchPreviousMessages()
     }
 }
 

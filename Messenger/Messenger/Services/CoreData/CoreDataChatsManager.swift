@@ -135,6 +135,8 @@ extension CoreDataChatsManager {
         } catch let error as NSError {
             fatalError("could not fetch. \(error), \(error.userInfo)")
         }
+        
+        chats[index].chatLog = initChatLog(chatIdentifier: chats[index].identifier)
     }
     
     func clear() {
@@ -297,7 +299,7 @@ private extension CoreDataChatsManager {
         coreDataChatLog.identifier = chat.identifier
         coreDataChatLog.timestamp = Constants.timestampInitialValue
         
-        coreDataChat.chatLog = coreDataChatLog
+        coreDataChat.chatLog = initChatLog(chatIdentifier: chat.identifier)
         
         return coreDataChat
     }
@@ -355,6 +357,15 @@ private extension CoreDataChatsManager {
                             latestMessage: latestMessage,
                             unreadMessagesCount: unreadMessagesCount)
         return chat
+    }
+    
+    func initChatLog(chatIdentifier: String) -> CoreDataChatLog {
+        let coreDataChatLog = CoreDataChatLog(context: managedContext)
+        
+        coreDataChatLog.identifier = chatIdentifier
+        coreDataChatLog.timestamp = Constants.timestampInitialValue
+        
+        return coreDataChatLog
     }
     
     var currentTimestamp: TimeInterval {

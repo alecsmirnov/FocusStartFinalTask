@@ -55,6 +55,7 @@ extension ChatsInteractor: IChatsInteractor {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
               let chatIdentifier = coreDataChatsManager.getChatIdentifier(by: index) else { return }
         
+        coreDataChatsManager.clearChatLog(at: index)
         coreDataChatsManager.updateChatLatestMessage(at: index, message: nil)
         firebaseChatsManager.clearChat(chatIdentifier: chatIdentifier, userIdentifier: userIdentifier)
     }

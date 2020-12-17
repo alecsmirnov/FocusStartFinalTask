@@ -74,7 +74,11 @@ extension ChatLogInteractor: IChatLogInteractor {
     func fetchPreviousMessages() {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
               let chatIdentifier = chat?.identifier,
-              let topMessageTimestamp = topMessageTimestamp else { return }
+              let topMessageTimestamp = topMessageTimestamp else {
+            presenter?.fetchPreviousMessagesFail()
+            
+            return
+        }
         
         let messagesLimit = Constants.storedMessagesCount
         

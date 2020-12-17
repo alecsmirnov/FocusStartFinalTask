@@ -240,13 +240,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8451B304258B40C200EE4BEF /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Helpers;
-			sourceTree = "<group>";
-		};
 		8453EC742569593E00385810 = {
 			isa = PBXGroup;
 			children = (
@@ -628,7 +621,6 @@
 		84602B8825877014003C8F6B /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				8451B304258B40C200EE4BEF /* Helpers */,
 				84602B852587700F003C8F6B /* CoreDataChatsManager.swift */,
 				8451B2F7258B34BE00EE4BEF /* CoreDataChatLogManager.swift */,
 			);
