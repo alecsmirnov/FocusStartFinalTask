@@ -48,6 +48,7 @@ extension ChatsInteractor: IChatsInteractor {
         loadStoredChats()
         observeLoadedChats(userIdentifier: userIdentifier, latestUpdateTime: latestUpdateTime)
         observeAddedChats(userIdentifier: userIdentifier, latestUpdateTime: latestUpdateTime)
+        observeRemovedChats(userIdentifier: userIdentifier)
     }
     
     func clearChat(at index: Int) {
@@ -85,11 +86,7 @@ private extension ChatsInteractor {
         
         firebaseChatsManager.observeLoadedChats(userIdentifier: userIdentifier,
                                                 latestUpdateTime: latestUpdateTime,
-                                                chats: chats) { [weak self] chat in
-            self?.chatAdded(chat: chat)
-        } chatRemovedCompletion: { [weak self] chatIdentifier in
-            self?.chatRemoved(chatIdentifier: chatIdentifier)
-        } pairChatUpdated: { [weak self] chatIdentifier, companion in
+                                                chats: chats) { [weak self] chatIdentifier, companion in
             self?.pairChatUpdated(chatIdentifier: chatIdentifier, companion: companion)
         } groupChatUpdated: { chatIdentifier, group in
 
@@ -106,8 +103,6 @@ private extension ChatsInteractor {
         firebaseChatsManager.observeChats(userIdentifier: userIdentifier,
                                           latestUpdateTime: latestUpdateTime) { [weak self] chat in
             self?.chatAdded(chat: chat)
-        } chatRemovedCompletion: { [weak self] chatIdentifier in
-            self?.chatRemoved(chatIdentifier: chatIdentifier)
         } pairChatUpdated: { [weak self] chatIdentifier, companion in
             self?.pairChatUpdated(chatIdentifier: chatIdentifier, companion: companion)
         } groupChatUpdated: { chatIdentifier, group in
@@ -118,6 +113,12 @@ private extension ChatsInteractor {
             self?.chatUnreadMessagesUpdated(chatIdentifier: chatIdentifier, count: count)
         } chatOnlineStatusUpdate: { [weak self] chatIdentifier, isOnline in
             self?.chatOnlineStatusUpdated(chatIdentifier: chatIdentifier, isOnline: isOnline)
+        }
+    }
+    
+    func observeRemovedChats(userIdentifier: String) {
+        firebaseChatsManager.observeRemovedChats(for: userIdentifier) { [weak self] chatIdentifier in
+            self?.chatRemoved(chatIdentifier: chatIdentifier)
         }
     }
     

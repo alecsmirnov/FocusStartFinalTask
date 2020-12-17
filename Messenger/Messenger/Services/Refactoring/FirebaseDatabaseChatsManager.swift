@@ -71,8 +71,6 @@ extension FirebaseDatabaseChatsManager {
     func observeLoadedChats(userIdentifier: String,
                             latestUpdateTime: TimeInterval,
                             chats: [ChatInfo],
-                            chatAddedCompletion: @escaping (ChatInfo) -> Void,
-                            chatRemovedCompletion: @escaping (String) -> Void,
                             pairChatUpdated: @escaping (String, UserInfo) -> Void,
                             groupChatUpdated: @escaping (String, GroupInfo) -> Void,
                             chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
@@ -133,7 +131,6 @@ extension FirebaseDatabaseChatsManager {
     func observeChats(userIdentifier: String,
                       latestUpdateTime: TimeInterval,
                       chatAddedCompletion: @escaping (ChatInfo) -> Void,
-                      chatRemovedCompletion: @escaping (String) -> Void,
                       pairChatUpdated: @escaping (String, UserInfo) -> Void,
                       groupChatUpdated: @escaping (String, GroupInfo) -> Void,
                       chatLatestMessageUpdated: @escaping (String, MessageInfo?) -> Void,
@@ -162,8 +159,14 @@ extension FirebaseDatabaseChatsManager {
                                                            [userStatusObserver]
             }
         }
-        
-        observeRemovedChats(for: userIdentifier, completion: chatRemovedCompletion)
+    }
+    
+    func observeRemovedChats(for userIdentifier: String, completion: @escaping (String) -> Void) {
+        databaseReference.child(Tables.usersChats)
+                         .child(userIdentifier)
+                         .observe(.childRemoved) { snapshot in
+            completion(snapshot.key)
+        }
     }
 }
 
@@ -193,14 +196,6 @@ private extension FirebaseDatabaseChatsManager {
         let observers = [companionObserver, latestMessageObserver, unreadMessagesObserver]
         
         observedChatsData[chatIdentifier] = (observedChatsData[chatIdentifier] ?? []) + observers
-    }
-    
-    func observeRemovedChats(for userIdentifier: String, completion: @escaping (String) -> Void) {
-        databaseReference.child(Tables.usersChats)
-                         .child(userIdentifier)
-                         .observe(.childRemoved) { snapshot in
-            completion(snapshot.key)
-        }
     }
     
     func observeCompanionChanged(companionIdentifier: String,
