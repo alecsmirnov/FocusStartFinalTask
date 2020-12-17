@@ -125,6 +125,18 @@ extension CoreDataChatsManager {
         saveContext()
     }
     
+    func clearChatLog(at index: Int) {
+        guard let chatLog = chats[index].chatLog else { return }
+        
+        do {
+            managedContext.delete(chatLog)
+            
+            try managedContext.save()
+        } catch let error as NSError {
+            fatalError("could not fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
     func clear() {
         let updateDeleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CoreDataUpdate")
         let updateDeleteRequest = NSBatchDeleteRequest(fetchRequest: updateDeleteFetch)

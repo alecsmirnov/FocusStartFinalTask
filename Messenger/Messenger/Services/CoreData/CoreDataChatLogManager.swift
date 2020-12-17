@@ -89,11 +89,10 @@ extension CoreDataChatLogManager {
     }
     
     func clear() {
-        let chatLogDeleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CoreDataChatLog")
-        let chatLogDeleteRequest = NSBatchDeleteRequest(fetchRequest: chatLogDeleteFetch)
-
+        guard let chatLog = chatLog else { return }
+        
         do {
-            try managedContext.execute(chatLogDeleteRequest)
+            managedContext.delete(chatLog)
             
             try managedContext.save()
         } catch let error as NSError {

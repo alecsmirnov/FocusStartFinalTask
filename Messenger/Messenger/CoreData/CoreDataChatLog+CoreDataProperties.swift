@@ -19,7 +19,6 @@ extension CoreDataChatLog {
     @NSManaged public var messages: NSOrderedSet?
     
     @NSManaged public var chat: CoreDataChat?
-
 }
 
 // MARK: Generated accessors for messages
