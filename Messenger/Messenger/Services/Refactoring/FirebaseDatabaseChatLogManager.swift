@@ -31,7 +31,8 @@ extension FirebaseDatabaseChatLogManager {
                                               senderIdentifier: messageValue.senderIdentifier,
                                               type: messageValue.messageType,
                                               isRead: messageValue.isRead,
-                                              timestamp: messageValue.timestamp)
+                                              timestamp: messageValue.timestamp,
+                                              isIncoming: messageValue.senderIdentifier != userIdentifier)
                     completion(message)
                 }
             }

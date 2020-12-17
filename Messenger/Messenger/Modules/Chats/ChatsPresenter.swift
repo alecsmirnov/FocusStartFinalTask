@@ -5,8 +5,6 @@
 //  Created by Admin on 22.11.2020.
 //
 
-import Dispatch
-
 protocol IChatsPresenter: AnyObject {
     var chatsCount: Int { get }
 

@@ -48,9 +48,6 @@ extension ChatsInteractor: IChatsInteractor {
         loadStoredChats()
         observeLoadedChats(userIdentifier: userIdentifier, latestUpdateTime: latestUpdateTime)
         observeAddedChats(userIdentifier: userIdentifier, latestUpdateTime: latestUpdateTime)
-        
-        print("update time: \(latestUpdateTime)")
-        print("chats count: \(coreDataChatsManager.getChats().count)")
     }
     
     func clearChat(at index: Int) {
@@ -75,10 +72,6 @@ extension ChatsInteractor: IChatsInteractor {
 // MARK: - Private Methods
 
 private extension ChatsInteractor {
-    func observeSignOutNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(userSignedOut), name: .SignOut, object: nil)
-    }
-    
     func loadStoredChats() {
         let storedChats = coreDataChatsManager.getChats()
         
@@ -93,69 +86,82 @@ private extension ChatsInteractor {
         firebaseChatsManager.observeLoadedChats(userIdentifier: userIdentifier,
                                                 latestUpdateTime: latestUpdateTime,
                                                 chats: chats) { [weak self] chat in
-            self?.coreDataChatsManager.appendChat(chat: chat)
-            self?.presenter?.chatAdded(chat: chat)
+            self?.chatAdded(chat: chat)
         } chatRemovedCompletion: { [weak self] chatIdentifier in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.removeChat(at: chatIdentifier)
-                self?.presenter?.chatRemoved(at: index)
-            }
+            self?.chatRemoved(chatIdentifier: chatIdentifier)
         } pairChatUpdated: { [weak self] chatIdentifier, companion in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatCompanion(at: chatIdentifier, companion: companion)
-                self?.presenter?.chatCompanionUpdated(at: index, companion: companion)
-            }
+            self?.pairChatUpdated(chatIdentifier: chatIdentifier, companion: companion)
         } groupChatUpdated: { chatIdentifier, group in
 
         } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatLatestMessage(at: chatIdentifier, message: message)
-                self?.presenter?.chatMessageUpdated(at: index, message: message)
-            }
+            self?.chatLatestMessageUpdated(chatIdentifier: chatIdentifier, message: message)
         } chatUnreadMessagesUpdated: { [weak self] chatIdentifier, count in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatUnreadMessagesCount(at: chatIdentifier, count: count)
-                self?.presenter?.chatUnreadMessagesCountUpdated(at: index, count: count)
-            }
+            self?.chatUnreadMessagesUpdated(chatIdentifier: chatIdentifier, count: count)
         } chatOnlineStatusUpdate: { [weak self] chatIdentifier, isOnline in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.presenter?.chatOnlineStatusUpdate(at: index, isOnline: isOnline)
-            }
+            self?.chatOnlineStatusUpdated(chatIdentifier: chatIdentifier, isOnline: isOnline)
         }
     }
     
     func observeAddedChats(userIdentifier: String, latestUpdateTime: TimeInterval) {
         firebaseChatsManager.observeChats(userIdentifier: userIdentifier,
                                           latestUpdateTime: latestUpdateTime) { [weak self] chat in
-            self?.coreDataChatsManager.appendChat(chat: chat)
-            self?.presenter?.chatAdded(chat: chat)
+            self?.chatAdded(chat: chat)
         } chatRemovedCompletion: { [weak self] chatIdentifier in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.removeChat(at: chatIdentifier)
-                self?.presenter?.chatRemoved(at: index)
-            }
+            self?.chatRemoved(chatIdentifier: chatIdentifier)
         } pairChatUpdated: { [weak self] chatIdentifier, companion in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatCompanion(at: chatIdentifier, companion: companion)
-                self?.presenter?.chatCompanionUpdated(at: index, companion: companion)
-            }
+            self?.pairChatUpdated(chatIdentifier: chatIdentifier, companion: companion)
         } groupChatUpdated: { chatIdentifier, group in
 
         } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatLatestMessage(at: chatIdentifier, message: message)
-                self?.presenter?.chatMessageUpdated(at: index, message: message)
-            }
+            self?.chatLatestMessageUpdated(chatIdentifier: chatIdentifier, message: message)
         } chatUnreadMessagesUpdated: { [weak self] chatIdentifier, count in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.coreDataChatsManager.updateChatUnreadMessagesCount(at: chatIdentifier, count: count)
-                self?.presenter?.chatUnreadMessagesCountUpdated(at: index, count: count)
-            }
+            self?.chatUnreadMessagesUpdated(chatIdentifier: chatIdentifier, count: count)
         } chatOnlineStatusUpdate: { [weak self] chatIdentifier, isOnline in
-            if let index = self?.coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-                self?.presenter?.chatOnlineStatusUpdate(at: index, isOnline: isOnline)
-            }
+            self?.chatOnlineStatusUpdated(chatIdentifier: chatIdentifier, isOnline: isOnline)
         }
+    }
+    
+    func chatAdded(chat: ChatInfo) {
+        coreDataChatsManager.appendChat(chat: chat)
+        presenter?.chatAdded(chat: chat)
+    }
+    
+    func chatRemoved(chatIdentifier: String) {
+        if let index = coreDataChatsManager.getChatIndex(by: chatIdentifier) {
+            coreDataChatsManager.removeChat(at: chatIdentifier)
+            presenter?.chatRemoved(at: index)
+        }
+    }
+    
+    func pairChatUpdated(chatIdentifier: String, companion: UserInfo) {
+        if let index = coreDataChatsManager.getChatIndex(by: chatIdentifier) {
+            coreDataChatsManager.updateChatCompanion(at: chatIdentifier, companion: companion)
+            presenter?.chatCompanionUpdated(at: index, companion: companion)
+        }
+    }
+    
+    func chatLatestMessageUpdated(chatIdentifier: String, message: MessageInfo?) {
+        if let index = coreDataChatsManager.getChatIndex(by: chatIdentifier) {
+            coreDataChatsManager.updateChatLatestMessage(at: chatIdentifier, message: message)
+            presenter?.chatMessageUpdated(at: index, message: message)
+        }
+    }
+    
+    func chatUnreadMessagesUpdated(chatIdentifier: String, count: Int) {
+        if let index = coreDataChatsManager.getChatIndex(by: chatIdentifier) {
+            coreDataChatsManager.updateChatUnreadMessagesCount(at: chatIdentifier, count: count)
+            presenter?.chatUnreadMessagesCountUpdated(at: index, count: count)
+        }
+    }
+    
+    func chatOnlineStatusUpdated(chatIdentifier: String, isOnline: Bool) {
+        if let index = coreDataChatsManager.getChatIndex(by: chatIdentifier) {
+            presenter?.chatOnlineStatusUpdate(at: index, isOnline: isOnline)
+        }
+    }
+    
+    func observeSignOutNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(userSignedOut), name: .SignOut, object: nil)
     }
 }
 

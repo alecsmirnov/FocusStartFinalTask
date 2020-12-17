@@ -17,6 +17,10 @@ final class LaunchInteractor {
         observeAppMovedToBackgroundNotification()
         observeAppWillTerminateNotification()
     }
+    
+    @objc func reachabilityChanged() {
+        
+    }
 }
 
 // MARK: - ILaunchInteractor

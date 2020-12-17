@@ -14,4 +14,6 @@ struct MessageInfo {
     let type: ChatsMessagesType
     let isRead: Bool
     let timestamp: TimeInterval
+    
+    var isIncoming: Bool?
 }
