@@ -8,7 +8,10 @@
 import UIKit
 
 protocol IMenuViewController: AnyObject {
-    func takePhoto()
+    func setUserInfo(_ user: UserInfo)
+    
+    func hideMenu()
+    func showMenu()
 }
 
 final class MenuViewController: UIViewController {
@@ -16,7 +19,7 @@ final class MenuViewController: UIViewController {
     
     var presenter: IMenuPresenter?
     
-    private var menuView: IMenuView {
+    private var menuView: MenuView {
         guard let view = view as? MenuView else {
             fatalError("view is not a MenuView instance")
         }
@@ -33,81 +36,50 @@ final class MenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        presenter?.viewDidLoad(view: menuView)
+        presenter?.viewDidLoad()
+        
+        setupViewDelegate()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        setupStatusBarColor()
     }
 }
 
 // MARK: - IMenuViewController
 
 extension MenuViewController: IMenuViewController {
-    func takePhoto() {
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            showPhotoMenu()
-        } else {
-            choosePhotoFromLibrary()
-        }
+    func setUserInfo(_ user: UserInfo) {
+        menuView.setUser(user)
+    }
+    
+    func hideMenu() {
+        menuView.hideOptions()
+    }
+    
+    func showMenu() {
+        menuView.showOptions()
     }
 }
 
-// MARK: - UIImagePickerControllerDelegate
+// MARK: - Private Methods
 
-extension MenuViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController,
-                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage,
-              let data = image.pngData() else {
-            picker.dismiss(animated: true)
-            
-            return
-        }
-        
-        presenter?.didSelectImage(with: data)
-        
-        picker.dismiss(animated: true)
+private extension MenuViewController {
+    func setupViewDelegate() {
+        menuView.delegate = self
     }
     
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true)
+    func setupStatusBarColor() {
+        setupStatusBarColor(Colors.themeColor)
     }
 }
 
-extension MenuViewController {
-    func showPhotoMenu() {
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .cancel)
-        let photoAlertAction = UIAlertAction(title: "Take Photo", style: .default) { [weak self] _ in
-            self?.takePhotoWithCamera()
-        }
-        
-        let libraryAlertAction = UIAlertAction(title: "Choose From Library", style: .default) { [weak self] _ in
-            self?.choosePhotoFromLibrary()
-        }
-        
-        alertController.addAction(cancelAlertAction)
-        alertController.addAction(photoAlertAction)
-        alertController.addAction(libraryAlertAction)
-    
-        present(alertController, animated: true)
-    }
-    
-    func takePhotoWithCamera() {
-        let imagePicker = UIImagePickerController()
-        imagePicker.sourceType = .camera
-        imagePicker.allowsEditing = true
-        
-        imagePicker.delegate = self
-        
-        present(imagePicker, animated: true)
-    }
-    
-    func choosePhotoFromLibrary() {
-        let imagePicker = UIImagePickerController()
-        imagePicker.sourceType = .photoLibrary
-        imagePicker.allowsEditing = true
-        
-        imagePicker.delegate = self
-        
-        present(imagePicker, animated: true)
+// MARK: - IMenuViewDelegate
+
+extension MenuViewController: IMenuViewDelegate {
+    func menuView(_ menuView: IMenuView, didSelectMenuOption menuOption: MenuView.MenuOptions) {
+        presenter?.didSelectMenu(with: menuOption)
     }
 }

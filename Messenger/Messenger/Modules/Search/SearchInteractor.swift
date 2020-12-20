@@ -16,8 +16,6 @@ protocol ISearchInteractorOutput: AnyObject {
 
 final class SearchInteractor {
     weak var presenter: ISearchInteractorOutput?
-    
-    private let firebaseSearchManager = FirebaseSearchManager()
 }
 
 // MARK: - ISearchInteractor
@@ -26,14 +24,14 @@ extension SearchInteractor: ISearchInteractor {
     func fetchUsers() {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
         
-        firebaseSearchManager.fetchUsers { [weak self] users in
-            guard let users = users?.filter({ $0.identifier != userIdentifier }), !users.isEmpty else {
-                self?.presenter?.fetchUsersFail()
-
+        FirebaseUserService.fetchUsers { users in
+            guard let users = users else {
+                self.presenter?.fetchUsersFail()
+                
                 return
             }
             
-            self?.presenter?.fetchUsersSuccess(users)
+            self.presenter?.fetchUsersSuccess(users.filter { $0.identifier != userIdentifier })
         }
     }
 }

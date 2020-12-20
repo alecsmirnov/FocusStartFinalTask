@@ -38,7 +38,6 @@ final class ChatLogInteractor {
     private var topMessageTimestamp: TimeInterval?
     
     private let coreDataChatLogManager = CoreDataChatLogManager(maxSize: Constants.storedMessagesCount)
-    private let firebaseChatLogManager = FirebaseChatLogManager()
 }
 
 // MARK: - Public Methods
@@ -67,7 +66,7 @@ extension ChatLogInteractor: IChatLogInteractor {
         // Test
         
         if let chatIdentifier = chat?.identifier {
-            firebaseChatLogManager.observeUpdatedMessages(chatIdentifier: chatIdentifier)
+            //FirebaseMessageService.observeUpdatedMessages(chatIdentifier: chatIdentifier)
         }
     }
     
@@ -82,7 +81,7 @@ extension ChatLogInteractor: IChatLogInteractor {
         
         let messagesLimit = Constants.storedMessagesCount
         
-        firebaseChatLogManager.fetchPreviousMessages(chatIdentifier: chatIdentifier,
+        FirebaseMessageService.fetchPreviousMessages(chatIdentifier: chatIdentifier,
                                                      userIdentifier: userIdentifier,
                                                      endingAt: topMessageTimestamp,
                                                      limit: messagesLimit) { [weak self] previousMessages in
@@ -98,34 +97,25 @@ extension ChatLogInteractor: IChatLogInteractor {
     func fetchChatTitleInfo() {
         guard let chat = chat else { return }
         
-        var title: String?
-        if chat.isGroup {
-            
-        } else if let companion = chat.companion {
-            title = "\(companion.firstName) \(companion.lastName ?? "")"
-        }
+        let title = "\(chat.companion.firstName) \(chat.companion.lastName ?? "")"
         
-        presenter?.fetchChatTitleInfoSuccess(title: title ?? "Error")
+        presenter?.fetchChatTitleInfoSuccess(title: title)
     }
     
     func sendMessage(_ messageType: ChatsMessagesType) {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
               let chat = chat else { return }
         
-        if !chat.isGroup {
-            if let companion = chat.companion {
-                firebaseChatLogManager.isChatExist(chatIdentifier: chat.identifier,
-                                                   userIdentifier: userIdentifier) { [weak self] isExist in
-                    if !isExist {
-                        self?.firebaseChatLogManager.createPairChat(chatIdentifier: chat.identifier,
-                                                                    userIdentifier1: userIdentifier,
-                                                                    userIdentifier2: companion.identifier)
-                    }
-                }
+        FirebaseChatsService.isChatExist(chatIdentifier: chat.identifier,
+                                           userIdentifier: userIdentifier) { isExist in
+            if !isExist {
+                FirebaseChatsService.createPairChat(chatIdentifier: chat.identifier,
+                                                            userIdentifier1: userIdentifier,
+                                                            userIdentifier2: chat.companion.identifier)
             }
         }
         
-        firebaseChatLogManager.sendMessage(messageType,
+        FirebaseMessageService.sendMessage(messageType,
                                            chatIdentifier: chat.identifier,
                                            senderIdentifier: userIdentifier)
     }
@@ -135,7 +125,7 @@ extension ChatLogInteractor: IChatLogInteractor {
               let chatIdentifier = chat?.identifier else { return }
 
         if message.isIncoming ?? false {
-            firebaseChatLogManager.readMessage(chatIdentifier: chatIdentifier,
+            FirebaseMessageService.readMessage(chatIdentifier: chatIdentifier,
                                                userIdentifier: userIdentifier,
                                                messageIdentifier: message.identifier)
         }
@@ -162,7 +152,7 @@ private extension ChatLogInteractor {
         
         let messagesLimit = Constants.storedMessagesCount + (chat?.unreadMessagesCount ?? 0)
         
-        firebaseChatLogManager.observeAddedMessages(chatIdentifier: chatIdentifier,
+        FirebaseMessageService.observeAddedMessages(chatIdentifier: chatIdentifier,
                                                     userIdentifier: userIdentifier,
                                                     latestUpdateTime: latestUpdateTime,
                                                     limit: messagesLimit) { [weak self] message in
@@ -174,9 +164,9 @@ private extension ChatLogInteractor {
     func registerPairChat(with companion: UserInfo) -> ChatInfo? {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return nil }
         
-        let chatIdentifier = FirebaseChatLogManager.getPairChatIdentifier(userIdentifier1: userIdentifier,
-                                                                          userIdentifier2: companion.identifier)
+        let chatIdentifier = FirebaseChatsService.getPairChatIdentifier(userIdentifier1: userIdentifier,
+                                                                        userIdentifier2: companion.identifier)
         
-        return ChatInfo(identifier: chatIdentifier, isGroup: false, companion: companion)
+        return ChatInfo(identifier: chatIdentifier, companion: companion)
     }
 }

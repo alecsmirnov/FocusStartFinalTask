@@ -7,10 +7,8 @@
 
 struct ChatInfo {
     let identifier: String
-    let isGroup: Bool
     
-    var group: GroupInfo?
-    var companion: UserInfo?
+    var companion: UserInfo
     
     var latestMessage: MessageInfo?
     var unreadMessagesCount: Int?

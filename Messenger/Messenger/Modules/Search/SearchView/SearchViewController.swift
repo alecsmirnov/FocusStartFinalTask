@@ -94,12 +94,12 @@ private extension SearchViewController {
     }
     
     func setupCloseButton() {
-        let menuBarButtonItem = UIBarButtonItem(title: "Close",
-                                                style: .plain,
-                                                target: self,
-                                                action: #selector(didPressCloseButton))
+        let closeBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"),
+                                                 style: .plain,
+                                                 target: self,
+                                                 action: #selector(didPressCloseButton))
         
-        navigationItem.leftBarButtonItem = menuBarButtonItem
+        navigationItem.leftBarButtonItem = closeBarButtonItem
     }
 }
 

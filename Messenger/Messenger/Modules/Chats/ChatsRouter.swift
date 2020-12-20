@@ -8,31 +8,51 @@
 import UIKit
 
 protocol IChatsRouter: AnyObject {
-    func openMenuViewController()
+    func extendMenu()
+    
     func openChatLogViewController(with user: UserInfo)
     func openChatLogViewController(with chat: ChatInfo)
     func openSearchViewController(delegate: ISearchPresenterDelegate?)
+    
+    func openLaunchViewController()
 }
 
 final class ChatsRouter {
     // MARK: Properties
     
+    private enum Constants {
+        static let presentDuration = 0.4
+        static let dismissDuration = 0.4
+    }
+    
     private weak var viewController: ChatsViewController?
+    private weak var menuChatsViewController: MenuChatsViewController?
+    
+    // MARK: Transition Animations
+    
+    private let transitionDelegate: TransitionDelegate = {
+        let presentAnimation = SlideAnimationController(duration: Constants.presentDuration, animationType: .present)
+        let dismissAnimation = SlideAnimationController(duration: Constants.dismissDuration, animationType: .dismiss)
+        
+        let transitionDelegate = TransitionDelegate(presentAnimationController: presentAnimation,
+                                                    dismissAnimationController: dismissAnimation)
+        
+        return transitionDelegate
+    }()
     
     // MARK: Initialization
     
-    init(viewController: ChatsViewController) {
+    init(viewController: ChatsViewController, menuChatsViewController: MenuChatsViewController?) {
         self.viewController = viewController
+        self.menuChatsViewController = menuChatsViewController
     }
 }
 
 // MARK: - IChatsRouter
 
 extension ChatsRouter: IChatsRouter {
-    func openMenuViewController() {
-        let menuViewController = MenuAssembly.createMenuViewController()
-        
-        viewController?.navigationController?.pushViewController(menuViewController, animated: true)
+    func extendMenu() {
+        menuChatsViewController?.extendMenu()
     }
     
     func openChatLogViewController(with user: UserInfo) {
@@ -54,5 +74,11 @@ extension ChatsRouter: IChatsRouter {
         navigationController.modalPresentationStyle = .fullScreen
         
         viewController?.present(navigationController, animated: true)
+    }
+    
+    func openLaunchViewController() {
+        menuChatsViewController?.extendMenu { [weak self] in
+            self?.menuChatsViewController?.navigationController?.popToRootViewController(animated: false)
+        }
     }
 }

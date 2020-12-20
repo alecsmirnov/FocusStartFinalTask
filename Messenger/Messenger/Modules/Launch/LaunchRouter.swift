@@ -5,9 +5,11 @@
 //  Created by Admin on 06.12.2020.
 //
 
+import UIKit
+
 protocol ILaunchRouter: AnyObject {
     func openLoginViewController()
-    func openChatsViewController()
+    func openMenuChatsViewController()
 }
 
 final class LaunchRouter {
@@ -28,19 +30,14 @@ extension LaunchRouter: ILaunchRouter {
     func openLoginViewController() {
         let loginViewController = LoginAssembly.createLoginViewController()
         
-        let navigationController = viewController?.navigationController
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        
-        navigationController?.pushViewController(loginViewController, animated: false)
+        viewController?.navigationController?.setNavigationBarHidden(true, animated: false)
+        viewController?.navigationController?.pushViewController(loginViewController, animated: false)
     }
     
-    func openChatsViewController() {
-        let chatsViewController = ChatsAssembly.createChatsViewController()
+    func openMenuChatsViewController() {
+        let menuChatsViewController = MenuChatsAssembly.createMenuChatsViewController()
         
-        let navigationController = viewController?.navigationController
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.setNavigationBarHidden(false, animated: false)
-        
-        navigationController?.pushViewController(chatsViewController, animated: false)
+        viewController?.navigationController?.setNavigationBarHidden(true, animated: false)
+        viewController?.navigationController?.pushViewController(menuChatsViewController, animated: false)
     }
 }

@@ -110,11 +110,12 @@ private extension LoginView {
     func setupSignInButtonAppearance() {
         signInButton.setTitle("Sign in", for: .normal)
         signInButton.setTitleColor(LoginRegistrationColors.buttonTitle, for: .normal)
-        signInButton.backgroundColor = LoginRegistrationColors.buttonBackground
+        signInButton.backgroundColor = Colors.themeColor
         signInButton.clipsToBounds = true
         signInButton.sizeToFit()
         
         signInButton.layer.borderWidth = LoginRegistrationMetrics.borderWidth
+        signInButton.layer.borderColor = Colors.themeSecondColor.cgColor
         signInButton.layer.cornerRadius = LoginRegistrationMetrics.cornerRadius
         
         signInButton.addTarget(self, action: #selector(didPressSignInButton), for: .touchUpInside)

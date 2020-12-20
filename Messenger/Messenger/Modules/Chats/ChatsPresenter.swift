@@ -12,10 +12,11 @@ protocol IChatsPresenter: AnyObject {
     
     func chat(at index: Int) -> ChatInfo?
     
-    func didPressMenuButton()
     func didSelectChat(at index: Int)
     func didClearChat(at index: Int)
     func didRemoveChat(at index: Int)
+    
+    func didPressMenuButton()
     func didPressSearchButton()
 }
 
@@ -30,7 +31,7 @@ final class ChatsPresenter {
 // MARK: - IChatsPresenter
 
 extension ChatsPresenter: IChatsPresenter {
-    func viewDidLoad() {        
+    func viewDidLoad() {
         interactor?.fetchChats()
     }
     
@@ -54,19 +55,19 @@ extension ChatsPresenter: IChatsPresenter {
         interactor?.removeChat(at: index)
     }
     
-    func didPressSearchButton() {
-        router?.openSearchViewController(delegate: self)
+    func didPressMenuButton() {
+        router?.extendMenu()
     }
     
-    func didPressMenuButton() {
-        router?.openMenuViewController()
+    func didPressSearchButton() {
+        router?.openSearchViewController(delegate: self)
     }
 }
 
 // MARK: - IChatsInteractorOutput
 
 extension ChatsPresenter: IChatsInteractorOutput {
-    func fetchChatsSuccess(chats: [ChatInfo]) {
+    func fetchChatsSuccess(_ chats: [ChatInfo]) {
         self.chats = chats
         
         viewController?.reloadData()

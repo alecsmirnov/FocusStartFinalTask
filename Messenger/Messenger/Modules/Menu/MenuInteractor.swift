@@ -8,35 +8,36 @@
 import Foundation
 
 protocol IMenuInteractor: AnyObject {
-    func uploadProfileImageData(_ data: Data)
+    func fetchUser() 
     
     func signOut()
 }
 
-protocol IMenuInteractorOutput: AnyObject {}
+protocol IMenuInteractorOutput: AnyObject {
+    func fetchUserSuccess(_ user: UserInfo)
+    func fetchUserFail()
+}
 
 final class MenuInteractor {
     weak var presenter: IMenuInteractorOutput?
+    
+    private let firebaseMenuManager = FirebaseMenuManager()
 }
 
 // MARK: - IMenuInteractor
 
 extension MenuInteractor: IMenuInteractor {
-    func uploadProfileImageData(_ data: Data) {
+    func fetchUser() {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return }
         
-        FirebaseStorageService.uploadProfileImageData(data, userIdentifier: userIdentifier) { error in
-            guard error == nil else {
-                return
+        firebaseMenuManager.fetchUser(userIdentifier: userIdentifier) { [weak self] user in
+            guard let user = user else { return }
+            
+            self?.firebaseMenuManager.observeUser(userIdentifier: userIdentifier) { updatedUser in
+                self?.presenter?.fetchUserSuccess(updatedUser)
             }
             
-//            FirebaseStorageService.downloadProfileImageDataURL(userIdentifier: userIdentifier) { urlString, error in
-//                guard let urlString = urlString, error == nil else {
-//                    return
-//                }
-//                
-//                FirebaseDatabaseService.updateUserInfo(for: userIdentifier, key: .profilePhotoURL, value: urlString)
-//            }
+            self?.presenter?.fetchUserSuccess(user)
         }
     }
     

@@ -15,7 +15,7 @@ protocol IChatsInteractor: AnyObject {
 }
 
 protocol IChatsInteractorOutput: AnyObject {
-    func fetchChatsSuccess(chats: [ChatInfo])
+    func fetchChatsSuccess(_ chats: [ChatInfo])
     
     func chatAdded(_ chat: ChatInfo)
     func chatRemoved(at index: Int)
@@ -78,7 +78,7 @@ private extension ChatsInteractor {
         let storedChats = coreDataChatsManager.getChats()
         
         if !storedChats.isEmpty {
-            presenter?.fetchChatsSuccess(chats: storedChats)
+            presenter?.fetchChatsSuccess(storedChats)
         }
     }
     
@@ -89,8 +89,6 @@ private extension ChatsInteractor {
                                                 latestUpdateTime: latestUpdateTime,
                                                 chats: chats) { [weak self] chatIdentifier, companion in
             self?.pairChatUpdated(chatIdentifier: chatIdentifier, companion: companion)
-        } groupChatUpdated: { chatIdentifier, group in
-
         } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
             self?.chatLatestMessageUpdated(chatIdentifier: chatIdentifier, message: message)
         } chatUnreadMessagesUpdated: { [weak self] chatIdentifier, count in
@@ -106,8 +104,6 @@ private extension ChatsInteractor {
             self?.chatAdded(chat: chat)
         } pairChatUpdated: { [weak self] chatIdentifier, companion in
             self?.pairChatUpdated(chatIdentifier: chatIdentifier, companion: companion)
-        } groupChatUpdated: { chatIdentifier, group in
-
         } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
             self?.chatLatestMessageUpdated(chatIdentifier: chatIdentifier, message: message)
         } chatUnreadMessagesUpdated: { [weak self] chatIdentifier, count in
@@ -161,7 +157,11 @@ private extension ChatsInteractor {
             presenter?.chatOnlineStatusUpdate(at: index, isOnline: isOnline)
         }
     }
-    
+}
+
+// MARK: - Notifications
+
+private extension ChatsInteractor {
     func observeSignOutNotification() {
         NotificationCenter.default.addObserver(self, selector: #selector(userSignedOut), name: .SignOut, object: nil)
     }

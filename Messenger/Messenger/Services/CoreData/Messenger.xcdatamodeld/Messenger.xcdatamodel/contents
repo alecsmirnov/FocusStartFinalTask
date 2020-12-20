@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CoreDataChat" representedClassName="CoreDataChat" syncable="YES">
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="unreadMessagesCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="chatLog" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataChatLog" inverseName="chat" inverseEntity="CoreDataChatLog"/>
+        <relationship name="companion" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataUser" inverseName="chat" inverseEntity="CoreDataUser"/>
+        <relationship name="latestMessage" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataMessage" inverseName="chat" inverseEntity="CoreDataMessage"/>
+    </entity>
+    <entity name="CoreDataChatLog" representedClassName="CoreDataChatLog" syncable="YES">
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="timestamp" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="chatLog" inverseEntity="CoreDataChat"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="CoreDataMessage" inverseName="chatLog" inverseEntity="CoreDataMessage"/>
+    </entity>
+    <entity name="CoreDataMessage" representedClassName="CoreDataMessage" syncable="YES">
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="isRead" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="senderIdentifier" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="latestMessage" inverseEntity="CoreDataChat"/>
+        <relationship name="chatLog" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChatLog" inverseName="messages" inverseEntity="CoreDataChatLog"/>
+        <relationship name="type" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataMessageType" inverseName="message" inverseEntity="CoreDataMessageType"/>
+    </entity>
+    <entity name="CoreDataMessageType" representedClassName="CoreDataMessageType" syncable="YES">
+        <attribute name="text" optional="YES" attributeType="String"/>
+        <relationship name="message" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataMessage" inverseName="type" inverseEntity="CoreDataMessage"/>
+    </entity>
+    <entity name="CoreDataUpdate" representedClassName="CoreDataUpdate" syncable="YES">
+        <attribute name="timestamp" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CoreDataUser" representedClassName="CoreDataUser" syncable="YES">
+        <attribute name="email" attributeType="String"/>
+        <attribute name="firstName" attributeType="String"/>
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="profileImageURL" optional="YES" attributeType="String"/>
+        <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataChat" inverseName="companion" inverseEntity="CoreDataChat"/>
+    </entity>
+    <elements>
+        <element name="CoreDataChat" positionX="12.9765625" positionY="-118.9921875" width="128" height="118"/>
+        <element name="CoreDataChatLog" positionX="-36" positionY="36" width="128" height="103"/>
+        <element name="CoreDataMessage" positionX="-229.99609375" positionY="142.0078125" width="128" height="148"/>
+        <element name="CoreDataMessageType" positionX="-225.97265625" positionY="56.00390625" width="128" height="73"/>
+        <element name="CoreDataUpdate" positionX="-45" positionY="27" width="128" height="58"/>
+        <element name="CoreDataUser" positionX="250.9609375" positionY="-32.99609375" width="128" height="133"/>
+    </elements>
+</model>

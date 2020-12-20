@@ -6,28 +6,46 @@
 //
 
 protocol IMenuRouter: AnyObject {
+    func extendMenu()
+    
     func openLaunchViewController()
+    func openProfileViewController(with user: UserInfo?)
 }
 
 final class MenuRouter {
     // MARK: Properties
     
     private weak var viewController: MenuViewController?
+    private weak var menuChatsViewController: MenuChatsViewController?
     
     // MARK: Initialization
     
-    init(viewController: MenuViewController) {
+    init(viewController: MenuViewController, menuChatsViewController: MenuChatsViewController?) {
         self.viewController = viewController
+        self.menuChatsViewController = menuChatsViewController
     }
 }
 
 // MARK: - IMenuRouter
 
 extension MenuRouter: IMenuRouter {
+    func extendMenu() {
+        menuChatsViewController?.extendMenu()
+    }
+    
     func openLaunchViewController() {
-        let navigationController = viewController?.navigationController
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        menuChatsViewController?.extendMenu { [weak self] in
+            self?.menuChatsViewController?.navigationController?.popToRootViewController(animated: true)
+        }
+    }
+    
+    func openProfileViewController(with user: UserInfo?) {
+        menuChatsViewController?.extendMenu { [weak self] in
+            let profileViewController = ProfileAssembly.createProfileViewController(with: user)
         
-        navigationController?.popToRootViewController(animated: true)
+            profileViewController.modalPresentationStyle = .fullScreen
+        
+            self?.viewController?.present(profileViewController, animated: true)
+        }
     }
 }

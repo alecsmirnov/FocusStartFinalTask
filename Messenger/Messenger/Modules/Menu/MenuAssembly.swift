@@ -6,12 +6,14 @@
 //
 
 enum MenuAssembly {
-    static func createMenuViewController() -> MenuViewController {
+    static func createMenuViewController(
+        menuChatsViewController: MenuChatsViewController? = nil
+    ) -> MenuViewController {
         let viewController = MenuViewController()
         
         let interactor = MenuInteractor()
         let presenter = MenuPresenter()
-        let router = MenuRouter(viewController: viewController)
+        let router = MenuRouter(viewController: viewController, menuChatsViewController: menuChatsViewController)
         
         viewController.presenter = presenter
         

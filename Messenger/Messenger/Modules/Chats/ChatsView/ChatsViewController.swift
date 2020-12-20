@@ -127,18 +127,16 @@ extension ChatsViewController: UITableViewDataSource {
             case .none: break
             }
             
-            if let companion = chat.companion {
-                cell.configure(withFirstName: companion.firstName, lastName: companion.lastName)
-                cell.configure(withText: messageText)
-                
-                cell.setUnreadMessagesCount(chat.unreadMessagesCount ?? 0)
-                cell.setTimestamp(chat.latestMessage?.timestamp ?? 0)
-                cell.setOnlineStatus(isOnline: chat.isOnline)
-                
+            cell.configure(withFirstName: chat.companion.firstName, lastName: chat.companion.lastName)
+            cell.configure(withText: messageText)
+            
+            cell.setUnreadMessagesCount(chat.unreadMessagesCount ?? 0)
+            cell.setTimestamp(chat.latestMessage?.timestamp ?? 0)
+            cell.setOnlineStatus(isOnline: chat.isOnline)
+            
 //                if let urlString = companion.profilePhotoURL {
 //                    cell.setImage(urlString: urlString)
 //                }
-            }
         }
         
         return cell

@@ -20,7 +20,7 @@ protocol IRegistrationView: AnyObject {
     func hideSpinnerView()
 }
 
-class RegistrationView: UIView {
+final class RegistrationView: UIView {
     // MARK: Properties
     
     var signUpButtonAction: Completions.ButtonPress?
@@ -143,11 +143,12 @@ private extension RegistrationView {
     func setupSignUpButtonAppearance() {
         signUpButton.setTitle("Sign up", for: .normal)
         signUpButton.setTitleColor(LoginRegistrationColors.buttonTitle, for: .normal)
-        signUpButton.backgroundColor = LoginRegistrationColors.buttonBackground
+        signUpButton.backgroundColor = Colors.themeColor
         signUpButton.clipsToBounds = true
         signUpButton.sizeToFit()
         
         signUpButton.layer.borderWidth = LoginRegistrationMetrics.borderWidth
+        signUpButton.layer.borderColor = Colors.themeSecondColor.cgColor
         signUpButton.layer.cornerRadius = LoginRegistrationMetrics.cornerRadius
         
         signUpButton.addTarget(self, action: #selector(didPressSignUpButton), for: .touchUpInside)

@@ -6,12 +6,14 @@
 //
 
 enum ChatsAssembly {
-    static func createChatsViewController() -> ChatsViewController {
+    static func createChatsViewController(
+        menuChatsViewController: MenuChatsViewController? = nil
+    ) -> ChatsViewController {
         let viewController = ChatsViewController()
         
         let interactor = ChatsInteractor()
         let presenter = ChatsPresenter()
-        let router = ChatsRouter(viewController: viewController)
+        let router = ChatsRouter(viewController: viewController, menuChatsViewController: menuChatsViewController)
         
         viewController.presenter = presenter
         

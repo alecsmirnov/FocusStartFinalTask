@@ -61,13 +61,13 @@ extension LaunchInteractor {
 extension LaunchInteractor {
     @objc func appBecomeActive() {
         if let userIdentifier = FirebaseAuthService.currentUser()?.uid {
-            FirebaseUserStatusService.setUserStatus(userIdentifier: userIdentifier, isOnline: true)
+            FirebaseUserService.setUserStatus(userIdentifier: userIdentifier, isOnline: true)
         }
     }
     
     @objc func appMovedToBackground() {
         if let userIdentifier = FirebaseAuthService.currentUser()?.uid {
-            FirebaseUserStatusService.setUserStatus(userIdentifier: userIdentifier, isOnline: false)
+            FirebaseUserService.setUserStatus(userIdentifier: userIdentifier, isOnline: false)
         }
     }
     
