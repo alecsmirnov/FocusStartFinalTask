@@ -11,6 +11,7 @@ protocol IChatLogPresenter: AnyObject {
     var sectionsCount: Int { get }
     
     func viewDidLoad()
+    func viewWillAppear()
     func viewDidAppear()
     func viewDidDisappear()
     
@@ -29,9 +30,8 @@ final class ChatLogPresenter {
     var interactor: IChatLogInteractor?
     var router: IChatLogRouter?
     
-    var chat: ChatInfo?
-    
     private let messagesService = MessagesGroupingService()
+    private var messagesCountToUpdate = 0
 }
 
 // MARK: - IChatLogPresenter
@@ -46,17 +46,17 @@ extension ChatLogPresenter: IChatLogPresenter {
         interactor?.observeMessages()
     }
     
-    func viewDidAppear() {
-        var unreadMessagesCount = 0
-//        if let chatUnreadMessagesCount = chat?.unreadMessagesCount {
-//            unreadMessagesCount = chatUnreadMessagesCount
-//        }
-//
-        //viewController?.startFromRowAt(index: messages.count - unreadMessagesCount)
+    func viewWillAppear() {
+        setChatTitle()
+    }
+    
+    func viewDidAppear() {        
+        messagesCountToUpdate = interactor?.chatInfo?.unreadMessagesCount ?? 0
+        viewController?.startFromRowAt(minus: messagesCountToUpdate)
     }
     
     func viewDidDisappear() {
-        
+        interactor?.stopObservingMessages()
     }
     
     func sectionDate(section: Int) -> String {
@@ -73,11 +73,10 @@ extension ChatLogPresenter: IChatLogPresenter {
     
     func didPressSendButton(messageType: ChatsMessagesType) {
         interactor?.sendMessage(messageType)
-        viewController?.scrollToBottom()
     }
     
     func didReadMessageAt(section: Int, index: Int) {
-        if let message = messagesService.messageAt(section: section, row: index) {
+        if let message = messagesService.messageAt(section: section, row: index) {            
             interactor?.readMessage(message)
         }
     }
@@ -108,9 +107,13 @@ extension ChatLogPresenter: IChatLogInteractorOutput {
     func addedMessage(_ message: MessageInfo) {
         messagesService.appendMessage(message)
         
-        viewController?.reloadData()
-        //viewController?.insertNewRow()
-        //viewController?.scrollToBottom()
+        viewController?.insertNewRow()
+        
+        if 0 < messagesCountToUpdate {
+            messagesCountToUpdate -= 1
+        } else {
+            viewController?.scrollToBottom()
+        }
     }
 
     func updateMessage(_ message: MessageInfo) {
@@ -129,11 +132,11 @@ extension ChatLogPresenter: IChatLogInteractorOutput {
 // MARK: - Private Methods
 
 private extension ChatLogPresenter {
-    func setChatTitleInfo() {
-//        guard let chat = chat else { return }
-//
-//        let title = "\(chat.companion.firstName) \(chat.companion.lastName ?? "")"
-//
-//        viewController?.setTitle(text: title)
+    func setChatTitle() {
+        if let chat = interactor?.chatInfo {
+            let title = "\(chat.companion.firstName) \(chat.companion.lastName ?? "")"
+
+            viewController?.setTitle(text: title)
+        }
     }
 }

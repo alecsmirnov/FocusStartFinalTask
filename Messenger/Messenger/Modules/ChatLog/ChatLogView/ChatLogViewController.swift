@@ -15,7 +15,7 @@ protocol IChatLogViewController: AnyObject {
     func reloadData()
     func updateMessageAt(section: Int, row: Int)
     func insertNewRow()
-    func startFromRowAt(index: Int)
+    func startFromRowAt(minus count: Int)
     func scrollToBottom()
 }
 
@@ -46,10 +46,14 @@ final class ChatLogViewController: UIViewController {
         setupView()           
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        presenter?.viewWillAppear()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        print("appear")
         
         presenter?.viewDidAppear()
     }
@@ -57,7 +61,7 @@ final class ChatLogViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        print("diss")
+        presenter?.viewDidDisappear()
     }
 }
 
@@ -84,8 +88,8 @@ extension ChatLogViewController: IChatLogViewController {
         chatLogView.insertNewRow()
     }
     
-    func startFromRowAt(index: Int) {
-        chatLogView.startFromRowAt(index: index)
+    func startFromRowAt(minus count: Int) {
+        chatLogView.startFromRowAt(minus: count)
     }
     
     func scrollToBottom() {

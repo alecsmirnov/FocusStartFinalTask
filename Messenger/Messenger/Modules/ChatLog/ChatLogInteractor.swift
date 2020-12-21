@@ -8,11 +8,13 @@
 import Foundation
 
 protocol IChatLogInteractor: AnyObject {
+    var chatInfo: ChatInfo? { get }
+    
     func fetchMessages()
+    func fetchPreviousMessages()
+    
     func observeMessages()
     func stopObservingMessages()
-    
-    func fetchPreviousMessages()
     
     func sendMessage(_ messageType: ChatsMessagesType)
     func readMessage(_ message: MessageInfo)
@@ -28,6 +30,8 @@ protocol IChatLogInteractorOutput: AnyObject {
 }
 
 final class ChatLogInteractor {
+    // MARK: Properties
+    
     weak var presenter: IChatLogInteractorOutput?
     
     private enum Constants {
@@ -61,6 +65,10 @@ extension ChatLogInteractor {
 // MARK: - IChatLogInteractor
 
 extension ChatLogInteractor: IChatLogInteractor {
+    var chatInfo: ChatInfo? {
+        return chat
+    }
+    
     func fetchMessages() {
         loadStoredMessages()
         
@@ -69,29 +77,6 @@ extension ChatLogInteractor: IChatLogInteractor {
 //        if let chatIdentifier = chat?.identifier {
 //            //FirebaseMessageService.observeUpdatedMessages(chatIdentifier: chatIdentifier)
 //        }
-    }
-    
-    func observeMessages() {
-        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
-              let chatIdentifier = chat?.identifier else { return }
-        
-        let latestUpdateTime = coreDataChatLogManager.getLatestUpdateTimestamp()
-        
-        let messagesLimit = Constants.storedMessagesCount + (chat?.unreadMessagesCount ?? 0)
-        
-        firebaseChatLogManager.observeAddedMessages(chatIdentifier: chatIdentifier,
-                                                    userIdentifier: userIdentifier,
-                                                    latestUpdateTime: latestUpdateTime,
-                                                    limit: messagesLimit) { [weak self] message in
-            let definedMessage = ChatLogInteractor.defineIncomingMessage(message)
-            
-            self?.coreDataChatLogManager.appendMessage(message)
-            self?.presenter?.addedMessage(definedMessage)
-        }
-    }
-    
-    func stopObservingMessages() {
-        firebaseChatLogManager.removeAddedMessages()
     }
     
     func fetchPreviousMessages() {
@@ -118,6 +103,29 @@ extension ChatLogInteractor: IChatLogInteractor {
                 self?.presenter?.fetchPreviousMessagesFail()
             }
         }
+    }
+    
+    func observeMessages() {
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+              let chatIdentifier = chat?.identifier else { return }
+        
+        let latestUpdateTime = coreDataChatLogManager.getLatestUpdateTimestamp()
+        
+        let messagesLimit = Constants.storedMessagesCount + (chat?.unreadMessagesCount ?? 0)
+        
+        firebaseChatLogManager.observeAddedMessages(chatIdentifier: chatIdentifier,
+                                                    userIdentifier: userIdentifier,
+                                                    latestUpdateTime: latestUpdateTime,
+                                                    limit: messagesLimit) { [weak self] message in
+            let definedMessage = ChatLogInteractor.defineIncomingMessage(message)
+            
+            self?.coreDataChatLogManager.appendMessage(message)
+            self?.presenter?.addedMessage(definedMessage)
+        }
+    }
+    
+    func stopObservingMessages() {
+        firebaseChatLogManager.removeAddedMessages()
     }
     
     func sendMessage(_ messageType: ChatsMessagesType) {

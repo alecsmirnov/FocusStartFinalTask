@@ -17,13 +17,13 @@ protocol IChatLogView: AnyObject {
     
     func clearTextView()
     func reloadData()
-    func updateRowAt(row: Int, section: Int)
-    func insertNewRow()
-    func startFromRowAt(index: Int)
-    func scrollToBottom()
     
-    // test
-    func viewDidLoad()
+    func insertNewRow()
+    func updateRowAt(row: Int, section: Int)
+    
+    func scrollToBottom()
+    func startFromRowAt(row: Int, section: Int)
+    func startFromRowAt(minus count: Int)
 }
 
 final class ChatLogView: UIView {
@@ -58,9 +58,7 @@ final class ChatLogView: UIView {
     
     let tableView = UITableView()
     
-    // TODO: rename - inputContainer
     private let textContainerView = UIView()
-    // TODO: rename - inputTextView
     private let textView = UITextView()
     private let sendButton = UIButton(type: .system)
     
@@ -118,47 +116,75 @@ extension ChatLogView: IChatLogView {
     }
     
     func insertNewRow() {
-        let lastRowIndex = tableView.numberOfRows(inSection: 0)
-        let lastRowIndexPath = IndexPath(row: lastRowIndex, section: 0)
+        let sectionsCount = tableView.numberOfSections
         
-        tableView.insertRows(at: [lastRowIndexPath], with: .none)
+        if 0 < sectionsCount {
+            let lastSection = sectionsCount - 1
+            
+            let lastRowIndex = tableView.numberOfRows(inSection: lastSection)
+            let lastRowIndexPath = IndexPath(row: lastRowIndex, section: lastSection)
+            
+            tableView.insertRows(at: [lastRowIndexPath], with: .bottom)
+        }
     }
     
-    func startFromRowAt(index: Int) {
-        let lastRowIndex = tableView.numberOfRows(inSection: 0) - 1
+    func scrollToBottom() {
+        let sectionsCount = tableView.numberOfSections
         
-        if 1 < lastRowIndex {
-            var currentRowIndex = lastRowIndex
+        if 0 < sectionsCount {
+            let lastSection = sectionsCount - 1
+            let rowsCount = tableView.numberOfRows(inSection: lastSection)
             
-            if index < lastRowIndex {
-                currentRowIndex -= index
+            if 0 < rowsCount {
+                let lastRow = rowsCount - 1
+            
+                startFromRowAt(row: lastRow, section: lastSection)
+            }
+        }
+    }
+    
+    func startFromRowAt(row: Int, section: Int) {
+        let lastRow = tableView.numberOfRows(inSection: section) - 1
+        
+        if 1 < lastRow {
+            var currentRow = lastRow
+            
+            if row < lastRow {
+                currentRow -= row
             }
             
-            let indexPath = IndexPath(row: currentRowIndex, section: 0)
+            let indexPath = IndexPath(row: currentRow, section: section)
             
             tableView.scrollToRow(at: indexPath, at: .top, animated: false)
         }
     }
     
-    func viewDidLoad() {
-        tableView.transform = CGAffineTransform(scaleX: 1, y: -1)
-    }
-    
-    // TODO: fix
-    func scrollToBottom() {
-//        let sectionsCount = tableView.numberOfSections
-//
-//        if 0 < sectionsCount {
-//            let itemsCount = tableView.numberOfItems(inSection: sectionsCount - 1)
-//
-//            if 0 < itemsCount {
-//                let indexPath = IndexPath(item: itemsCount - 1, section: sectionsCount - 1)
-//
-//                DispatchQueue.main.async {
-//                    self.tableView.scrollToItem(at: indexPath, at: .bottom, animated: true)
-//                }
-//            }
-//        }
+    func startFromRowAt(minus count: Int) {
+        let sectionsCount = tableView.numberOfSections
+        
+        if 0 < sectionsCount {
+            var excludeCount = count
+            
+            var section = 0
+            var rowsCount = 0
+            
+            for currentSection in stride(from: sectionsCount - 1, through: 0, by: -1) {
+                section = currentSection
+                rowsCount = tableView.numberOfRows(inSection: currentSection)
+                
+                if rowsCount < excludeCount {
+                    excludeCount -= rowsCount
+                } else {
+                    break
+                }
+            }
+            
+            let rowsInSection = rowsCount - excludeCount
+            
+            if 0 < rowsInSection {
+                startFromRowAt(row: rowsInSection - 1, section: section)
+            }
+        }
     }
 }
 
@@ -296,16 +322,6 @@ private extension ChatLogView {
     }
 }
 
-// MARK: - Flow Layout
-
-private extension ChatLogView {
-//    func updateFlowLayout() {
-//        if let collectionViewFlowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-//            collectionViewFlowLayout.estimatedItemSize = CGSize(width: UIScreen.main.bounds.size.width, height: .zero)
-//        }
-//    }
-}
-
 // MARK: - Keyboard Events
 
 private extension ChatLogView {
@@ -329,8 +345,6 @@ private extension ChatLogView {
         let keyboardTop = safeAreaInsets.bottom - keyboardSize.cgRectValue.height
         textContainerViewBottomConstraint?.constant = keyboardTop
         
-        //tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.cgRectValue.height + 8, right: 0)
-        
         UIView.animate(withDuration: Settings.keyboardAnimationDuration) {
             self.layoutIfNeeded()
         }
@@ -338,9 +352,7 @@ private extension ChatLogView {
     
     @objc func keyboardWillHide(notification: NSNotification) {
         textContainerViewBottomConstraint?.constant = 0
-        
-        //tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
-        
+
         UIView.animate(withDuration: 0.1) {
             self.layoutIfNeeded()
         }
@@ -358,11 +370,6 @@ private extension ChatLogView {
 // MARK: - UITextViewDelegate
 
 extension ChatLogView: UITextViewDelegate {
-    // TODO: input check
-//    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-//
-//    }
-    
     func textViewDidChange(_ textView: UITextView) {
         if let text = textView.text {
             if text.isEmpty {
