@@ -26,6 +26,7 @@ extension LaunchPresenter: ILaunchPresenter {
         }
         
         if isUserSignedIn {
+            interactor?.userBecomeOnline()
             router?.openMenuChatsViewController()
         } else {
             router?.openLoginViewController()

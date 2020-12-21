@@ -60,11 +60,7 @@ extension InitialsImageView {
             initialsLabel.isHidden = false
         }
     }
-}
-
-// MARK: - Private Methods
-
-private extension InitialsImageView {
+    
     func hideInitials() {
         initialsLabel.isHidden = true
     }

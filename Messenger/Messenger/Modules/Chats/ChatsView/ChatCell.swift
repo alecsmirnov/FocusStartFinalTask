@@ -109,6 +109,9 @@ private extension ChatCell {
         
         if let profileImageURL = sender.profileImageURL {
             profileImageImageView.download(urlString: profileImageURL)
+            
+            profileImageImageView.hideInitials()
+            profileImageImageView.backgroundColor = .clear
         }
     }
     

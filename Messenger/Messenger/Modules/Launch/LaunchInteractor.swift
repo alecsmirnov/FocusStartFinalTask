@@ -9,6 +9,8 @@ import UIKit
 
 protocol ILaunchInteractor: AnyObject {
     var isUserSignedIn: Bool { get }
+    
+    func userBecomeOnline()
 }
 
 final class LaunchInteractor {
@@ -24,6 +26,10 @@ final class LaunchInteractor {
 extension LaunchInteractor: ILaunchInteractor {
     var isUserSignedIn: Bool {
         return FirebaseAuthService.isUserSignedIn()
+    }
+    
+    func userBecomeOnline() {
+        appBecomeActive()
     }
 }
 
