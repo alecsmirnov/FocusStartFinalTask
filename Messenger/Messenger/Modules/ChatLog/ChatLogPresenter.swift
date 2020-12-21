@@ -16,7 +16,7 @@ protocol IChatLogPresenter: AnyObject {
     func sectionDate(section: Int) -> String
     func messagesCount(section: Int) -> Int
     
-    func messageAt(section: Int, index: Int) -> MessageInfo?
+    func messageAt(section: Int, index: Int) -> UserMessageInfo?
     
     func didPressSendButton(messageType: ChatsMessagesType)
     func didReadMessageAt(section: Int, index: Int)
@@ -65,8 +65,16 @@ extension ChatLogPresenter: IChatLogPresenter {
         return messagesService.messagesCountAt(section: section)
     }
     
-    func messageAt(section: Int, index: Int) -> MessageInfo? {
-        return messagesService.messageAt(section: section, row: index)
+    func messageAt(section: Int, index: Int) -> UserMessageInfo? {
+        guard let message = messagesService.messageAt(section: section, row: index) else { return nil }
+        
+        var sender: UserInfo?
+        
+        if message.isIncoming ?? false {
+            sender = interactor?.chatInfo?.companion
+        }
+        
+        return UserMessageInfo(sender: sender, message: message)
     }
     
     func didPressSendButton(messageType: ChatsMessagesType) {

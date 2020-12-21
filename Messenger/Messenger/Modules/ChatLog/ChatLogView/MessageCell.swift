@@ -68,12 +68,12 @@ extension MessageCell: IMessageCell {}
 // MARK: - Public Methods
 
 extension MessageCell {
-    func configure(with message: MessageInfo) {
+    func configure(with userMessage: UserMessageInfo) {
+        let message = userMessage.message
         
         switch message.type {
         case .text(let messageText): messageLabel.text = messageText
         }
-        
         
         if message.isRead {
             isReadMessageLabel.text = "read"
@@ -92,6 +92,15 @@ extension MessageCell {
             messageLabel.textColor = .white
             
             bubbleView.backgroundColor = Constants.incomingMessageColor
+            
+            if let sender = userMessage.sender {
+                profileImageImageView.showInitials(firstName: sender.firstName, lastName: sender.lastName)
+                profileImageImageView.backgroundColor = .black
+                
+                if let profileImageURL = sender.profileImageURL {
+                    profileImageImageView.download(urlString: profileImageURL)
+                }
+            }
         } else {
             setupCellContentViewTrailingLayout()
             
