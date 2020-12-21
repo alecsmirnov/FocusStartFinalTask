@@ -11,7 +11,6 @@ enum ChatLogAssembly {
         
         let interactor = ChatLogInteractor()
         let presenter = ChatLogPresenter()
-        let router = ChatLogRouter(viewController: viewController)
         
         viewController.presenter = presenter
         
@@ -19,7 +18,6 @@ enum ChatLogAssembly {
         
         presenter.viewController = viewController
         presenter.interactor = interactor
-        presenter.router = router
         
         interactor.initPairChat(with: companion)
         
@@ -31,7 +29,6 @@ enum ChatLogAssembly {
         
         let interactor = ChatLogInteractor()
         let presenter = ChatLogPresenter()
-        let router = ChatLogRouter(viewController: viewController)
         
         viewController.presenter = presenter
         
@@ -39,7 +36,6 @@ enum ChatLogAssembly {
         
         presenter.viewController = viewController
         presenter.interactor = interactor
-        presenter.router = router
         
         interactor.initGroupChat(chat: chat)
         

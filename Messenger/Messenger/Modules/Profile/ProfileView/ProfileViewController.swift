@@ -50,9 +50,6 @@ final class ProfileViewController: UIViewController {
         presenter?.viewDidLoad()
         
         setupView()
-        setupSimpleAlertController()
-        setupImagePicker()
-        setupPasswordAlertController()
     }
 }
 
@@ -98,18 +95,17 @@ extension ProfileViewController: IProfileViewController {
 private extension ProfileViewController {
     func setupView() {
         profileView.delegate = self
-    }
-    
-    func setupImagePicker() {
+        
         imagePicker = ImagePicker(presentationController: self, delegate: self)
-    }
-    
-    func setupSimpleAlertController() {
         simpleAlertController = SimpleAlertController(presentationController: self)
+        passwordAlertController = PasswordAlertController(presentationController: self, delegate: self)
     }
     
-    func setupPasswordAlertController() {
-        passwordAlertController = PasswordAlertController(presentationController: self, delegate: self)
+    func compressImage(_ image: UIImage?) -> Data? {
+        let bound = CGSize(width: SharedMetrics.profileImageSize, height: SharedMetrics.profileImageSize)
+        let compressedImage = image?.resize(withBounds: bound, contentMode: .aspectFill)
+        
+        return compressedImage?.pngData()
     }
 }
 
@@ -117,14 +113,10 @@ private extension ProfileViewController {
 
 extension ProfileViewController: ProfileViewDelegate {
     func profileViewDidPressSaveButton(_ profileView: ProfileView) {
-        let bound = CGSize(width: 60, height: 60)
-        
-        let compressedProfileImage = profileView.profileImage?.resize(withBounds: bound, contentMode: .aspectFill)
-        
         presenter?.didPressSaveButton(firstName: profileView.firstNameText,
                                       lastName: profileView.lastNameText,
                                       email: profileView.emailText,
-                                      profileImageData: compressedProfileImage?.pngData())
+                                      profileImageData: compressImage(profileView.profileImage))
     }
     
     func profileViewDidPressCloseButton(_ profileView: ProfileView) {
@@ -152,6 +144,4 @@ extension ProfileViewController: PasswordAlertControllerDelegate {
             presenter?.didValidatePassword(password)
         }
     }
-    
-    func passwordAlertControllerDidPressDismiss(_ passwordAlertController: PasswordAlertController) {}
 }

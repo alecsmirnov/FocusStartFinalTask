@@ -9,7 +9,6 @@ import UIKit
 
 protocol PasswordAlertControllerDelegate: AnyObject {
     func passwordAlertController(_ passwordAlertController: PasswordAlertController, didPressSubmitWith text: String?)
-    func passwordAlertControllerDidPressDismiss(_ passwordAlertController: PasswordAlertController)
 }
 
 final class PasswordAlertController: NSObject {
@@ -34,9 +33,7 @@ final class PasswordAlertController: NSObject {
             }
         }
         
-        let dismissAlertAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
-            self.delegate?.passwordAlertControllerDidPressDismiss(self)
-        }
+        let dismissAlertAction = UIAlertAction(title: "Dismiss", style: .default)
         
         submitAlertAction.setValue(Colors.themeColor, forKey: "titleTextColor")
         dismissAlertAction.setValue(LoginRegistrationColors.alertActionButton, forKey: "titleTextColor")

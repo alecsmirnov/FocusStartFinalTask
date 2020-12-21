@@ -14,7 +14,6 @@ final class ProfileRouter {
     
     private weak var viewController: ProfileViewController?
     
-    
     // MARK: Initialization
     
     init(viewController: ProfileViewController) {

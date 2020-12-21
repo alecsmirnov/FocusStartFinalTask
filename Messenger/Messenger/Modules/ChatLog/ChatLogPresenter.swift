@@ -26,7 +26,6 @@ protocol IChatLogPresenter: AnyObject {
 final class ChatLogPresenter {
     weak var viewController: IChatLogViewController?
     var interactor: IChatLogInteractor?
-    var router: IChatLogRouter?
     
     private let messagesService = MessagesGroupingService()
     private var messagesCountToUpdate = 0

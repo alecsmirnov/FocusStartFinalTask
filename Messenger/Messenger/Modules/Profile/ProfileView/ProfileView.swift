@@ -18,15 +18,19 @@ final class ProfileView: UIView {
     
     weak var delegate: ProfileViewDelegate?
     
+    private enum Constants {
+        static let profileImageButtonTitleFontSise: CGFloat = 16
+    }
+    
     private enum Metrics {
-        static let headerTopSpace: CGFloat = 20
+        static let headerTopSpace: CGFloat = 30
         
         static let verticalSpace: CGFloat = 8
         static let horizontalSpace: CGFloat = 16
         
         static let profileImageSize: CGFloat = 54
         
-        static let tableViewRowHeight: CGFloat = 30
+        static let containerViewTopSpace: CGFloat = 20
         
         static let buttonWidth: CGFloat = 200
     }
@@ -40,11 +44,9 @@ final class ProfileView: UIView {
     private let profileImageButton = UIButton(type: .system)
     
     private let containerView = UIView()
-    
     private let firstNameTextField = UITextField()
     private let lastNameTextField = UITextField()
     private let emailTextField = UITextField()
-
     private let closeButton = UIButton(type: .system)
     private let saveButton = UIButton(type: .system)
     
@@ -136,9 +138,8 @@ private extension ProfileView {
         setupFirstNameTextFieldAppearance()
         setupLastNameTextFieldAppearance()
         setupEmailTextFieldAppearance()
-        
-        setupCloseButtonAppearance()
         setupSaveButtonAppearance()
+        setupCloseButtonAppearance()
     }
     
     func setupProfileImageImageViewAppearance() {
@@ -147,8 +148,8 @@ private extension ProfileView {
     
     func setupProfileImageButtonAppearance() {
         profileImageButton.setTitle("Set Profile Photo", for: .normal)
-        profileImageButton.setTitleColor(.black, for: .normal)
-        profileImageButton.titleLabel?.font = .systemFont(ofSize: 16)
+        profileImageButton.setTitleColor(Colors.themeAdditionalColor, for: .normal)
+        profileImageButton.titleLabel?.font = .boldSystemFont(ofSize: Constants.profileImageButtonTitleFontSise)
     }
     
     func setupFirstNameTextFieldAppearance() {
@@ -181,28 +182,30 @@ private extension ProfileView {
         emailTextField.sizeToFit()
     }
     
-    func setupCloseButtonAppearance() {
-        closeButton.setTitle("Close", for: .normal)
-        closeButton.setTitleColor(LoginRegistrationColors.buttonTitle, for: .normal)
-        closeButton.backgroundColor = Colors.themeColor
-        closeButton.clipsToBounds = true
-        closeButton.sizeToFit()
-        
-        closeButton.layer.borderWidth = LoginRegistrationMetrics.borderWidth
-        closeButton.layer.borderColor = Colors.themeSecondColor.cgColor
-        closeButton.layer.cornerRadius = LoginRegistrationMetrics.cornerRadius
-    }
-    
     func setupSaveButtonAppearance() {
         saveButton.setTitle("Save", for: .normal)
         saveButton.setTitleColor(LoginRegistrationColors.buttonTitle, for: .normal)
         saveButton.backgroundColor = Colors.themeColor
+        saveButton.titleLabel?.font = .boldSystemFont(ofSize: saveButton.titleLabel?.font.pointSize ?? 0)
         saveButton.clipsToBounds = true
         saveButton.sizeToFit()
         
         saveButton.layer.borderWidth = LoginRegistrationMetrics.borderWidth
         saveButton.layer.borderColor = Colors.themeSecondColor.cgColor
         saveButton.layer.cornerRadius = LoginRegistrationMetrics.cornerRadius
+    }
+    
+    func setupCloseButtonAppearance() {
+        closeButton.setTitle("Close", for: .normal)
+        closeButton.setTitleColor(LoginRegistrationColors.buttonTitle, for: .normal)
+        closeButton.backgroundColor = Colors.themeColor
+        closeButton.titleLabel?.font = .boldSystemFont(ofSize: closeButton.titleLabel?.font.pointSize ?? 0)
+        closeButton.clipsToBounds = true
+        closeButton.sizeToFit()
+        
+        closeButton.layer.borderWidth = LoginRegistrationMetrics.borderWidth
+        closeButton.layer.borderColor = Colors.themeSecondColor.cgColor
+        closeButton.layer.cornerRadius = LoginRegistrationMetrics.cornerRadius
     }
 }
 
@@ -215,16 +218,12 @@ private extension ProfileView{
         setupHeaderViewLayout()
         setupProfileImageImageViewLayout()
         setupProfileImageButtonLayout()
-        
         setupContainerViewLayout()
-        
         setupFirstNameTextFieldLayout()
         setupLastNameTextFieldLayout()
-        
         setupEmailTextFieldLayout()
-        
-        setupCloseButtonLayout()
         setupSaveButtonLayout()
+        setupCloseButtonLayout()
     }
     
     func setupSubviews() {
@@ -279,7 +278,8 @@ private extension ProfileView{
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            containerView.topAnchor.constraint(equalTo: headerView.bottomAnchor,
+                                               constant: Metrics.containerViewTopSpace),
             containerView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
             containerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor,
                                                    constant: LoginRegistrationMetrics.horizontalSpace),
@@ -349,28 +349,13 @@ private extension ProfileView{
 
 private extension ProfileView {
     func setupActions() {
-        setupProfileImageViewAction()
-        setupProfileImageButtonAction()
-        setupCloseButtonAction()
-        setupSaveButtonAction()
-    }
-    
-    func setupProfileImageViewAction() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapProfileImageView))
 
         profileImageImageView.isUserInteractionEnabled = true
         profileImageImageView.addGestureRecognizer(tapGestureRecognizer)
-    }
-    
-    func setupProfileImageButtonAction() {
         profileImageButton.addTarget(self, action: #selector(didTapProfileImageView), for: .touchUpInside)
-    }
-    
-    func setupCloseButtonAction() {
+        
         closeButton.addTarget(self, action: #selector(didPressCloseButton), for: .touchUpInside)
-    }
-    
-    func setupSaveButtonAction() {
         saveButton.addTarget(self, action: #selector(didPressSaveButton), for: .touchUpInside)
     }
     

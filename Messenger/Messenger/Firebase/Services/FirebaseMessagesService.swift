@@ -111,14 +111,6 @@ extension FirebaseMessageService {
         
         return ObserverData(reference: addedMessagesReference, handle: addedMessagesHandle)
     }
-    
-    static func observeMessagesChanged(chatIdentifier: String, userIdentifier: String) {
-        // TODO: after added message fix
-    }
-    
-    static func observeMessageChanged(chatIdentifier: String, messageIdentifier: String) {
-        // TODO: after added message fix
-    }
 }
 
 // MARK: - Public Fetch Methods

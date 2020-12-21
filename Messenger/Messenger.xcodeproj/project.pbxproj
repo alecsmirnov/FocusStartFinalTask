@@ -42,7 +42,6 @@
 		8453EC8D2569594100385810 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8453EC8B2569594100385810 /* LaunchScreen.storyboard */; };
 		8453ECA925696C3700385810 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453ECA825696C3700385810 /* LoginViewController.swift */; };
 		8453ECAC25696C4700385810 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453ECAB25696C4700385810 /* LoginView.swift */; };
-		8453ECB025696CCC00385810 /* Completions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453ECAF25696CCC00385810 /* Completions.swift */; };
 		84542CA0257DFBB200FEC359 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84542C9F257DFBB200FEC359 /* MenuView.swift */; };
 		84542CA3257DFBBE00FEC359 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84542CA2257DFBBE00FEC359 /* MenuViewController.swift */; };
 		84544DA9258CB7F2005ED17E /* MenuChatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84544DA8258CB7F2005ED17E /* MenuChatsViewController.swift */; };
@@ -57,7 +56,7 @@
 		8454633C258F16E900FEC6C5 /* PasswordAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454633B258F16E900FEC6C5 /* PasswordAlertController.swift */; };
 		8454633F258F19EB00FEC6C5 /* SimpleAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454633E258F19EB00FEC6C5 /* SimpleAlertController.swift */; };
 		84546342258F41D900FEC6C5 /* Date+formatRelativeString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84546341258F41D900FEC6C5 /* Date+formatRelativeString.swift */; };
-		8454634D258F6FCE00FEC6C5 /* ChatLogSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454634C258F6FCE00FEC6C5 /* ChatLogSectionView.swift */; };
+		8454634D258F6FCE00FEC6C5 /* DateSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454634C258F6FCE00FEC6C5 /* DateSectionView.swift */; };
 		84546355258F79CA00FEC6C5 /* Date+daytimeString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84546354258F79CA00FEC6C5 /* Date+daytimeString.swift */; };
 		84546358258F7A9B00FEC6C5 /* Date+dateString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84546357258F7A9B00FEC6C5 /* Date+dateString.swift */; };
 		8454635B258F8D1700FEC6C5 /* Date+sortDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454635A258F8D1700FEC6C5 /* Date+sortDate.swift */; };
@@ -83,7 +82,6 @@
 		8454F858256FA5D1003AABAA /* ChatLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454F857256FA5D1003AABAA /* ChatLogView.swift */; };
 		8454F85B256FA64F003AABAA /* ChatLogInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454F85A256FA64F003AABAA /* ChatLogInteractor.swift */; };
 		8454F85E256FA70B003AABAA /* ChatLogPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454F85D256FA70B003AABAA /* ChatLogPresenter.swift */; };
-		8454F862256FA74D003AABAA /* ChatLogRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454F861256FA74D003AABAA /* ChatLogRouter.swift */; };
 		8454F865256FA789003AABAA /* ChatLogAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454F864256FA789003AABAA /* ChatLogAssembly.swift */; };
 		8454F86F256FADDD003AABAA /* ChatsMessagesValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454F86E256FADDD003AABAA /* ChatsMessagesValue.swift */; };
 		8454F873256FAE13003AABAA /* ChatsMessagesType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454F872256FAE13003AABAA /* ChatsMessagesType.swift */; };
@@ -176,7 +174,6 @@
 		8453EC8E2569594100385810 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8453ECA825696C3700385810 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		8453ECAB25696C4700385810 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		8453ECAF25696CCC00385810 /* Completions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Completions.swift; sourceTree = "<group>"; };
 		84542C9F257DFBB200FEC359 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		84542CA2257DFBBE00FEC359 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		84544DA8258CB7F2005ED17E /* MenuChatsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuChatsViewController.swift; sourceTree = "<group>"; };
@@ -191,7 +188,7 @@
 		8454633B258F16E900FEC6C5 /* PasswordAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordAlertController.swift; sourceTree = "<group>"; };
 		8454633E258F19EB00FEC6C5 /* SimpleAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleAlertController.swift; sourceTree = "<group>"; };
 		84546341258F41D900FEC6C5 /* Date+formatRelativeString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+formatRelativeString.swift"; sourceTree = "<group>"; };
-		8454634C258F6FCE00FEC6C5 /* ChatLogSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogSectionView.swift; sourceTree = "<group>"; };
+		8454634C258F6FCE00FEC6C5 /* DateSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSectionView.swift; sourceTree = "<group>"; };
 		84546354258F79CA00FEC6C5 /* Date+daytimeString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+daytimeString.swift"; sourceTree = "<group>"; };
 		84546357258F7A9B00FEC6C5 /* Date+dateString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+dateString.swift"; sourceTree = "<group>"; };
 		8454635A258F8D1700FEC6C5 /* Date+sortDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+sortDate.swift"; sourceTree = "<group>"; };
@@ -217,7 +214,6 @@
 		8454F857256FA5D1003AABAA /* ChatLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogView.swift; sourceTree = "<group>"; };
 		8454F85A256FA64F003AABAA /* ChatLogInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogInteractor.swift; sourceTree = "<group>"; };
 		8454F85D256FA70B003AABAA /* ChatLogPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogPresenter.swift; sourceTree = "<group>"; };
-		8454F861256FA74D003AABAA /* ChatLogRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogRouter.swift; sourceTree = "<group>"; };
 		8454F864256FA789003AABAA /* ChatLogAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogAssembly.swift; sourceTree = "<group>"; };
 		8454F86E256FADDD003AABAA /* ChatsMessagesValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsMessagesValue.swift; sourceTree = "<group>"; };
 		8454F872256FAE13003AABAA /* ChatsMessagesType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsMessagesType.swift; sourceTree = "<group>"; };
@@ -449,7 +445,6 @@
 			isa = PBXGroup;
 			children = (
 				8455B89025826585001FCE7D /* LoginRegistration */,
-				8453ECAF25696CCC00385810 /* Completions.swift */,
 				8454A0BD258A15E5004E3CFD /* Tables.swift */,
 				8450E2E4258E0976003A456F /* Timestamp.swift */,
 				84546338258F0AAA00FEC6C5 /* Colors.swift */,
@@ -642,7 +637,6 @@
 				8454F867256FA8D2003AABAA /* ChatLogView */,
 				8454F85A256FA64F003AABAA /* ChatLogInteractor.swift */,
 				8454F85D256FA70B003AABAA /* ChatLogPresenter.swift */,
-				8454F861256FA74D003AABAA /* ChatLogRouter.swift */,
 				8454F864256FA789003AABAA /* ChatLogAssembly.swift */,
 			);
 			path = ChatLog;
@@ -672,7 +666,7 @@
 				8455B87F25823F40001FCE7D /* SpinnerView.swift */,
 				8450E306258E5A4F003A456F /* InitialsImageView.swift */,
 				84530E012590618000AAECF3 /* InputTextView.swift */,
-				8454634C258F6FCE00FEC6C5 /* ChatLogSectionView.swift */,
+				8454634C258F6FCE00FEC6C5 /* DateSectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -900,7 +894,7 @@
 				845DB21A2588D549004EE926 /* CoreDataMessageType+CoreDataProperties.swift in Sources */,
 				8455B88B258264CC001FCE7D /* LoginRegistrationMetrics.swift in Sources */,
 				8454F85E256FA70B003AABAA /* ChatLogPresenter.swift in Sources */,
-				8454634D258F6FCE00FEC6C5 /* ChatLogSectionView.swift in Sources */,
+				8454634D258F6FCE00FEC6C5 /* DateSectionView.swift in Sources */,
 				8454DFBA2570BB8A00131C1B /* SearchViewController.swift in Sources */,
 				845A69D7256D51BD00E2E6E8 /* UsersValue.swift in Sources */,
 				845A69A6256CCD4600E2E6E8 /* ZoomAnimationController.swift in Sources */,
@@ -945,7 +939,6 @@
 				8445C5A4257E5130002C1D82 /* FirebaseStorageService.swift in Sources */,
 				84542CA0257DFBB200FEC359 /* MenuView.swift in Sources */,
 				8454B667257CCC90007FEBC2 /* EmailValidation.swift in Sources */,
-				8454F862256FA74D003AABAA /* ChatLogRouter.swift in Sources */,
 				845792B1256BD9CB0069D5FF /* SlideAnimationController.swift in Sources */,
 				845CFC85257F46F500B2ED5F /* UserCell.swift in Sources */,
 				8454632A258EE07200FEC6C5 /* MenuInteractor.swift in Sources */,
@@ -988,7 +981,6 @@
 				8450E2DD258DFE02003A456F /* ProfileInfo.swift in Sources */,
 				8457C1C4256A2FBB001E3F4C /* ChatsRouter.swift in Sources */,
 				8450E2AD258D9C3B003A456F /* MenuOptionCell.swift in Sources */,
-				8453ECB025696CCC00385810 /* Completions.swift in Sources */,
 				84546358258F7A9B00FEC6C5 /* Date+dateString.swift in Sources */,
 				8453ECAC25696C4700385810 /* LoginView.swift in Sources */,
 				845DB2162588D549004EE926 /* CoreDataChat+CoreDataProperties.swift in Sources */,

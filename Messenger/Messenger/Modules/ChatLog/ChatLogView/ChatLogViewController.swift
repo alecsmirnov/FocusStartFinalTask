@@ -111,7 +111,7 @@ private extension ChatLogViewController {
 
 extension ChatLogViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return ChatLogSectionView(dateString: presenter?.sectionDate(section: section))
+        return DateSectionView(dateString: presenter?.sectionDate(section: section))
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {

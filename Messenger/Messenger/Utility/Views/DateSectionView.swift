@@ -1,5 +1,5 @@
 //
-//  ChatLogSectionView.swift
+//  DateSectionView.swift
 //  Messenger
 //
 //  Created by Admin on 20.12.2020.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class ChatLogSectionView: UIView {
+final class DateSectionView: UIView {
     // MARK: Subviews
     
     private let timestampLabel = DateSectionLabel()
@@ -30,7 +30,7 @@ final class ChatLogSectionView: UIView {
 
 // MARK: - Appearance
 
-private extension ChatLogSectionView {
+private extension DateSectionView {
     func setupAppearance() {
         setupTimestampLabelAppearance()
     }
@@ -45,7 +45,7 @@ private extension ChatLogSectionView {
 
 // MARK: - Appearance
 
-private extension ChatLogSectionView {
+private extension DateSectionView {
     func setupLayout() {
         setupSubviews()
         setupTimestampLabelLayout()

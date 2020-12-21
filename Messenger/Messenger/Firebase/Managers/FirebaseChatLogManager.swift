@@ -43,10 +43,6 @@ extension FirebaseChatLogManager {
                                                                             limit: limit,
                                                                             completion: completion)
     }
-    
-    func observeMessagesChanged(chatIdentifier: String, userIdentifier: String) {
-        // TODO: after added message fix
-    }
 }
 
 // MARK: - Public Fetch Methods

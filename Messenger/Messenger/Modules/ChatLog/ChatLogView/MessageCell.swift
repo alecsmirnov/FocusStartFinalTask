@@ -13,19 +13,31 @@ final class MessageCell: UITableViewCell {
     static let reuseIdentifier = String(describing: self)
     
     private enum Constants {
-        static let incomingMessageColor = UIColor.black
+        static let incomingMessageColor = Colors.themeAdditionalColor
         static let outgoingMessageColor = Colors.themeColor
+        
+        static let incomingMessageTextColor = UIColor.white
+        static let outgoingMessageTextColor = UIColor.black
+        
+        static let messageLabelFontSize: CGFloat = 16
+        static let timestampLabelFontSize: CGFloat = 12
+        
+        static let timestampLabelTextColor = UIColor.white
     }
     
     private enum Metrics {
         static let verticalSpace: CGFloat = 8
         static let horizontalSpace: CGFloat = 16
         
+        static let profileImageLeftSpace: CGFloat = 10
         static let profileImageSize: CGFloat = 44
         
+        static let bubbleViewHorizontalSpace: CGFloat = 5
         static let bubbleViewCornerRadius: CGFloat = 16
         
         static let cellContentViewMultiplier: CGFloat = 0.7
+        
+        static let timestampLabelRightSpace: CGFloat = 7
     }
     
     // MARK: Constraints
@@ -61,52 +73,56 @@ final class MessageCell: UITableViewCell {
 
 extension MessageCell {
     func configure(with userMessage: UserMessageInfo) {
-        let message = userMessage.message
+        setMessage(userMessage.message)
         
-        switch message.type {
-        case .text(let messageText): messageLabel.text = messageText
-        }
-        
-        if message.isIncoming ?? false {
-            setupCellContentViewLeadingLayout()
-            
-            profileImageImageView.isHidden = false
-            profileImageImageView.backgroundColor = .black
-            
-            messageLabel.textColor = .white
-            
-            bubbleView.backgroundColor = Constants.incomingMessageColor
-            
-            if let sender = userMessage.sender {
-                profileImageImageView.showInitials(firstName: sender.firstName, lastName: sender.lastName)
-                profileImageImageView.backgroundColor = Colors.initialsViewBackgroundColor
-                
-                if let profileImageURL = sender.profileImageURL {
-                    profileImageImageView.download(urlString: profileImageURL)
-                }
-            }
+        if userMessage.message.isIncoming ?? false {
+            setupIncomingAppearance()
+            setSenderInfo(userMessage.sender)
         } else {
-            setupCellContentViewTrailingLayout()
-            
-            profileImageImageView.isHidden = true
-            
-            messageLabel.textColor = .black
-            
-            bubbleView.backgroundColor = Constants.outgoingMessageColor
+            setupOutgoingAppearance()
         }
     }
 }
 
-// MARK: - Public Methods
+// MARK: - Private Methods
 
 private extension MessageCell {
-    func setSenderInfo(_ sender: UserInfo) {        
-        profileImageImageView.showInitials(firstName: sender.firstName, lastName: sender.lastName)
-        profileImageImageView.backgroundColor = Colors.initialsViewBackgroundColor
-        
-        if let profileImageURL = sender.profileImageURL {
-            profileImageImageView.download(urlString: profileImageURL)
+    func setMessage(_ message: MessageInfo) {
+        switch message.type {
+        case .text(let messageText): messageLabel.text = messageText
         }
+        
+        timestampLabel.text = Date(timeIntervalSince1970: message.timestamp).daytimeString()
+    }
+    
+    func setSenderInfo(_ sender: UserInfo?) {
+        if let sender = sender {
+            profileImageImageView.showInitials(firstName: sender.firstName, lastName: sender.lastName)
+            profileImageImageView.backgroundColor = Colors.initialsViewBackgroundColor
+            
+            if let profileImageURL = sender.profileImageURL {
+                profileImageImageView.download(urlString: profileImageURL)
+            }
+        }
+    }
+    
+    func setupIncomingAppearance() {
+        setupCellContentViewLeadingLayout()
+        
+        profileImageImageView.isHidden = false
+        profileImageImageView.backgroundColor = .black
+        
+        messageLabel.textColor = Constants.incomingMessageTextColor
+        bubbleView.backgroundColor = Constants.incomingMessageColor
+    }
+    
+    func setupOutgoingAppearance() {
+        setupCellContentViewTrailingLayout()
+        
+        profileImageImageView.isHidden = true
+        
+        messageLabel.textColor = Constants.outgoingMessageTextColor
+        bubbleView.backgroundColor = Constants.outgoingMessageColor
     }
 }
 
@@ -135,13 +151,13 @@ private extension MessageCell {
     
     func setupMessageLabelAppearance() {
         messageLabel.numberOfLines = 0
-        messageLabel.font = .systemFont(ofSize: 14)
+        messageLabel.font = .systemFont(ofSize: Constants.messageLabelFontSize)
     }
     
     func setupTimestampLabelAppearance() {
         timestampLabel.textAlignment = .right
-        timestampLabel.textColor = .systemGray
-        timestampLabel.font = .systemFont(ofSize: 10)
+        timestampLabel.textColor = Constants.timestampLabelTextColor
+        timestampLabel.font = .systemFont(ofSize: Constants.timestampLabelFontSize)
     }
 }
 
@@ -209,14 +225,14 @@ private extension MessageCell {
     func prepareCellContentViewLeadingLayout() {
         cellContentViewLeadingConstraint = cellContentView.leadingAnchor.constraint(
             equalTo: profileImageImageView.trailingAnchor,
-            constant: 5
+            constant: Metrics.bubbleViewHorizontalSpace
         )
     }
     
     func prepareCellContentViewTrailingLayout() {
         cellContentViewTrailingConstraint = cellContentView.trailingAnchor.constraint(
             equalTo: contentView.trailingAnchor,
-            constant: -5
+            constant: -Metrics.bubbleViewHorizontalSpace
         )
     }
     
@@ -227,7 +243,7 @@ private extension MessageCell {
             profileImageImageView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor,
                                                           constant: -Metrics.verticalSpace),
             profileImageImageView.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor,
-                                                           constant: 10),
+                                                           constant: Metrics.profileImageLeftSpace),
             profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageSize),
             profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageSize),
         ])
@@ -240,9 +256,9 @@ private extension MessageCell {
             bubbleView.topAnchor.constraint(equalTo: cellContentView.topAnchor, constant: Metrics.verticalSpace),
             bubbleView.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor, constant: -Metrics.verticalSpace),
             bubbleView.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor,
-                                                constant: 5),
+                                                constant: Metrics.bubbleViewHorizontalSpace),
             bubbleView.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor,
-                                                 constant: -5),
+                                                 constant: -Metrics.bubbleViewHorizontalSpace),
         ])
     }
     
@@ -266,7 +282,7 @@ private extension MessageCell {
             timestampLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor,
                                                     constant: Metrics.horizontalSpace),
             timestampLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
-                                                     constant: -Metrics.horizontalSpace),
+                                                     constant: -Metrics.timestampLabelRightSpace),
         ])
     }
 }
