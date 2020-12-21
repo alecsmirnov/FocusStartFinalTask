@@ -159,13 +159,15 @@ private extension MenuChatsViewController {
 extension MenuChatsViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        
-        guard let menuViewController = menuViewController,
-              let menuView = menuViewController.view,
-              let touchView = touches.first?.view else { return }
-        
-        if menuView != touchView && !menuView.subviews.contains(touchView) {
-            extendMenu()
+
+        if isExtend {
+            guard let menuViewController = menuViewController,
+                  let menuView = menuViewController.view,
+                  let touchView = touches.first?.view else { return }
+
+            if menuView != touchView && !menuView.subviews.contains(touchView) {
+                extendMenu()
+            }
         }
     }
 }
