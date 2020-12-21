@@ -42,6 +42,10 @@ final class ChatLogView: UIView {
         set { tableView.delegate = newValue }
     }
     
+    private enum Constants {
+        static let textViewPlaceholder = "Enter message"
+    }
+    
     private enum Metrics {
         static let verticalSpace: CGFloat = 8
         static let horizontalSpace: CGFloat = 16
@@ -59,7 +63,7 @@ final class ChatLogView: UIView {
     let tableView = UITableView()
     
     private let textContainerView = UIView()
-    private let textView = UITextView()
+    private let textView = PlaceholderTextView()
     private let sendButton = UIButton(type: .system)
     
     // MARK: Lifecycle
@@ -217,6 +221,8 @@ private extension ChatLogView {
     }
     
     func setupTextViewAppearance() {
+        textView.placeholderText = Constants.textViewPlaceholder
+        
         textView.layer.borderWidth = 1
         textView.layer.borderColor = UIColor.systemGray3.cgColor
         textView.layer.cornerRadius = 8
@@ -373,12 +379,16 @@ extension ChatLogView: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         if let text = textView.text {
             if text.isEmpty {
+                self.textView.showPlaceholder()
+                
                 textViewTrailingConstraint?.constant = -Metrics.horizontalSpace
                 
                 UIView.animate(withDuration: Settings.keyboardAnimationDuration) {
                     self.layoutIfNeeded()
                 }
             } else if text.count <= 1 {
+                self.textView.hidePlaceholder()
+                
                 textViewTrailingConstraint?.constant = -sendButton.frame.width - Metrics.horizontalSpace * 2
                 
                 UIView.animate(withDuration: 0.1) {
