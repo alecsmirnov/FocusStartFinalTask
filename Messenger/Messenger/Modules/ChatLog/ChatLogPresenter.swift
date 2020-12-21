@@ -5,8 +5,6 @@
 //  Created by Admin on 26.11.2020.
 //
 
-import Foundation
-
 protocol IChatLogPresenter: AnyObject {
     var sectionsCount: Int { get }
     
@@ -117,7 +115,7 @@ extension ChatLogPresenter: IChatLogInteractorOutput {
     }
 
     func updateMessage(_ message: MessageInfo) {
-        if let section = messagesService.sectionAt(date: Date(timeIntervalSince1970: message.timestamp).sortDate()) {
+        if let section = messagesService.sectionAt(timestamp: message.timestamp) {
             let messages = messagesService.messagesAt(section: section)
     
             if let row = messages?.firstIndex(where: { $0.identifier == message.identifier }) {

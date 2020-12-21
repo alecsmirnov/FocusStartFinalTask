@@ -64,6 +64,10 @@ extension MessagesGroupingService {
         }
     }
     
+    func sectionAt(timestamp: TimeInterval) -> Int? {
+        return indices.firstIndex(of: Date(timeIntervalSince1970: timestamp).sortDate())
+    }
+    
     func sectionAt(date: Date) -> Int? {
         return indices.firstIndex(of: date)
     }
