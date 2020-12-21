@@ -7,18 +7,6 @@
 
 import UIKit
 
-protocol ISearchView: AnyObject {
-    var searchText: String? { get }
-    
-    func reloadData()
-    
-    func showNoResultLabel()
-    func hideNoResultLabel()
-    
-    func showSpinnerView()
-    func hideSpinnerView()
-}
-
 final class SearchView: UIView {
     // MARK: Properties
     
@@ -38,6 +26,8 @@ final class SearchView: UIView {
     }
     
     private enum Constants {
+        static let tableViewReloadAnimationDuration = 0.3
+        
         static let noResultLabelShowAnimationDuration = 0.6
         static let noResultLabelHideAnimationDuration = 0.1
     }
@@ -64,15 +54,19 @@ final class SearchView: UIView {
     }
 }
 
-// MARK: - ISearchView
+// MARK: - Public Methods
 
-extension SearchView: ISearchView {
+extension SearchView {
     var searchText: String? {
         return searchBar.text
     }
     
     func reloadData() {
-        tableView.reloadData()
+        UIView.transition(with: tableView,
+                          duration: Constants.tableViewReloadAnimationDuration,
+                          options: [.transitionCrossDissolve]) {
+            self.tableView.reloadData()
+        }
     }
     
     func showNoResultLabel() {

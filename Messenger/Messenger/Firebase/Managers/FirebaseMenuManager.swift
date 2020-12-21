@@ -5,8 +5,6 @@
 //  Created by Admin on 20.12.2020.
 //
 
-import Foundation
-
 final class FirebaseMenuManager {
     private var observedUser: ObserverData?
 }

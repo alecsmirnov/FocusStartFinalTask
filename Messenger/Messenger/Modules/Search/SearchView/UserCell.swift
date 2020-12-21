@@ -7,8 +7,6 @@
 
 import UIKit
 
-protocol IUserCell: AnyObject {}
-
 final class UserCell: UITableViewCell {
     // MARK: Properties
     
@@ -20,7 +18,6 @@ final class UserCell: UITableViewCell {
         static let cellContentRightSpace: CGFloat = 10
         
         static let profileImageHorizontalSpace: CGFloat = 10
-        static let profileImageSize: CGFloat = 54
         
         static let nameEmailVerticalSpace: CGFloat = 6
         
@@ -37,7 +34,7 @@ final class UserCell: UITableViewCell {
     private let profileImageView = UIView()
     private let cellContentView = UIView()
     
-    private let profileImageImageView = UIImageView()
+    private let profileImageImageView = InitialsImageView()
     private let nameLabel = UILabel()
     private let emailLabel = UILabel()
     
@@ -63,16 +60,19 @@ final class UserCell: UITableViewCell {
     }
 }
 
-// MARK: - IUserCell
-
-extension UserCell: IUserCell {}
-
 // MARK: - Public Methods
 
 extension UserCell {
     func configure(with user: UserInfo) {
         nameLabel.text = "\(user.firstName) \(user.lastName ?? "")"
         emailLabel.text = user.email
+        
+        profileImageImageView.showInitials(firstName: user.firstName, lastName: user.lastName)
+        profileImageImageView.backgroundColor = Colors.initialsViewBackgroundColor
+        
+        if let profileImageURL = user.profileImageURL {
+            profileImageImageView.download(urlString: profileImageURL)
+        }
     }
 }
 
@@ -98,8 +98,6 @@ private extension UserCell {
     
     func setupProfileImageImageViewAppearance() {
         profileImageImageView.contentMode = .scaleAspectFill
-        profileImageImageView.layer.borderWidth = 1
-        profileImageImageView.layer.borderColor = UIColor.systemGray.cgColor
     }
     
     func setupNameLabelAppearance() {
@@ -114,7 +112,7 @@ private extension UserCell {
     }
     
     func setupSeparatorAppearance() {
-        let leftInset = Metrics.profileImageSize + Metrics.profileImageHorizontalSpace * 2
+        let leftInset = SharedMetrics.profileImageSize + Metrics.profileImageHorizontalSpace * 2
         separatorInset = UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: 0)
     }
 }
@@ -127,7 +125,6 @@ private extension UserCell {
         
         setupProfileImageViewLayout()
         setupCellContentViewLayout()
-        
         setupProfilePhotoImageViewLayout()
         setupNameLabelLayout()
         setupEmailLabelLayout()
@@ -155,19 +152,19 @@ private extension UserCell {
     func setupCellContentViewLayout() {
         cellContentView.translatesAutoresizingMaskIntoConstraints = false
         
+        NSLayoutConstraint.activate([
+            cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Metrics.cellContentTopSpace),
+            cellContentView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor),
+            cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
+                                                      constant: -Metrics.cellContentRightSpace),
+        ])
+        
         let cellContentViewBottomConstraint = cellContentView.bottomAnchor.constraint(
             equalTo: contentView.bottomAnchor,
             constant: -Metrics.cellContentBottomSpace
         )
         cellContentViewBottomConstraint.priority = UILayoutPriority(LayoutPriority.bottom)
-        
-        NSLayoutConstraint.activate([
-            cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Metrics.cellContentTopSpace),
-            cellContentViewBottomConstraint,
-            cellContentView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor),
-            cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
-                                                      constant: -Metrics.cellContentRightSpace),
-        ])
+        cellContentViewBottomConstraint.isActive = true
     }
     
     func setupProfilePhotoImageViewLayout() {
@@ -180,8 +177,8 @@ private extension UserCell {
                                                            constant: Metrics.profileImageHorizontalSpace),
             profileImageImageView.trailingAnchor.constraint(equalTo: profileImageView.trailingAnchor,
                                                             constant: -Metrics.profileImageHorizontalSpace),
-            profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageSize),
-            profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageSize),
+            profileImageImageView.heightAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
+            profileImageImageView.widthAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
         ])
     }
     

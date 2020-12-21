@@ -30,7 +30,11 @@
 		8451B30B258B4CCB00EE4BEF /* CoreDataChatLog+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8451B309258B4CCB00EE4BEF /* CoreDataChatLog+CoreDataProperties.swift */; };
 		84530DF72590319B00AAECF3 /* FirebaseChatLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84530DF62590319B00AAECF3 /* FirebaseChatLogManager.swift */; };
 		84530DFF25905E8400AAECF3 /* UserMessageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84530DFE25905E8400AAECF3 /* UserMessageInfo.swift */; };
-		84530E022590618000AAECF3 /* PlaceholderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84530E012590618000AAECF3 /* PlaceholderTextView.swift */; };
+		84530E022590618000AAECF3 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84530E012590618000AAECF3 /* InputTextView.swift */; };
+		84530E0525906C2A00AAECF3 /* CoreDataConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84530E0425906C2A00AAECF3 /* CoreDataConstants.swift */; };
+		84530E0A25907F1100AAECF3 /* MyNavigationBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84530E0925907F1100AAECF3 /* MyNavigationBarViewController.swift */; };
+		84530E0E259081A200AAECF3 /* MyStatusBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84530E0D259081A200AAECF3 /* MyStatusBarViewController.swift */; };
+		84530E152590852400AAECF3 /* SharedMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84530E142590852400AAECF3 /* SharedMetrics.swift */; };
 		8453EC812569593E00385810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453EC802569593E00385810 /* AppDelegate.swift */; };
 		8453EC832569593E00385810 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453EC822569593E00385810 /* SceneDelegate.swift */; };
 		8453EC852569593E00385810 /* ChatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453EC842569593E00385810 /* ChatsViewController.swift */; };
@@ -87,7 +91,6 @@
 		8455B88025823F40001FCE7D /* SpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455B87F25823F40001FCE7D /* SpinnerView.swift */; };
 		8455B88B258264CC001FCE7D /* LoginRegistrationMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455B889258264CB001FCE7D /* LoginRegistrationMetrics.swift */; };
 		8455B88C258264CC001FCE7D /* LoginRegistrationColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455B88A258264CC001FCE7D /* LoginRegistrationColors.swift */; };
-		8455B8932582695F001FCE7D /* LoginRegistrationPresentationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455B8922582695F001FCE7D /* LoginRegistrationPresentationType.swift */; };
 		845792AA256BD9480069D5FF /* FirebaseAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845792A9256BD9480069D5FF /* FirebaseAuthService.swift */; };
 		845792B0256BD9CB0069D5FF /* TransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845792AE256BD9CB0069D5FF /* TransitionDelegate.swift */; };
 		845792B1256BD9CB0069D5FF /* SlideAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845792AF256BD9CB0069D5FF /* SlideAnimationController.swift */; };
@@ -159,7 +162,11 @@
 		8451B309258B4CCB00EE4BEF /* CoreDataChatLog+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataChatLog+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		84530DF62590319B00AAECF3 /* FirebaseChatLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseChatLogManager.swift; sourceTree = "<group>"; };
 		84530DFE25905E8400AAECF3 /* UserMessageInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserMessageInfo.swift; sourceTree = "<group>"; };
-		84530E012590618000AAECF3 /* PlaceholderTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderTextView.swift; sourceTree = "<group>"; };
+		84530E012590618000AAECF3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
+		84530E0425906C2A00AAECF3 /* CoreDataConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataConstants.swift; sourceTree = "<group>"; };
+		84530E0925907F1100AAECF3 /* MyNavigationBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNavigationBarViewController.swift; sourceTree = "<group>"; };
+		84530E0D259081A200AAECF3 /* MyStatusBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStatusBarViewController.swift; sourceTree = "<group>"; };
+		84530E142590852400AAECF3 /* SharedMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMetrics.swift; sourceTree = "<group>"; };
 		8453EC7D2569593E00385810 /* Messenger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Messenger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8453EC802569593E00385810 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8453EC822569593E00385810 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -218,7 +225,6 @@
 		8455B87F25823F40001FCE7D /* SpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerView.swift; sourceTree = "<group>"; };
 		8455B889258264CB001FCE7D /* LoginRegistrationMetrics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginRegistrationMetrics.swift; sourceTree = "<group>"; };
 		8455B88A258264CC001FCE7D /* LoginRegistrationColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginRegistrationColors.swift; sourceTree = "<group>"; };
-		8455B8922582695F001FCE7D /* LoginRegistrationPresentationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRegistrationPresentationType.swift; sourceTree = "<group>"; };
 		845792A9256BD9480069D5FF /* FirebaseAuthService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseAuthService.swift; sourceTree = "<group>"; };
 		845792AE256BD9CB0069D5FF /* TransitionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitionDelegate.swift; sourceTree = "<group>"; };
 		845792AF256BD9CB0069D5FF /* SlideAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideAnimationController.swift; sourceTree = "<group>"; };
@@ -302,9 +308,10 @@
 		8450E2D8258DF4A5003A456F /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				8455B87E25823CEF001FCE7D /* Views */,
+				84530E0825907E6A00AAECF3 /* Controllers */,
 				845DB227258927E2004EE926 /* Extensions */,
 				845792AD256BD9CB0069D5FF /* Transitions */,
-				8455B87E25823CEF001FCE7D /* Views */,
 				84553CA6257A7189003C272A /* Validation */,
 				8450E2D5258DF022003A456F /* ImagePicker.swift */,
 				8454633B258F16E900FEC6C5 /* PasswordAlertController.swift */,
@@ -397,6 +404,15 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		84530E0825907E6A00AAECF3 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				84530E0925907F1100AAECF3 /* MyNavigationBarViewController.swift */,
+				84530E0D259081A200AAECF3 /* MyStatusBarViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		8453EC742569593E00385810 = {
 			isa = PBXGroup;
 			children = (
@@ -437,6 +453,8 @@
 				8454A0BD258A15E5004E3CFD /* Tables.swift */,
 				8450E2E4258E0976003A456F /* Timestamp.swift */,
 				84546338258F0AAA00FEC6C5 /* Colors.swift */,
+				84530E0425906C2A00AAECF3 /* CoreDataConstants.swift */,
+				84530E142590852400AAECF3 /* SharedMetrics.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -635,7 +653,6 @@
 			children = (
 				8454F87B256FB332003AABAA /* MessageCell.swift */,
 				8454F857256FA5D1003AABAA /* ChatLogView.swift */,
-				8454634C258F6FCE00FEC6C5 /* ChatLogSectionView.swift */,
 				8454F854256FA559003AABAA /* ChatLogViewController.swift */,
 			);
 			path = ChatLogView;
@@ -654,7 +671,8 @@
 			children = (
 				8455B87F25823F40001FCE7D /* SpinnerView.swift */,
 				8450E306258E5A4F003A456F /* InitialsImageView.swift */,
-				84530E012590618000AAECF3 /* PlaceholderTextView.swift */,
+				84530E012590618000AAECF3 /* InputTextView.swift */,
+				8454634C258F6FCE00FEC6C5 /* ChatLogSectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -664,7 +682,6 @@
 			children = (
 				8455B88A258264CC001FCE7D /* LoginRegistrationColors.swift */,
 				8455B889258264CB001FCE7D /* LoginRegistrationMetrics.swift */,
-				8455B8922582695F001FCE7D /* LoginRegistrationPresentationType.swift */,
 			);
 			path = LoginRegistration;
 			sourceTree = "<group>";
@@ -871,12 +888,14 @@
 				84530DFF25905E8400AAECF3 /* UserMessageInfo.swift in Sources */,
 				84544DAD258D1965005ED17E /* UIViewController+setupStatusBarColor.swift in Sources */,
 				8454F858256FA5D1003AABAA /* ChatLogView.swift in Sources */,
+				84530E0E259081A200AAECF3 /* MyStatusBarViewController.swift in Sources */,
 				8450E2E0258E026C003A456F /* FirebaseUserService.swift in Sources */,
 				84546329258EE07200FEC6C5 /* MenuPresenter.swift in Sources */,
 				8457C1CD256A38FA001E3F4C /* LoginPresenter.swift in Sources */,
 				8450E304258E4E68003A456F /* UIImageView+download.swift in Sources */,
+				84530E0A25907F1100AAECF3 /* MyNavigationBarViewController.swift in Sources */,
 				845B4262258376F50043112D /* UsersChatsLatestMessageValue.swift in Sources */,
-				84530E022590618000AAECF3 /* PlaceholderTextView.swift in Sources */,
+				84530E022590618000AAECF3 /* InputTextView.swift in Sources */,
 				8455B88025823F40001FCE7D /* SpinnerView.swift in Sources */,
 				845DB21A2588D549004EE926 /* CoreDataMessageType+CoreDataProperties.swift in Sources */,
 				8455B88B258264CC001FCE7D /* LoginRegistrationMetrics.swift in Sources */,
@@ -884,7 +903,6 @@
 				8454634D258F6FCE00FEC6C5 /* ChatLogSectionView.swift in Sources */,
 				8454DFBA2570BB8A00131C1B /* SearchViewController.swift in Sources */,
 				845A69D7256D51BD00E2E6E8 /* UsersValue.swift in Sources */,
-				8455B8932582695F001FCE7D /* LoginRegistrationPresentationType.swift in Sources */,
 				845A69A6256CCD4600E2E6E8 /* ZoomAnimationController.swift in Sources */,
 				8454A0DD258A33D1004E3CFD /* UsersStatusValue.swift in Sources */,
 				84602B60258710E3003C8F6B /* ChatInfo.swift in Sources */,
@@ -902,6 +920,7 @@
 				8454F85B256FA64F003AABAA /* ChatLogInteractor.swift in Sources */,
 				845DB2102588D549004EE926 /* CoreDataUser+CoreDataProperties.swift in Sources */,
 				8457C1CA256A38EE001E3F4C /* LoginInteractor.swift in Sources */,
+				84530E152590852400AAECF3 /* SharedMetrics.swift in Sources */,
 				84546330258EE18200FEC6C5 /* MenuChatsAssembly.swift in Sources */,
 				8454DFBD2570BB9D00131C1B /* SearchInteractor.swift in Sources */,
 				8457C1C1256A2FA6001E3F4C /* ChatsPresenter.swift in Sources */,
@@ -976,6 +995,7 @@
 				8454A0D1258A2BCD004E3CFD /* FirebaseDatabaseCoding.swift in Sources */,
 				8457C1D0256A391E001E3F4C /* LoginRouter.swift in Sources */,
 				8453EC832569593E00385810 /* SceneDelegate.swift in Sources */,
+				84530E0525906C2A00AAECF3 /* CoreDataConstants.swift in Sources */,
 				8454DFC62570BBFF00131C1B /* SearchAssembly.swift in Sources */,
 				8450E2C1258DC522003A456F /* ProfileInteractor.swift in Sources */,
 				845A69A9256CCDA500E2E6E8 /* BaseAnimationController.swift in Sources */,

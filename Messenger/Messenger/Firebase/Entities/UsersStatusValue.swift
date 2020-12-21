@@ -13,6 +13,8 @@ struct UsersStatusValue: Codable {
     var isOnline: Bool { info.isOnline }
     var timestamp: TimeInterval { info.timestamp }
     
+    // MARK: Additional Node
+    
     private let info: Info
     
     // MARK: Initialization

@@ -73,6 +73,10 @@ extension ChatsRouter: IChatsRouter {
         
         navigationController.modalPresentationStyle = .fullScreen
         
+        // Animation bug when used with slide menu
+        //navigationController.modalPresentationStyle = .custom
+        //navigationController.transitioningDelegate = transitionDelegate
+        
         viewController?.present(navigationController, animated: true)
     }
     

@@ -93,7 +93,7 @@ extension MessagesGroupingService {
     }
 }
 
-// MARK: - Private Methods
+// MARK: - Helper Methods
 
 private extension MessagesGroupingService {
     static func groupMessages(_ messages: [MessageInfo]) -> [Date: [MessageInfo]] {

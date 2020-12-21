@@ -10,11 +10,11 @@ import UIKit
 protocol IMenuViewController: AnyObject {
     func setUserInfo(_ user: UserInfo)
     
-    func hideMenu()
     func showMenu()
+    func hideMenu()
 }
 
-final class MenuViewController: UIViewController {
+final class MenuViewController: MyStatusBarViewController {
     // MARK: Properties
     
     var presenter: IMenuPresenter?
@@ -38,13 +38,7 @@ final class MenuViewController: UIViewController {
         
         presenter?.viewDidLoad()
         
-        setupViewDelegate()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        setupStatusBarColor()
+        setupView()
     }
 }
 
@@ -55,31 +49,27 @@ extension MenuViewController: IMenuViewController {
         menuView.setUser(user)
     }
     
-    func hideMenu() {
-        menuView.hideOptions()
-    }
-    
     func showMenu() {
         menuView.showOptions()
+    }
+    
+    func hideMenu() {
+        menuView.hideOptions()
     }
 }
 
 // MARK: - Private Methods
 
 private extension MenuViewController {
-    func setupViewDelegate() {
+    func setupView() {
         menuView.delegate = self
-    }
-    
-    func setupStatusBarColor() {
-        setupStatusBarColor(Colors.themeColor)
     }
 }
 
 // MARK: - IMenuViewDelegate
 
-extension MenuViewController: IMenuViewDelegate {
-    func menuView(_ menuView: IMenuView, didSelectMenuOption menuOption: MenuView.MenuOptions) {
+extension MenuViewController: MenuViewDelegate {
+    func menuView(_ menuView: MenuView, didSelectMenuOption menuOption: MenuView.MenuOptions) {
         presenter?.didSelectMenu(with: menuOption)
     }
 }

@@ -35,8 +35,8 @@ final class ChatLogInteractor {
     weak var presenter: IChatLogInteractorOutput?
     
     private enum Constants {
-        static let previousMessagesLoadCount = 3
-        static let storedMessagesCount = 3
+        static let previousMessagesLoadCount = 3    // For demonstration
+        static let storedMessagesCount = 3          // For demonstration
     }
     
     private var chat: ChatInfo?
@@ -71,12 +71,6 @@ extension ChatLogInteractor: IChatLogInteractor {
     
     func fetchMessages() {
         loadStoredMessages()
-        
-        // Test
-        
-//        if let chatIdentifier = chat?.identifier {
-//            //FirebaseMessageService.observeUpdatedMessages(chatIdentifier: chatIdentifier)
-//        }
     }
     
     func fetchPreviousMessages() {
@@ -187,10 +181,6 @@ private extension ChatLogInteractor {
     static func defineIncomingMessage(_ message: MessageInfo) -> MessageInfo {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return message }
         
-        var message = message
-        
-        message.isIncoming = message.senderIdentifier != userIdentifier
-        
-        return message
+        return FirebaseMessageService.determineMessageDirection(message, currentUserIdentifier: userIdentifier)
     }
 }

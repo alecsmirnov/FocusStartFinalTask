@@ -7,30 +7,15 @@
 
 import UIKit
 
-protocol IChatLogView: AnyObject {
-    var sendMessageButtonAction: Completions.ButtonPress? { get set }
-    var pullToRefreshAction: Completions.ButtonPress? { get set }
-
-    var messageText: String? { get }
-    
-    func endRefreshing()
-    
-    func clearTextView()
-    func reloadData()
-    
-    func insertNewRow()
-    func updateRowAt(row: Int, section: Int)
-    
-    func scrollToBottom()
-    func startFromRowAt(row: Int, section: Int)
-    func startFromRowAt(minus count: Int)
+protocol ChatLogViewDelegate: AnyObject {
+    func chatLogViewDidPressSendButton(_ chatLogView: ChatLogView)
+    func chatLogViewPullToRefresh(_ chatLogView: ChatLogView)
 }
 
 final class ChatLogView: UIView {
     // MARK: Properties
     
-    var sendMessageButtonAction: Completions.ButtonPress?
-    var pullToRefreshAction: Completions.ButtonPress?
+    weak var delegate: ChatLogViewDelegate?
     
     var tableViewDataSource: UITableViewDataSource? {
         get { tableView.dataSource }
@@ -43,36 +28,31 @@ final class ChatLogView: UIView {
     }
     
     private enum Constants {
-        static let textViewPlaceholder = "Enter message"
+        static let textViewFontSize: CGFloat = 18
+        static let textViewCornerRadius: CGFloat = 8
+        static let textViewBorderWidth: CGFloat = 1
+        static let textViewBorderColor = UIColor.systemGray3
+        static let textViewPlaceholder = "Write a message..."
+        
+        static let keyboardAnimationDuration = 0.1
+        
+        static let tableViewVerticalInset: CGFloat = 8
+        static let tableViewBackgroundColor = UIColor(white: 0.98, alpha: 1)
     }
     
     private enum Metrics {
         static let verticalSpace: CGFloat = 8
-        static let horizontalSpace: CGFloat = 16
-    }
-    
-    private enum Settings {
-        static let keyboardAnimationDuration = 0.5
+        static let horizontalSpace: CGFloat = 8
     }
     
     private var textContainerViewBottomConstraint: NSLayoutConstraint?
-    private var textViewTrailingConstraint: NSLayoutConstraint?
     
     // MARK: Subviews
     
     let tableView = UITableView()
     
     private let textContainerView = UIView()
-    private let textView = PlaceholderTextView()
-    private let sendButton = UIButton(type: .system)
-    
-    // MARK: Lifecycle
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        
-        //updateFlowLayout()
-    }
+    private let textView = InputTextView()
     
     // MARK: Initialization
     
@@ -94,9 +74,9 @@ final class ChatLogView: UIView {
     }
 }
 
-// MARK: - IChatLogView
+// MARK: - Public Methods
 
-extension ChatLogView: IChatLogView {
+extension ChatLogView {
     var messageText: String? {
         return textView.text
     }
@@ -129,6 +109,8 @@ extension ChatLogView: IChatLogView {
             let lastRowIndexPath = IndexPath(row: lastRowIndex, section: lastSection)
             
             tableView.insertRows(at: [lastRowIndexPath], with: .bottom)
+        } else {
+            tableView.reloadData()
         }
     }
     
@@ -146,23 +128,7 @@ extension ChatLogView: IChatLogView {
             }
         }
     }
-    
-    func startFromRowAt(row: Int, section: Int) {
-        let lastRow = tableView.numberOfRows(inSection: section) - 1
-        
-        if 1 < lastRow {
-            var currentRow = lastRow
-            
-            if row < lastRow {
-                currentRow -= row
-            }
-            
-            let indexPath = IndexPath(row: currentRow, section: section)
-            
-            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
-        }
-    }
-    
+
     func startFromRowAt(minus count: Int) {
         let sectionsCount = tableView.numberOfSections
         
@@ -192,6 +158,31 @@ extension ChatLogView: IChatLogView {
     }
 }
 
+// MARK: - Private Methods
+
+private extension ChatLogView {
+    func setupViewDelegates() {
+        textView.delegate = self
+        textView.sendDelegate = self
+    }
+    
+    func startFromRowAt(row: Int, section: Int) {
+        let lastRow = tableView.numberOfRows(inSection: section) - 1
+        
+        if 1 < lastRow {
+            var currentRow = lastRow
+            
+            if row < lastRow {
+                currentRow -= row
+            }
+            
+            let indexPath = IndexPath(row: currentRow, section: section)
+            
+            tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+        }
+    }
+}
+
 // MARK: - Appearance
 
 private extension ChatLogView {
@@ -200,14 +191,16 @@ private extension ChatLogView {
         
         setupTextContainerViewAppearance()
         setupTextViewAppearance()
-        setupSendButtonAppearance()
     }
     
     func setupTableViewAppearance() {
-        tableView.backgroundColor = UIColor(white: 0.98, alpha: 1)
+        tableView.backgroundColor = Constants.tableViewBackgroundColor
         tableView.separatorStyle = .none
         
-        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: Constants.tableViewVerticalInset,
+                                              left: 0,
+                                              bottom: Constants.tableViewVerticalInset,
+                                              right: 0)
         
         tableView.register(MessageCell.self, forCellReuseIdentifier: MessageCell.reuseIdentifier)
         
@@ -216,40 +209,30 @@ private extension ChatLogView {
     }
     
     func setupTextContainerViewAppearance() {
-        textContainerView.backgroundColor = .systemBackground
+        textContainerView.backgroundColor = Colors.themeColor
+        textContainerView.layer.borderColor = Colors.themeSecondColor.cgColor
         textContainerView.sizeToFit()
     }
     
     func setupTextViewAppearance() {
         textView.placeholderText = Constants.textViewPlaceholder
         
-        textView.layer.borderWidth = 1
-        textView.layer.borderColor = UIColor.systemGray3.cgColor
-        textView.layer.cornerRadius = 8
+        textView.layer.borderWidth = Constants.textViewBorderWidth
+        textView.layer.borderColor = Constants.textViewBorderColor.cgColor
+        textView.layer.cornerRadius = Constants.textViewCornerRadius
         
-        textView.font = .systemFont(ofSize: 18)
+        textView.font = .systemFont(ofSize: Constants.textViewFontSize)
         textView.isScrollEnabled = false
         
         textView.sizeToFit()
-    }
-    
-    func setupSendButtonAppearance() {
-        sendButton.setTitle("Send", for: .normal)
-        sendButton.sizeToFit()
-        
-        sendButton.addTarget(self, action: #selector(didPressSendButton), for: .touchUpInside)
     }
 }
 
 // MARK: - Actions
 
 private extension ChatLogView {
-    @objc func didPressSendButton() {
-        sendMessageButtonAction?()
-    }
-    
     @objc func didPullToRefresh() {
-        pullToRefreshAction?()
+        delegate?.chatLogViewPullToRefresh(self)
     }
 }
 
@@ -263,7 +246,6 @@ private extension ChatLogView {
         
         setupTextContainerViewLayout()
         setupTextViewLayout()
-        setupSendButtonLayout()
     }
     
     func setupSubviews() {
@@ -271,7 +253,6 @@ private extension ChatLogView {
         addSubview(textContainerView)
         
         textContainerView.addSubview(textView)
-        textContainerView.addSubview(sendButton)
     }
     
     func setupTableViewLayout() {
@@ -306,24 +287,12 @@ private extension ChatLogView {
         textView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            textView.topAnchor.constraint(equalTo: textContainerView.topAnchor),
+            textView.topAnchor.constraint(equalTo: textContainerView.topAnchor, constant: Metrics.verticalSpace),
             textView.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor, constant: -Metrics.verticalSpace),
             textView.leadingAnchor.constraint(equalTo: textContainerView.leadingAnchor,
                                               constant: Metrics.horizontalSpace),
-        ])
-        
-        textViewTrailingConstraint = textView.trailingAnchor.constraint(equalTo: textContainerView.trailingAnchor,
-                                                                        constant: -Metrics.horizontalSpace)
-        textViewTrailingConstraint?.isActive = true
-    }
-    
-    func setupSendButtonLayout() {
-        sendButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            sendButton.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor,
-                                               constant: -Metrics.verticalSpace),
-            sendButton.leadingAnchor.constraint(equalTo: textView.trailingAnchor, constant: Metrics.horizontalSpace),
+            textView.trailingAnchor.constraint(equalTo: textContainerView.trailingAnchor,
+                                               constant: -Metrics.horizontalSpace),
         ])
     }
 }
@@ -351,7 +320,7 @@ private extension ChatLogView {
         let keyboardTop = safeAreaInsets.bottom - keyboardSize.cgRectValue.height
         textContainerViewBottomConstraint?.constant = keyboardTop
         
-        UIView.animate(withDuration: Settings.keyboardAnimationDuration) {
+        UIView.animate(withDuration: Constants.keyboardAnimationDuration) {
             self.layoutIfNeeded()
         }
     }
@@ -359,17 +328,9 @@ private extension ChatLogView {
     @objc func keyboardWillHide(notification: NSNotification) {
         textContainerViewBottomConstraint?.constant = 0
 
-        UIView.animate(withDuration: 0.1) {
+        UIView.animate(withDuration: Constants.keyboardAnimationDuration) {
             self.layoutIfNeeded()
         }
-    }
-}
-
-// MARK: - View Delegates
-
-private extension ChatLogView {
-    func setupViewDelegates() {
-        textView.delegate = self
     }
 }
 
@@ -377,24 +338,28 @@ private extension ChatLogView {
 
 extension ChatLogView: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
+        guard let textView = textView as? InputTextView else { return }
+        
         if let text = textView.text {
             if text.isEmpty {
-                self.textView.showPlaceholder()
-                
-                textViewTrailingConstraint?.constant = -Metrics.horizontalSpace
-                
-                UIView.animate(withDuration: Settings.keyboardAnimationDuration) {
-                    self.layoutIfNeeded()
-                }
+                textView.showPlaceholder()
+                textView.hideSendButton()
             } else if text.count <= 1 {
-                self.textView.hidePlaceholder()
-                
-                textViewTrailingConstraint?.constant = -sendButton.frame.width - Metrics.horizontalSpace * 2
-                
-                UIView.animate(withDuration: 0.1) {
-                    self.layoutIfNeeded()
-                }
+                textView.hidePlaceholder()
+                textView.showSendButton()
             }
         }
+    }
+}
+
+// MARK: - InputTextViewDelegate
+
+extension ChatLogView: InputTextViewDelegate {
+    func inputTextViewDidPressSendButton(_ textView: InputTextView) {
+        delegate?.chatLogViewDidPressSendButton(self)
+        
+        textView.showPlaceholder()
+        textView.hideSendButton()
+        textView.text = nil
     }
 }

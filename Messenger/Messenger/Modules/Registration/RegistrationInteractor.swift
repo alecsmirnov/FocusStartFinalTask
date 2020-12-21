@@ -13,7 +13,6 @@ protocol IRegistrationInteractor: AnyObject {
 
 protocol IRegistrationInteractorOutput: AnyObject {
     func signInSuccess()
-    
     func signUpFail()
 }
 

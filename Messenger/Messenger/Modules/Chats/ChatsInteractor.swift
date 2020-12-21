@@ -77,8 +77,18 @@ private extension ChatsInteractor {
     func loadStoredChats() {
         let storedChats = coreDataChatsManager.getChats()
         
+        let definedChats = storedChats.map { chat -> ChatInfo in
+            var definedChat = chat
+            
+            if let message = chat.latestMessage {
+                definedChat.latestMessage = ChatsInteractor.defineIncomingMessage(message)
+            }
+            
+            return definedChat
+        }
+        
         if !storedChats.isEmpty {
-            presenter?.fetchChatsSuccess(storedChats)
+            presenter?.fetchChatsSuccess(definedChats)
         }
     }
     
@@ -121,7 +131,14 @@ private extension ChatsInteractor {
     
     func chatAdded(chat: ChatInfo) {
         coreDataChatsManager.appendChat(chat)
-        presenter?.chatAdded(chat)
+        
+        var definedChat = chat
+        
+        if let message = chat.latestMessage {
+            definedChat.latestMessage = ChatsInteractor.defineIncomingMessage(message)
+        }
+        
+        presenter?.chatAdded(definedChat)
     }
     
     func chatRemoved(chatIdentifier: String) {
@@ -140,8 +157,14 @@ private extension ChatsInteractor {
     
     func chatLatestMessageUpdated(chatIdentifier: String, message: MessageInfo?) {
         if let index = coreDataChatsManager.getChatIndex(by: chatIdentifier) {
-            coreDataChatsManager.updateChatLatestMessage(at: chatIdentifier, message: message)
-            presenter?.chatMessageUpdated(at: index, message: message)
+            var updatedMessage: MessageInfo?
+            
+            if let message = message {
+                updatedMessage = ChatsInteractor.defineIncomingMessage(message)
+            }
+            
+            coreDataChatsManager.updateChatLatestMessage(at: chatIdentifier, message: updatedMessage)
+            presenter?.chatMessageUpdated(at: index, message: updatedMessage)
         }
     }
     
@@ -159,17 +182,23 @@ private extension ChatsInteractor {
     }
 }
 
+// MARK: - Helper Methods
+
+private extension ChatsInteractor {
+    static func defineIncomingMessage(_ message: MessageInfo) -> MessageInfo {
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return message }
+        
+        return FirebaseMessageService.determineMessageDirection(message, currentUserIdentifier: userIdentifier)
+    }
+}
+
 // MARK: - Notifications
 
 private extension ChatsInteractor {
     func observeSignOutNotification() {
         NotificationCenter.default.addObserver(self, selector: #selector(userSignedOut), name: .SignOut, object: nil)
     }
-}
-
-// MARK: - Actions
-
-private extension ChatsInteractor {
+    
     @objc func userSignedOut() {
         coreDataChatsManager.clear()
     }

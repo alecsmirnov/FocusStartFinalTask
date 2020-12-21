@@ -97,31 +97,13 @@ extension ChatLogViewController: IChatLogViewController {
     }
 }
 
-// MARK: - View Setup
+// MARK: - Private Methods
 
 private extension ChatLogViewController {
     func setupView() {
-        setupViewDelegates()
-        setupViewActions()
-    }
-    
-    func setupViewDelegates() {
         chatLogView.tableViewDataSource = self
         chatLogView.tableViewDelegate = self
-    }
-    
-    func setupViewActions() {
-        chatLogView.sendMessageButtonAction = { [weak self] in
-            if let messageText = self?.chatLogView.messageText {
-                self?.presenter?.didPressSendButton(messageType: .text(messageText))
-                
-                self?.chatLogView.clearTextView()
-            }
-        }
-        
-        chatLogView.pullToRefreshAction = { [weak self] in
-            self?.presenter?.didPullToRefresh()
-        }
+        chatLogView.delegate = self
     }
 }
 
@@ -163,5 +145,19 @@ extension ChatLogViewController: UITableViewDelegate {
                 self.presenter?.didReadMessageAt(section: indexPath.section, index: indexPath.row)
             }
         }
+    }
+}
+
+// MARK: - ChatLogViewDelegate
+
+extension ChatLogViewController: ChatLogViewDelegate {
+    func chatLogViewDidPressSendButton(_ chatLogView: ChatLogView) {
+        if let text = chatLogView.messageText, !text.isEmpty {
+            presenter?.didPressSendButton(messageType: .text(text))
+        }
+    }
+    
+    func chatLogViewPullToRefresh(_ chatLogView: ChatLogView) {
+        presenter?.didPullToRefresh()
     }
 }

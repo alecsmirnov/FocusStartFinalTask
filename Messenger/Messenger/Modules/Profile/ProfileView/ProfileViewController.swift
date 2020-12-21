@@ -105,7 +105,7 @@ private extension ProfileViewController {
     }
     
     func setupSimpleAlertController() {
-        simpleAlertController = SimpleAlertController(presentationController: self, delegate: self)
+        simpleAlertController = SimpleAlertController(presentationController: self)
     }
     
     func setupPasswordAlertController() {
@@ -142,12 +142,6 @@ extension ProfileViewController: ImagePickerDelegate {
     func imagePicker(_ imagePicker: ImagePicker, didSelectImage image: UIImage?) {
         profileView.profileImage = image
     }
-}
-
-// MARK: - SimpleAlertControllerDelegate
-
-extension ProfileViewController: SimpleAlertControllerDelegate {
-    func simpleAlertControllerDidPressDismiss(_ simpleAlertController: SimpleAlertController) {}
 }
 
 // MARK: - PasswordAlertControllerDelegate

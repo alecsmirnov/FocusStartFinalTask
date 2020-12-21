@@ -7,15 +7,10 @@
 
 import UIKit
 
-protocol SimpleAlertControllerDelegate: AnyObject {
-    func simpleAlertControllerDidPressDismiss(_ simpleAlertController: SimpleAlertController)
-}
-
 final class SimpleAlertController: NSObject {
     // MARK: Properties
     
     private weak var presentationController: UIViewController?
-    private weak var delegate: PasswordAlertControllerDelegate?
     
     private lazy var alertController: UIAlertController = {
         let alertAction = UIAlertAction(title: "Dismiss", style: .cancel)
@@ -29,11 +24,10 @@ final class SimpleAlertController: NSObject {
     
     // MARK: Initialization
     
-    init(presentationController: UIViewController, delegate: PasswordAlertControllerDelegate) {
+    init(presentationController: UIViewController) {
         super.init()
 
         self.presentationController = presentationController
-        self.delegate = delegate
     }
 }
 

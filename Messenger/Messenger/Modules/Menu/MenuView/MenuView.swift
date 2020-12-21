@@ -7,14 +7,14 @@
 
 import UIKit
 
-protocol IMenuView: AnyObject {}
-
-protocol IMenuViewDelegate: AnyObject {
-    func menuView(_ menuView: IMenuView, didSelectMenuOption menuOption: MenuView.MenuOptions)
+protocol MenuViewDelegate: AnyObject {
+    func menuView(_ menuView: MenuView, didSelectMenuOption menuOption: MenuView.MenuOptions)
 }
 
 final class MenuView: UIView {
     // MARK: Properties
+    
+    weak var delegate: MenuViewDelegate?
     
     enum MenuOptions: Int {
         case editProfile
@@ -31,17 +31,18 @@ final class MenuView: UIView {
         
         var image: UIImage? {
             switch self {
-            case .editProfile: return UIImage(systemName: "person")
-            case .signOut: return UIImage(systemName: "xmark")
+            case .editProfile: return Constants.editProfileImage
+            case .signOut: return Constants.signOutImage
             }
         }
     }
     
-    weak var delegate: IMenuViewDelegate?
-    
     private enum Constants {
         static let nameLabelFontSize: CGFloat = 17
         static let emailLabelFontSize: CGFloat = 15
+        
+        static let editProfileImage = UIImage(systemName: "person")
+        static let signOutImage = UIImage(systemName: "xmark")
     }
     
     private enum Metrics {
@@ -49,8 +50,6 @@ final class MenuView: UIView {
         
         static let verticalSpace: CGFloat = 4
         static let horizontalSpace: CGFloat = 16
-        
-        static let profileImageSize: CGFloat = 54
         
         static let tableViewRowHeight: CGFloat = 40
         static let tableViewTopInset: CGFloat = 16
@@ -100,7 +99,7 @@ extension MenuView {
             profileImageImageView.download(urlString: profileImageURL)
         } else {
             profileImageImageView.showInitials(firstName: user.firstName, lastName: user.lastName)
-            profileImageImageView.backgroundColor = .black
+            profileImageImageView.backgroundColor = Colors.initialsViewBackgroundColor
         }
     }
     
@@ -116,10 +115,6 @@ extension MenuView {
         tableView.reloadData()
     }
 }
-
-// MARK: - IMenuView
-
-extension MenuView: IMenuView {}
 
 // MARK: - Draw
 
@@ -214,8 +209,8 @@ private extension MenuView {
             profileImageImageView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor,
                                                            constant: Metrics.horizontalSpace),
             profileImageImageView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
-            profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageSize),
-            profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageSize),
+            profileImageImageView.heightAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
+            profileImageImageView.widthAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
         ])
     }
     
@@ -274,7 +269,7 @@ extension MenuView: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return menuOptionsCount//MenuOptions.count
+        return menuOptionsCount
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

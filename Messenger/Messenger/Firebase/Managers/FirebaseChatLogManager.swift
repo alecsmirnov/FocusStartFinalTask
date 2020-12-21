@@ -45,7 +45,7 @@ extension FirebaseChatLogManager {
     }
     
     func observeMessagesChanged(chatIdentifier: String, userIdentifier: String) {
-        //FirebaseChatsService.
+        // TODO: after added message fix
     }
 }
 

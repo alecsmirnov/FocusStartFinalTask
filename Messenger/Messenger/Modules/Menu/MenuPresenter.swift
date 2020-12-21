@@ -51,8 +51,4 @@ extension MenuPresenter: IMenuInteractorOutput {
             self.viewController?.setUserInfo(user)
         }
     }
-    
-    func fetchUserFail() {
-        
-    }
 }

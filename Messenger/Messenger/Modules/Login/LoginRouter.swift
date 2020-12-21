@@ -32,7 +32,6 @@ extension LoginRouter: ILoginRouter {
     }
     
     func openLaunchViewController() {
-
         viewController?.navigationController?.popToRootViewController(animated: false)
     }
 }

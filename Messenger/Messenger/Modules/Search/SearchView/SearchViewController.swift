@@ -17,10 +17,14 @@ protocol ISearchViewController: AnyObject {
     func hideSpinnerView()
 }
 
-final class SearchViewController: UIViewController {
+final class SearchViewController: MyNavigationBarViewController {
     // MARK: Properties
     
     var presenter: ISearchPresenter?
+    
+    private enum Constants {
+        static let closeButtonImage = UIImage(systemName: "xmark")
+    }
     
     private var searchView: SearchView {
         guard let view = view as? SearchView else {
@@ -41,8 +45,8 @@ final class SearchViewController: UIViewController {
         
         presenter?.viewDidLoad()
         
+        setupView()
         setupButtons()
-        setupViewDelegates()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,10 +80,10 @@ extension SearchViewController: ISearchViewController {
     }
 }
 
-// MARK: - View Delegates
+// MARK: - Private Methods
 
 private extension SearchViewController {
-    func setupViewDelegates() {
+    func setupView() {
         searchView.searchBarDelegate = self
         searchView.tableViewDataSource = self
         searchView.tableViewDelegate = self
@@ -94,7 +98,7 @@ private extension SearchViewController {
     }
     
     func setupCloseButton() {
-        let closeBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"),
+        let closeBarButtonItem = UIBarButtonItem(image: Constants.closeButtonImage,
                                                  style: .plain,
                                                  target: self,
                                                  action: #selector(didPressCloseButton))
@@ -115,12 +119,6 @@ private extension SearchViewController {
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if let text = searchView.searchText {
-            presenter?.didChangeText(text)
-        }
-    }
-
-    @objc func didStartTyping() {
         if let text = searchView.searchText {
             presenter?.didChangeText(text)
         }

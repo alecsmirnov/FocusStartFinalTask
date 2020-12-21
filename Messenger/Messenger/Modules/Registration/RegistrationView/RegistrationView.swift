@@ -7,36 +7,25 @@
 
 import UIKit
 
-protocol IRegistrationView: AnyObject {
-    var signUpButtonAction: Completions.ButtonPress? { get set }
-    var signInButtonAction: Completions.ButtonPress? { get set }
-    
-    var firstNameText: String? { get }
-    var lastNameText: String? { get }
-    var emailText: String? { get }
-    var passwordText: String? { get }
-    
-    func showSpinnerView()
-    func hideSpinnerView()
+protocol RegistrationViewDelegate: AnyObject {
+    func registrationViewSignUp(_ loginView: RegistrationView)
+    func registrationViewSignIn(_ loginView: RegistrationView)
 }
 
 final class RegistrationView: UIView {
     // MARK: Properties
     
-    var signUpButtonAction: Completions.ButtonPress?
-    var signInButtonAction: Completions.ButtonPress?
+    weak var delegate: RegistrationViewDelegate?
     
     // MARK: Subviews
     
     private let spinnerView = SpinnerView()
-    private let containerView = UIView()
     
+    private let containerView = UIView()
     private let firstNameTextField = UITextField()
     private let lastNameTextField = UITextField()
-    
     private let emailTextField = UITextField()
     private let passwordTextField = UITextField()
-
     private let signUpButton = UIButton(type: .system)
     
     private let signInView = UIView()
@@ -49,6 +38,7 @@ final class RegistrationView: UIView {
         super.init(frame: .zero)
         
         setupAppearance()
+        setupActions()
         setupLayout()
         setupGestures()
     }
@@ -58,9 +48,9 @@ final class RegistrationView: UIView {
     }
 }
 
-// MARK: - IRegistrationView
+// MARK: - Public Methods
 
-extension RegistrationView: IRegistrationView {    
+extension RegistrationView {
     var firstNameText: String? {
         return firstNameTextField.text
     }
@@ -94,12 +84,9 @@ private extension RegistrationView {
         
         setupFirstNameTextFieldAppearance()
         setupLastNameTextFieldAppearance()
-        
         setupEmailTextFieldAppearance()
         setupPasswordTextFieldAppearance()
-        
         setupSignUpButtonAppearance()
-        
         setupPromptLabelAppearance()
         setupSignInButtonAppearance()
     }
@@ -144,14 +131,13 @@ private extension RegistrationView {
         signUpButton.setTitle("Sign up", for: .normal)
         signUpButton.setTitleColor(LoginRegistrationColors.buttonTitle, for: .normal)
         signUpButton.backgroundColor = Colors.themeColor
+        signUpButton.titleLabel?.font = .boldSystemFont(ofSize: signUpButton.titleLabel?.font.pointSize ?? 0)
         signUpButton.clipsToBounds = true
         signUpButton.sizeToFit()
         
         signUpButton.layer.borderWidth = LoginRegistrationMetrics.borderWidth
         signUpButton.layer.borderColor = Colors.themeSecondColor.cgColor
         signUpButton.layer.cornerRadius = LoginRegistrationMetrics.cornerRadius
-        
-        signUpButton.addTarget(self, action: #selector(didPressSignUpButton), for: .touchUpInside)
     }
     
     func setupPromptLabelAppearance() {
@@ -165,20 +151,23 @@ private extension RegistrationView {
         signInButton.setTitleColor(LoginRegistrationColors.link, for: .normal)
         signInButton.titleLabel?.font = .boldSystemFont(ofSize: LoginRegistrationMetrics.promptFontSize)
         signInButton.sizeToFit()
-        
-        signInButton.addTarget(self, action: #selector(didPressSignInButton), for: .touchUpInside)
     }
 }
 
 // MARK: - Actions
 
 private extension RegistrationView {
+    func setupActions() {
+        signUpButton.addTarget(self, action: #selector(didPressSignUpButton), for: .touchUpInside)
+        signInButton.addTarget(self, action: #selector(didPressSignInButton), for: .touchUpInside)
+    }
+    
     @objc func didPressSignUpButton() {
-        signUpButtonAction?()
+        delegate?.registrationViewSignUp(self)
     }
     
     @objc func didPressSignInButton() {
-        signInButtonAction?()
+        delegate?.registrationViewSignIn(self)
     }
 }
 
@@ -189,15 +178,11 @@ private extension RegistrationView{
         setupSubviews()
  
         setupContainerViewLayout()
-        
         setupFirstNameTextFieldLayout()
         setupLastNameTextFieldLayout()
-        
         setupEmailTextFieldLayout()
         setupPasswordTextFieldLayout()
-        
         setupSignUpButtonLayout()
-        
         setupSignInViewLayout()
         setupPromptLabelLayout()
         setupSignInButtonLayout()
@@ -209,13 +194,11 @@ private extension RegistrationView{
         
         containerView.addSubview(firstNameTextField)
         containerView.addSubview(lastNameTextField)
-        
         containerView.addSubview(emailTextField)
         containerView.addSubview(passwordTextField)
-        
         containerView.addSubview(signUpButton)
-        
         containerView.addSubview(signInView)
+        
         signInView.addSubview(promptLabel)
         signInView.addSubview(signInButton)
     }
@@ -355,11 +338,17 @@ private extension RegistrationView {
 extension RegistrationView: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         switch textField {
-        case firstNameTextField: lastNameTextField.becomeFirstResponder()
-        case lastNameTextField: emailTextField.becomeFirstResponder()
-        case emailTextField: passwordTextField.becomeFirstResponder()
-        case passwordTextField: passwordTextField.resignFirstResponder(); signUpButtonAction?()
-        default: break
+        case firstNameTextField:
+            lastNameTextField.becomeFirstResponder()
+        case lastNameTextField:
+            emailTextField.becomeFirstResponder()
+        case emailTextField:
+            passwordTextField.becomeFirstResponder()
+        case passwordTextField:
+            passwordTextField.resignFirstResponder()
+            delegate?.registrationViewSignUp(self)
+        default:
+            break
         }
         
         return true

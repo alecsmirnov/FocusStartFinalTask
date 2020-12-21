@@ -54,17 +54,12 @@ private extension MenuOptionCell {
         backgroundColor = .systemBackground
         
         setupIconImageViewAppearance()
-        setupDescriptionLabelAppearance()
     }
     
     func setupIconImageViewAppearance() {
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.clipsToBounds = true
         iconImageView.tintColor = .black
-    }
-    
-    func setupDescriptionLabelAppearance() {
-        descriptionLabel.text = "sample text"
     }
 }
 

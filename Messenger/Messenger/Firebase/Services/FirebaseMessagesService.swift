@@ -8,6 +8,8 @@
 import FirebaseDatabase
 
 enum FirebaseMessageService {
+    // MARK: Properties
+    
     private enum Constants {
         static let messageIsReadKey = "is_read"
     }
@@ -111,14 +113,11 @@ extension FirebaseMessageService {
     }
     
     static func observeMessagesChanged(chatIdentifier: String, userIdentifier: String) {
-        //let messagesChangedReference = databaseReference.
+        // TODO: after added message fix
     }
     
     static func observeMessageChanged(chatIdentifier: String, messageIdentifier: String) {
-        let messagesChangedReference = databaseReference.child(Tables.chatsMessages)
-                                                        .child(chatIdentifier)
-                                                        .child(messageIdentifier)
-        //let messageChangedHandle = messagesChangedReference.observe(<#T##eventType: DataEventType##DataEventType#>, with: <#T##(DataSnapshot) -> Void#>)
+        // TODO: after added message fix
     }
 }
 
@@ -212,7 +211,7 @@ extension FirebaseMessageService {
 
 // MARK: - Private Methods
 
-extension FirebaseMessageService {
+private extension FirebaseMessageService {
     static func increaseUnreadMessagesCount(userIdentifier: String, chatIdentifier: String) {
         let counterReference = databaseReference.child(Tables.usersChatsUnread)
                                                 .child(userIdentifier)
@@ -257,13 +256,24 @@ extension FirebaseMessageService {
             return TransactionResult.success(withValue: mutableDat)
         }
     }
-    
+}
+
+// MARK: - Helper Methods
+
+extension FirebaseMessageService {
     static func messageValueToMessage(_ messageValue: ChatsMessagesValue, messageIdentifier: String) -> MessageInfo {
         let message = MessageInfo(identifier: messageIdentifier,
                                   senderIdentifier: messageValue.senderIdentifier,
                                   type: messageValue.messageType,
                                   isRead: messageValue.isRead,
                                   timestamp: messageValue.timestamp)
+        
+        return message
+    }
+    
+    static func determineMessageDirection(_ message: MessageInfo, currentUserIdentifier: String) -> MessageInfo {
+        var message = message
+        message.isIncoming = message.senderIdentifier != currentUserIdentifier
         
         return message
     }

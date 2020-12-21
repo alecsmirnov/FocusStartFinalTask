@@ -7,8 +7,6 @@
 
 import UIKit
 
-protocol IMenuChatsViewController: AnyObject {}
-
 final class MenuChatsViewController: UIViewController {
     // MARK: Properties
     
@@ -37,10 +35,6 @@ final class MenuChatsViewController: UIViewController {
         setupMenuViewController()
     }
 }
-
-// MARK: - IMenuChatsViewController
-
-extension MenuChatsViewController: IMenuChatsViewController {}
 
 // MARK: - Public Methods
 

@@ -8,15 +8,23 @@
 import UIKit
 
 protocol IChatsViewController: AnyObject {
-    var activityIndicator: Bool { get set }
-    
+    func insertNewRow()
+    func updateRow(at index: Int)
     func reloadData()
 }
 
-final class ChatsViewController: UIViewController {
+final class ChatsViewController: MyNavigationBarViewController {
     // MARK: Properties
     
     var presenter: IChatsPresenter?
+    
+    private enum Constants {
+        static let searchButtonImage = UIImage(systemName: "square.and.pencil")
+        static let menuButtonImage = UIImage(systemName: "line.horizontal.3")
+        
+        static let clearMenuTitle = "Clear history"
+        static let removeMenuTitle = "Remove"
+    }
     
     private var chatsView: ChatsView {
         guard let view = view as? ChatsView else {
@@ -37,7 +45,7 @@ final class ChatsViewController: UIViewController {
         
         presenter?.viewDidLoad()
         
-        setupViewDelegates()
+        setupView()
         setupButtons()
     }
 }
@@ -45,17 +53,25 @@ final class ChatsViewController: UIViewController {
 // MARK: - IChatsViewController
 
 extension ChatsViewController: IChatsViewController {
-    var activityIndicator: Bool {
-        get { chatsView.activityIndicator }
-        set {
-            chatsView.activityIndicator = newValue
-            
-            navigationController?.setNavigationBarHidden(newValue, animated: true)
-        }
+    func insertNewRow() {
+        chatsView.insertNewRow()
+    }
+    
+    func updateRow(at index: Int) {
+        chatsView.updateRow(at: index)
     }
     
     func reloadData() {
         chatsView.reloadData()
+    }
+}
+
+// MARK: - Private Methods
+
+private extension ChatsViewController {
+    func setupView() {
+        chatsView.tableViewDataSource = self
+        chatsView.tableViewDelegate = self
     }
 }
 
@@ -68,7 +84,7 @@ private extension ChatsViewController {
     }
     
     func setupSearchButton() {
-        let searchBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "square.and.pencil"),
+        let searchBarButtonItem = UIBarButtonItem(image: Constants.searchButtonImage,
                                                   style: .plain,
                                                   target: self,
                                                   action: #selector(didPressSearchButton))
@@ -77,7 +93,7 @@ private extension ChatsViewController {
     }
     
     func setupMenuButton() {
-        let menuBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"),
+        let menuBarButtonItem = UIBarButtonItem(image: Constants.menuButtonImage,
                                                 style: .plain,
                                                 target: self,
                                                 action: #selector(didPressMenuButton))
@@ -95,15 +111,6 @@ private extension ChatsViewController {
     
     @objc func didPressMenuButton() {
         presenter?.didPressMenuButton()
-    }
-}
-
-// MARK: - View Delegates
-
-private extension ChatsViewController {
-    func setupViewDelegates() {
-        chatsView.tableViewDataSource = self
-        chatsView.tableViewDelegate = self
     }
 }
 
@@ -141,17 +148,21 @@ extension ChatsViewController: UITableViewDelegate {
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
-        let clear = UIContextualAction(style: .normal, title: "Clear history") { [weak self] _, _, completionHandler in
+        let clear = UIContextualAction(style: .normal,
+                                       title: Constants.clearMenuTitle) { [weak self] _, _, completionHandler in
             self?.presenter?.didClearChat(at: indexPath.row)
-
+            
             completionHandler(true)
         }
         
-        let remove = UIContextualAction(style: .destructive, title: "Remove") { [weak self] _, _, completionHandler in
+        let remove = UIContextualAction(style: .destructive,
+                                        title: Constants.removeMenuTitle) { [weak self] _, _, completionHandler in
             self?.presenter?.didRemoveChat(at: indexPath.row)
-
+            
             completionHandler(true)
         }
+        
+        remove.backgroundColor = Colors.themeAdditionalColor
 
         return UISwipeActionsConfiguration(actions: [remove, clear])
     }

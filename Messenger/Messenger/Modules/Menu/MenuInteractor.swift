@@ -15,10 +15,11 @@ protocol IMenuInteractor: AnyObject {
 
 protocol IMenuInteractorOutput: AnyObject {
     func fetchUserSuccess(_ user: UserInfo)
-    func fetchUserFail()
 }
 
 final class MenuInteractor {
+    // MARK: Properties
+    
     weak var presenter: IMenuInteractorOutput?
     
     private let firebaseMenuManager = FirebaseMenuManager()

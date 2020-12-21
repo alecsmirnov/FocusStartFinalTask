@@ -7,12 +7,6 @@
 
 import UIKit
 
-protocol IChatsView: AnyObject {
-    var activityIndicator: Bool { get set }
-    
-    func reloadData()
-}
-
 final class ChatsView: UIView {
     // MARK: Properties
     
@@ -24,6 +18,10 @@ final class ChatsView: UIView {
     var tableViewDelegate: UITableViewDelegate? {
         get { tableView.delegate }
         set { tableView.delegate = newValue }
+    }
+    
+    private enum Constants {
+        static let tableViewReloadAnimationDuration = 0.2
     }
     
     // MARK: Subviews
@@ -45,20 +43,41 @@ final class ChatsView: UIView {
     }
 }
 
-// MARK: - IChatsView
+// MARK: - Public Methods
 
-extension ChatsView: IChatsView {
-    var activityIndicator: Bool {
-        get { activityIndicatorView.isAnimating }
-        set {
-            tableView.isHidden = newValue
+extension ChatsView {
+    func insertNewRow() {
+        let sectionsCount = tableView.numberOfSections
+        
+        if 0 < sectionsCount {
+            let section = 0
             
-            newValue ? activityIndicatorView.startAnimating() : activityIndicatorView.stopAnimating()
+            let lastRowIndex = tableView.numberOfRows(inSection: section)
+            let lastRowIndexPath = IndexPath(row: lastRowIndex, section: section)
+            
+            tableView.insertRows(at: [lastRowIndexPath], with: .bottom)
+        } else {
+            reloadData()
+        }
+    }
+    
+    func updateRow(at index: Int) {
+        let section = 0
+        let indexPath = IndexPath(row: index, section: section)
+        
+        UIView.transition(with: tableView,
+                          duration: Constants.tableViewReloadAnimationDuration,
+                          options: [.transitionCrossDissolve]) {
+            self.tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     
     func reloadData() {
-        tableView.reloadData()
+        UIView.transition(with: tableView,
+                          duration: Constants.tableViewReloadAnimationDuration,
+                          options: [.transitionCrossDissolve]) {
+            self.tableView.reloadData()
+        }
     }
 }
 

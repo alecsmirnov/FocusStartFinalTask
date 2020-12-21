@@ -35,7 +35,7 @@ extension MenuRouter: IMenuRouter {
     
     func openLaunchViewController() {
         menuChatsViewController?.extendMenu { [weak self] in
-            self?.menuChatsViewController?.navigationController?.popToRootViewController(animated: true)
+            self?.menuChatsViewController?.navigationController?.popToRootViewController(animated: false)
         }
     }
     

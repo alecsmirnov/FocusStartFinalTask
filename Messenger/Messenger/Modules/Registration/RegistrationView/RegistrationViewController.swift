@@ -22,7 +22,9 @@ final class RegistrationViewController: UIViewController {
     
     var presenter: IRegistrationPresenter?
     
-    private var registrationView: IRegistrationView {
+    private var simpleAlertController: SimpleAlertController?
+    
+    private var registrationView: RegistrationView {
         guard let view = view as? RegistrationView else {
             fatalError("view is not a RegistrationView instance")
         }
@@ -39,7 +41,7 @@ final class RegistrationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupViewActions()
+        setupView()
     }
 }
 
@@ -47,19 +49,22 @@ final class RegistrationViewController: UIViewController {
 
 extension RegistrationViewController: IRegistrationViewController {
     func showEmptyFieldsAlert() {
-        showAlert(title: "Required fields are empty", message: "Please enter First name, Email and Password")
+        simpleAlertController?.showAlert(title: "Required fields are empty",
+                                         message: "Please enter First name, Email and Password")
     }
     
     func showInvalidEmailAlert() {
-        showAlert(title: "Invalid email address", message: "Please try again")
+        simpleAlertController?.showAlert(title: "Invalid email address", message: "Please try again")
     }
     
     func showUserAlreadyExistAlert() {
-        showAlert(title: "User with this email exists", message: "Please login or try another address")
+        simpleAlertController?.showAlert(title: "User with this email exists",
+                                         message: "Please login or try another address")
     }
     
     func showShortPasswordAlert(passwordLength: Int) {
-        showAlert(title: "Password is too short", message: "Minimum length: \(passwordLength). Please try again")
+        simpleAlertController?.showAlert(title: "Password is too short",
+                                         message: "Minimum length: \(passwordLength). Please try again")
     }
     
     func showSpinnerView() {
@@ -74,26 +79,28 @@ extension RegistrationViewController: IRegistrationViewController {
 // MARK: - Private Methods
 
 private extension RegistrationViewController {
-    func setupViewActions() {
-        registrationView.signUpButtonAction = { [weak self] in
-            self?.presenter?.didPressSignUpButton(firstName: self?.registrationView.firstNameText,
-                                                  lastName: self?.registrationView.lastNameText,
-                                                  email: self?.registrationView.emailText,
-                                                  password: self?.registrationView.passwordText)
-        }
+    func setupView() {
+        registrationView.delegate = self
         
-        registrationView.signInButtonAction = { [weak self] in
-            self?.presenter?.didPressSignInButton()
-        }
+        setupSimpleAlertController()
     }
     
-    func showAlert(title: String, message: String?) {
-        let alertAction = UIAlertAction(title: "Dismiss", style: .cancel)
-        alertAction.setValue(LoginRegistrationColors.alertActionButton, forKey: "titleTextColor")
+    func setupSimpleAlertController() {
+        simpleAlertController = SimpleAlertController(presentationController: self)
+    }
+}
 
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(alertAction)
+// MARK: - Private Methods
 
-        present(alert, animated: true)
+extension RegistrationViewController: RegistrationViewDelegate {
+    func registrationViewSignUp(_ loginView: RegistrationView) {
+        presenter?.didPressSignUpButton(firstName: registrationView.firstNameText,
+                                        lastName: registrationView.lastNameText,
+                                        email: registrationView.emailText,
+                                        password: registrationView.passwordText)
+    }
+    
+    func registrationViewSignIn(_ loginView: RegistrationView) {
+        presenter?.didPressSignInButton()
     }
 }

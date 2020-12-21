@@ -7,8 +7,6 @@
 
 import UIKit
 
-protocol IMessageCell: AnyObject {}
-
 final class MessageCell: UITableViewCell {
     // MARK: Properties
     
@@ -45,8 +43,6 @@ final class MessageCell: UITableViewCell {
     private let messageLabel = UILabel()
     private let timestampLabel = UILabel()
     
-    private let isReadMessageLabel = UILabel()
-    
     // MARK: Initialization
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -61,10 +57,6 @@ final class MessageCell: UITableViewCell {
     }
 }
 
-// MARK: - IMessageCell
-
-extension MessageCell: IMessageCell {}
-
 // MARK: - Public Methods
 
 extension MessageCell {
@@ -73,14 +65,6 @@ extension MessageCell {
         
         switch message.type {
         case .text(let messageText): messageLabel.text = messageText
-        }
-        
-        if message.isRead {
-            isReadMessageLabel.text = "read"
-            isReadMessageLabel.textColor = .green
-        } else {
-            isReadMessageLabel.text = "no"
-            isReadMessageLabel.textColor = .red
         }
         
         if message.isIncoming ?? false {
@@ -95,7 +79,7 @@ extension MessageCell {
             
             if let sender = userMessage.sender {
                 profileImageImageView.showInitials(firstName: sender.firstName, lastName: sender.lastName)
-                profileImageImageView.backgroundColor = .black
+                profileImageImageView.backgroundColor = Colors.initialsViewBackgroundColor
                 
                 if let profileImageURL = sender.profileImageURL {
                     profileImageImageView.download(urlString: profileImageURL)
@@ -109,6 +93,19 @@ extension MessageCell {
             messageLabel.textColor = .black
             
             bubbleView.backgroundColor = Constants.outgoingMessageColor
+        }
+    }
+}
+
+// MARK: - Public Methods
+
+private extension MessageCell {
+    func setSenderInfo(_ sender: UserInfo) {        
+        profileImageImageView.showInitials(firstName: sender.firstName, lastName: sender.lastName)
+        profileImageImageView.backgroundColor = Colors.initialsViewBackgroundColor
+        
+        if let profileImageURL = sender.profileImageURL {
+            profileImageImageView.download(urlString: profileImageURL)
         }
     }
 }
@@ -161,8 +158,6 @@ private extension MessageCell {
         setupBubbleViewLayout()
         setupMessageLabelLayout()
         setupTimestampLabelLayout()
-        
-        setupIsReadMessageLabelLayout()
     }
     
     func setupSubviews() {
@@ -174,7 +169,6 @@ private extension MessageCell {
         
         bubbleView.addSubview(messageLabel)
         bubbleView.addSubview(timestampLabel)
-        bubbleView.addSubview(isReadMessageLabel)
     }
     
     func setupProfileImageViewLayout() {
@@ -268,26 +262,11 @@ private extension MessageCell {
         
         NSLayoutConstraint.activate([
             timestampLabel.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: Metrics.verticalSpace),
+            timestampLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -Metrics.verticalSpace),
             timestampLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor,
                                                     constant: Metrics.horizontalSpace),
             timestampLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
                                                      constant: -Metrics.horizontalSpace),
-        ])
-    }
-    
-    
-    func setupIsReadMessageLabelLayout() {
-        isReadMessageLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            isReadMessageLabel.topAnchor.constraint(equalTo: timestampLabel.bottomAnchor,
-                                                    constant: Metrics.verticalSpace),
-            isReadMessageLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor,
-                                                       constant: -Metrics.verticalSpace),
-            isReadMessageLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor,
-                                                        constant: Metrics.horizontalSpace),
-            isReadMessageLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
-                                                         constant: -Metrics.horizontalSpace),
         ])
     }
 }

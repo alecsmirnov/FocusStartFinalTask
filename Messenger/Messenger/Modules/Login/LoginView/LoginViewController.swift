@@ -22,7 +22,9 @@ final class LoginViewController: UIViewController {
     
     var presenter: ILoginPresenter?
     
-    private var loginView: ILoginView {
+    private var simpleAlertController: SimpleAlertController?
+    
+    private var loginView: LoginView {
         guard let view = view as? LoginView else {
             fatalError("view is not a LoginView instance")
         }
@@ -39,7 +41,7 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupViewActions()
+        setupView()
     }
 }
 
@@ -55,43 +57,45 @@ extension LoginViewController: ILoginViewController {
     }
     
     func showEmptyFieldsAlert() {
-        showAlert(title: "Required fields are empty", message: "Please enter Email and Password")
+        simpleAlertController?.showAlert(title: "Required fields are empty", message: "Please enter Email and Password")
     }
     
     func showInvalidEmailAlert() {
-        showAlert(title: "Invalid email address", message: "Please try again")
+        simpleAlertController?.showAlert(title: "Invalid email address", message: "Please try again")
     }
     
     func showUserNotExistAlert() {
-        showAlert(title: "User does not exist", message: "Please register or try another address")
+        simpleAlertController?.showAlert(title: "User does not exist",
+                                         message: "Please register or try another address")
     }
     
     func showWrongPasswordAlert() {
-        showAlert(title: "Wrong password", message: "Please try again")
+        simpleAlertController?.showAlert(title: "Wrong password", message: "Please try again")
     }
 }
 
 // MARK: - Private Methods
 
 private extension LoginViewController {
-    func setupViewActions() {
-        loginView.signInButtonAction = { [weak self] in
-            self?.presenter?.didPressSignInButton(email: self?.loginView.emailText,
-                                                  password: self?.loginView.passwordText)
-        }
+    func setupView() {
+        loginView.delegate = self
         
-        loginView.signUpButtonAction = { [weak self] in
-            self?.presenter?.didPressSignUpButton()
-        }
+        setupSimpleAlertController()
     }
     
-    func showAlert(title: String, message: String?) {
-        let alertAction = UIAlertAction(title: "Dismiss", style: .cancel)
-        alertAction.setValue(LoginRegistrationColors.alertActionButton, forKey: "titleTextColor")
-        
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(alertAction)
-        
-        present(alert, animated: true)
+    func setupSimpleAlertController() {
+        simpleAlertController = SimpleAlertController(presentationController: self)
+    }
+}
+
+// MARK: - LoginViewDelegate
+
+extension LoginViewController: LoginViewDelegate {
+    func loginViewSignIn(_ loginView: LoginView) {
+        presenter?.didPressSignInButton(email: loginView.emailText, password: loginView.passwordText)
+    }
+    
+    func loginViewSignUp(_ loginView: LoginView) {
+        presenter?.didPressSignUpButton()
     }
 }

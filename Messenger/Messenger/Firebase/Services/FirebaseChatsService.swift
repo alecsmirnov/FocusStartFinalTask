@@ -358,7 +358,7 @@ extension FirebaseChatsService {
     }
 }
 
-// MARK: - Private Methods
+// MARK: - Helper Methods
 
 extension FirebaseChatsService {
     static func getPairChatIdentifier(userIdentifier1: String, userIdentifier2: String) -> String {

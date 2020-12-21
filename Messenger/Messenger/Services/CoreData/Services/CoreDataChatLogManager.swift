@@ -11,12 +11,6 @@ import CoreData
 final class CoreDataChatLogManager {
     // MARK: Properties
     
-    private enum Constants {
-        static let timestampInitialValue = 0.0
-        
-        static let fetchPredicate = "identifier == %@"
-    }
-    
     private lazy var managedContext: NSManagedObjectContext = {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let managedContext = appDelegate.persistentContainer.viewContext
@@ -39,7 +33,7 @@ final class CoreDataChatLogManager {
 extension CoreDataChatLogManager {
     func fetchData(chatIdentifier: String) {
         let chatLogFetchRequest: NSFetchRequest<CoreDataChatLog> = CoreDataChatLog.fetchRequest()
-        chatLogFetchRequest.predicate = NSPredicate(format: Constants.fetchPredicate, chatIdentifier)
+        chatLogFetchRequest.predicate = NSPredicate(format: CoreDataConstants.fetchChatLogPredicate, chatIdentifier)
 
         do {
             chatLog = try managedContext.fetch(chatLogFetchRequest).first
@@ -49,7 +43,7 @@ extension CoreDataChatLogManager {
     }
     
     func getLatestUpdateTimestamp() -> TimeInterval {
-        return chatLog?.timestamp ?? Constants.timestampInitialValue
+        return chatLog?.timestamp ?? CoreDataConstants.timestampInitialValue
     }
     
     func getMessages() -> [MessageInfo] {
@@ -83,7 +77,7 @@ extension CoreDataChatLogManager {
     }
     
     func resetUpdateTimestamp() {
-        chatLog?.timestamp = Constants.timestampInitialValue
+        chatLog?.timestamp = CoreDataConstants.timestampInitialValue
         
         saveContext()
     }
@@ -92,7 +86,7 @@ extension CoreDataChatLogManager {
         guard let chatLog = chatLog else { return }
         
         let chatLogFetchRequest: NSFetchRequest<CoreDataChatLog> = CoreDataChatLog.fetchRequest()
-        chatLogFetchRequest.predicate = NSPredicate(format: Constants.fetchPredicate, chatLog.identifier)
+        chatLogFetchRequest.predicate = NSPredicate(format: CoreDataConstants.fetchChatLogPredicate, chatLog.identifier)
         
         do {
             let objects = try managedContext.fetch(chatLogFetchRequest)
@@ -125,7 +119,7 @@ private extension CoreDataChatLogManager {
     }
 
     func updateTimestamp() {
-        chatLog?.timestamp = currentTimestamp
+        chatLog?.timestamp = Timestamp.current
         
         do {
             try managedContext.save()
@@ -173,9 +167,5 @@ private extension CoreDataChatLogManager {
                                   timestamp: coreDataMessage.timestamp)
         
         return message
-    }
-    
-    var currentTimestamp: TimeInterval {
-        return Date().timeIntervalSince1970
     }
 }

@@ -11,12 +11,6 @@ import CoreData
 final class CoreDataChatsManager {
     // MARK: Properties
     
-    private enum Constants {
-        static let timestampInitialValue = 0.0
-        
-        static let fetchChatLogPredicate = "identifier == %@"
-    }
-    
     private lazy var managedContext: NSManagedObjectContext = {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let managedContext = appDelegate.persistentContainer.viewContext
@@ -38,7 +32,7 @@ final class CoreDataChatsManager {
 
 extension CoreDataChatsManager {
     func getLatestUpdateTimestamp() -> TimeInterval {
-        return update?.timestamp ?? Constants.timestampInitialValue
+        return update?.timestamp ?? CoreDataConstants.timestampInitialValue
     }
     
     func getChats() -> [ChatInfo] {
@@ -122,14 +116,15 @@ extension CoreDataChatsManager {
     }
     
     func resetUpdateTimestamp() {
-        update?.timestamp = Constants.timestampInitialValue
+        update?.timestamp = CoreDataConstants.timestampInitialValue
         
         saveContext()
     }
     
     func clearChatLog(at index: Int) {
         let chatLogFetchRequest: NSFetchRequest<CoreDataChatLog> = CoreDataChatLog.fetchRequest()
-        chatLogFetchRequest.predicate = NSPredicate(format: Constants.fetchChatLogPredicate, chats[index].identifier)
+        chatLogFetchRequest.predicate = NSPredicate(format: CoreDataConstants.fetchChatLogPredicate,
+                                                    chats[index].identifier)
         
         do {
             let objects = try managedContext.fetch(chatLogFetchRequest)
@@ -144,7 +139,7 @@ extension CoreDataChatsManager {
         }
         
         chats[index].chatLog = initChatLog(chatIdentifier: chats[index].identifier)
-        chats[index].chatLog?.timestamp = currentTimestamp
+        chats[index].chatLog?.timestamp = Timestamp.current
     }
     
     func clear() {
@@ -177,7 +172,7 @@ private extension CoreDataChatsManager {
             
             if update == nil {
                 update = CoreDataUpdate(context: managedContext)
-                update?.timestamp = Constants.timestampInitialValue
+                update?.timestamp = CoreDataConstants.timestampInitialValue
             }
             
             chats = try managedContext.fetch(chatsFetchRequest)
@@ -207,7 +202,7 @@ private extension CoreDataChatsManager {
     }
     
     func updateTimestamp() {
-        update?.timestamp = currentTimestamp
+        update?.timestamp = Timestamp.current
         
         do {
             try managedContext.save()
@@ -281,7 +276,7 @@ private extension CoreDataChatsManager {
         
         let coreDataChatLog = CoreDataChatLog(context: managedContext)
         coreDataChatLog.identifier = chat.identifier
-        coreDataChatLog.timestamp = Constants.timestampInitialValue
+        coreDataChatLog.timestamp = CoreDataConstants.timestampInitialValue
         
         coreDataChat.chatLog = initChatLog(chatIdentifier: chat.identifier)
         
@@ -322,12 +317,8 @@ private extension CoreDataChatsManager {
         let coreDataChatLog = CoreDataChatLog(context: managedContext)
         
         coreDataChatLog.identifier = chatIdentifier
-        coreDataChatLog.timestamp = Constants.timestampInitialValue
+        coreDataChatLog.timestamp = CoreDataConstants.timestampInitialValue
         
         return coreDataChatLog
-    }
-    
-    var currentTimestamp: TimeInterval {
-        return Date().timeIntervalSince1970
     }
 }

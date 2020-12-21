@@ -7,31 +7,23 @@
 
 import UIKit
 
-protocol ILoginView: AnyObject {
-    var signInButtonAction: Completions.ButtonPress? { get set }
-    var signUpButtonAction: Completions.ButtonPress? { get set }
-
-    var emailText: String? { get }
-    var passwordText: String? { get }
-    
-    func showSpinnerView()
-    func hideSpinnerView()
+protocol LoginViewDelegate: AnyObject {
+    func loginViewSignIn(_ loginView: LoginView)
+    func loginViewSignUp(_ loginView: LoginView)
 }
 
 final class LoginView: UIView {
     // MARK: Properties
     
-    var signInButtonAction: Completions.ButtonPress?
-    var signUpButtonAction: Completions.ButtonPress?
+    weak var delegate: LoginViewDelegate?
     
     // MARK: Subviews
     
     private let spinnerView = SpinnerView()
-    private let containerView = UIView()
     
+    private let containerView = UIView()
     private let emailTextField = UITextField()
     private let passwordTextField = UITextField()
-    
     private let signInButton = UIButton(type: .system)
     
     private let signUpView = UIView()
@@ -44,6 +36,7 @@ final class LoginView: UIView {
         super.init(frame: .zero)
         
         setupAppearance()
+        setupActions()
         setupLayout()
         setupGestures()
     }
@@ -53,9 +46,9 @@ final class LoginView: UIView {
     }
 }
 
-// MARK: - ILoginView
+// MARK: - Public Methods
 
-extension LoginView: ILoginView {
+extension LoginView {
     var emailText: String? {
         return emailTextField.text
     }
@@ -81,9 +74,7 @@ private extension LoginView {
         
         setupEmailTextFieldAppearance()
         setupPasswordTextFieldAppearance()
-        
         setupSignInButtonAppearance()
-        
         setupPromptLabelAppearance()
         setupSignUpButtonAppearance()
     }
@@ -111,14 +102,13 @@ private extension LoginView {
         signInButton.setTitle("Sign in", for: .normal)
         signInButton.setTitleColor(LoginRegistrationColors.buttonTitle, for: .normal)
         signInButton.backgroundColor = Colors.themeColor
+        signInButton.titleLabel?.font = .boldSystemFont(ofSize: signInButton.titleLabel?.font.pointSize ?? 0)
         signInButton.clipsToBounds = true
         signInButton.sizeToFit()
         
         signInButton.layer.borderWidth = LoginRegistrationMetrics.borderWidth
         signInButton.layer.borderColor = Colors.themeSecondColor.cgColor
         signInButton.layer.cornerRadius = LoginRegistrationMetrics.cornerRadius
-        
-        signInButton.addTarget(self, action: #selector(didPressSignInButton), for: .touchUpInside)
     }
     
     func setupPromptLabelAppearance() {
@@ -132,20 +122,23 @@ private extension LoginView {
         signUpButton.setTitleColor(LoginRegistrationColors.link, for: .normal)
         signUpButton.titleLabel?.font = .boldSystemFont(ofSize: LoginRegistrationMetrics.promptFontSize)
         signUpButton.sizeToFit()
-        
-        signUpButton.addTarget(self, action: #selector(didPressSignUpButton), for: .touchUpInside)
     }
 }
 
 // MARK: - Actions
 
 private extension LoginView {
+    func setupActions() {
+        signInButton.addTarget(self, action: #selector(didPressSignInButton), for: .touchUpInside)
+        signUpButton.addTarget(self, action: #selector(didPressSignUpButton), for: .touchUpInside)
+    }
+    
     @objc func didPressSignUpButton() {
-        signUpButtonAction?()
+        delegate?.loginViewSignUp(self)
     }
     
     @objc func didPressSignInButton() {
-        signInButtonAction?()
+        delegate?.loginViewSignIn(self)
     }
 }
 
@@ -156,12 +149,9 @@ private extension LoginView {
         setupSubviews()
         
         setupContainerViewLayout()
-        
         setupEmailTextFieldLayout()
         setupPasswordTextFieldLayout()
-        
         setupSignUpButtonLayout()
-        
         setupSignUpViewLayout()
         setupPromptLabelLayout()
         setupSignInButtonLayout()
@@ -173,10 +163,9 @@ private extension LoginView {
         
         containerView.addSubview(emailTextField)
         containerView.addSubview(passwordTextField)
-        
         containerView.addSubview(signInButton)
-        
         containerView.addSubview(signUpView)
+        
         signUpView.addSubview(promptLabel)
         signUpView.addSubview(signUpButton)
     }
@@ -292,9 +281,13 @@ private extension LoginView {
 extension LoginView: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         switch textField {
-        case emailTextField: passwordTextField.becomeFirstResponder()
-        case passwordTextField: passwordTextField.resignFirstResponder(); signInButtonAction?()
-        default: break
+        case
+            emailTextField: passwordTextField.becomeFirstResponder()
+        case
+            passwordTextField: passwordTextField.resignFirstResponder()
+            delegate?.loginViewSignIn(self)
+        default:
+            break
         }
         
         return true

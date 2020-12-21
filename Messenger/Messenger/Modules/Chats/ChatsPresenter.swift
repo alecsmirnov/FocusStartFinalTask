@@ -31,12 +31,12 @@ final class ChatsPresenter {
 // MARK: - IChatsPresenter
 
 extension ChatsPresenter: IChatsPresenter {
-    func viewDidLoad() {
-        interactor?.fetchChats()
-    }
-    
     var chatsCount: Int {
         return chats.count
+    }
+    
+    func viewDidLoad() {
+        interactor?.fetchChats()
     }
     
     func chat(at index: Int) -> ChatInfo? {
@@ -76,7 +76,7 @@ extension ChatsPresenter: IChatsInteractorOutput {
     func chatAdded(_ chat: ChatInfo) {
         chats.append(chat)
         
-        viewController?.reloadData()
+        viewController?.insertNewRow()
     }
     
     func chatRemoved(at index: Int) {
@@ -88,25 +88,25 @@ extension ChatsPresenter: IChatsInteractorOutput {
     func chatCompanionUpdated(at index: Int, companion: UserInfo) {
         chats[index].companion = companion
         
-        viewController?.reloadData()
+        viewController?.updateRow(at: index)
     }
     
     func chatMessageUpdated(at index: Int, message: MessageInfo?) {
         chats[index].latestMessage = message
         
-        viewController?.reloadData()
+        viewController?.updateRow(at: index)
     }
     
     func chatUnreadMessagesCountUpdated(at index: Int, count: Int) {
         chats[index].unreadMessagesCount = count
         
-        viewController?.reloadData()
+        viewController?.updateRow(at: index)
     }
     
     func chatOnlineStatusUpdate(at index: Int, isOnline: Bool) {
         chats[index].isOnline = isOnline
         
-        viewController?.reloadData()
+        viewController?.updateRow(at: index)
     }
 }
 
