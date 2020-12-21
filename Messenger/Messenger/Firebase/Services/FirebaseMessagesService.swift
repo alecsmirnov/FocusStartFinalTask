@@ -88,14 +88,15 @@ extension FirebaseMessageService {
                                      userIdentifier: String,
                                      latestUpdateTime: TimeInterval,
                                      limit: Int,
-                                     completion: @escaping (MessageInfo) -> Void) {
-        databaseReference.child(Tables.usersChatsMessages)
-                         .child(userIdentifier)
-                         .child(chatIdentifier)
-                         .queryOrderedByValue()
-                         .queryStarting(atValue: latestUpdateTime)
-                         .queryLimited(toLast: UInt(limit))
-                         .observe(.childAdded) { snapshot in
+                                     completion: @escaping (MessageInfo) -> Void) -> ObserverData {
+        
+        let addedMessagesReference = databaseReference.child(Tables.usersChatsMessages)
+                                                      .child(userIdentifier)
+                                                      .child(chatIdentifier)
+        let addedMessagesHandle = addedMessagesReference.queryOrderedByValue()
+                                                        .queryStarting(atValue: latestUpdateTime)
+                                                        .queryLimited(toLast: UInt(limit))
+                                                        .observe(.childAdded) { snapshot in
             let messageIdentifier = snapshot.key
             
             FirebaseMessageService.fetchChatMessage(chatIdentifier: chatIdentifier,
@@ -105,6 +106,19 @@ extension FirebaseMessageService {
                 }
             }
         }
+        
+        return ObserverData(reference: addedMessagesReference, handle: addedMessagesHandle)
+    }
+    
+    static func observeMessagesChanged(chatIdentifier: String, userIdentifier: String) {
+        //let messagesChangedReference = databaseReference.
+    }
+    
+    static func observeMessageChanged(chatIdentifier: String, messageIdentifier: String) {
+        let messagesChangedReference = databaseReference.child(Tables.chatsMessages)
+                                                        .child(chatIdentifier)
+                                                        .child(messageIdentifier)
+        //let messageChangedHandle = messagesChangedReference.observe(<#T##eventType: DataEventType##DataEventType#>, with: <#T##(DataSnapshot) -> Void#>)
     }
 }
 

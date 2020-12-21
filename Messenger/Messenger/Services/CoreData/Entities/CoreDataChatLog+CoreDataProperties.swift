@@ -14,8 +14,8 @@ extension CoreDataChatLog {
         return NSFetchRequest<CoreDataChatLog>(entityName: "CoreDataChatLog")
     }
 
+    @NSManaged public var identifier: String
     @NSManaged public var timestamp: Double
-    @NSManaged public var identifier: String?
     @NSManaged public var messages: NSOrderedSet?
     
     @NSManaged public var chat: CoreDataChat?

@@ -44,6 +44,7 @@ extension MenuInteractor: IMenuInteractor {
     func signOut() {
         sendSignOutNotification()
         
+        firebaseMenuManager.removeUser()
         FirebaseAuthService.signOut()
     }
 }

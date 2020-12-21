@@ -143,7 +143,7 @@ extension FirebaseChatsService {
             
             fetchPairChat(chatIdentifier: chatIdentifier,
                           userIdentifier: userIdentifier) { chat, error in
-                guard let chat = chat, error == nil else {
+                guard var chat = chat, error == nil else {
                     LoggingService.log(category: .database,
                                        layer: .none,
                                        type: .error,
@@ -151,6 +151,8 @@ extension FirebaseChatsService {
                     
                     return
                 }
+                
+                chat.isOnline = true
                 
                 completion(chat)
             }

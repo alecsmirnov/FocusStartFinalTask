@@ -28,6 +28,8 @@ final class ChatCell: UITableViewCell {
         static let nameLabelFontSize: CGFloat = 17
         static let timestampLabelFontSize: CGFloat = 14
         static let messageLabelFontSize: CGFloat = 16
+        
+        static let unreadMessagesCountLabelSize: CGFloat = 16
     }
     
     private enum LayoutPriority {
@@ -37,9 +39,10 @@ final class ChatCell: UITableViewCell {
     // MARK: Subviews
     
     private let profileImageView = UIView()
-    private let cellContentView = UIView()
+    private let profileImageImageView = InitialsImageView()
+    private let onlineStatusView = UIView()
     
-    private let profileImageImageView = UIImageView()
+    private let cellContentView = UIView()
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
     private let unreadMessagesCountLabel = UILabel()
@@ -74,38 +77,33 @@ extension ChatCell: IChatsCell {}
 // MARK: - Public Methods
 
 extension ChatCell {
-    func configure(withFirstName firstName: String, lastName: String?) {
-        nameLabel.text = "\(firstName) \(lastName ?? "")"
-    }
-    
-    func configure(withText text: String) {
-        messageLabel.text = text
-    }
-    
-    func setUnreadMessagesCount(_ count: Int) {
-        unreadMessagesCountLabel.text = count.description
-    }
-    
-    func setTimestamp(_ timestamp: TimeInterval) {
-        timestampLabel.text = timestamp.description
-    }
-    
-    func setOnlineStatus(isOnline: Bool?) {
-        if let isOnline = isOnline {
-            nameLabel.textColor = isOnline ? .green : .black
-        }
-    }
-    
-    func setImage(urlString: String) {
-        FirebaseStorageService.downloadProfileImageData(urlString: urlString) { data in
-            print("here")
-            
-            if let data = data {
-                DispatchQueue.main.async {
-                    self.profileImageImageView.image = UIImage(data: data)
-                }
+    func configure(with chat: ChatInfo) {
+        nameLabel.text = "\(chat.companion.firstName) \(chat.companion.lastName ?? "")"
+        
+        if let latestMessage = chat.latestMessage {
+            switch latestMessage.type {
+            case .text(let messageText): messageLabel.text = messageText
             }
+            
+            if let latestMessageTimestamp = chat.latestMessage?.timestamp {
+                timestampLabel.text = Date(timeIntervalSince1970: latestMessageTimestamp).formatRelativeString()
+            }
+        } else {
+            messageLabel.text = nil
+            timestampLabel.text = nil
         }
+
+        unreadMessagesCountLabel.isHidden = chat.unreadMessagesCount == nil || 0 == chat.unreadMessagesCount ?? 0
+        unreadMessagesCountLabel.text = chat.unreadMessagesCount?.description
+        
+        profileImageImageView.showInitials(firstName: chat.companion.firstName, lastName: chat.companion.lastName)
+        profileImageImageView.backgroundColor = .black
+        
+        if let profileImageURL = chat.companion.profileImageURL {
+            profileImageImageView.download(urlString: profileImageURL)
+        }
+        
+        onlineStatusView.isHidden = !(chat.isOnline ?? false)
     }
 }
 
@@ -123,6 +121,7 @@ private extension ChatCell {
 private extension ChatCell {
     func setupAppearance() {
         setupProfileImageImageViewAppearance()
+        setupOnlineStatusViewAppearance()
         setupNameLabelAppearance()
         setupMessageLabelAppearance()
         setupUnreadMessagesCountLabelAppearance()
@@ -133,8 +132,14 @@ private extension ChatCell {
     
     func setupProfileImageImageViewAppearance() {
         profileImageImageView.contentMode = .scaleAspectFill
-        profileImageImageView.layer.borderWidth = 1
-        profileImageImageView.layer.borderColor = UIColor.systemGray.cgColor
+    }
+    
+    func setupOnlineStatusViewAppearance() {
+        onlineStatusView.backgroundColor = UIColor(red: 0.0549, green: 0.9274, blue: 0.7647, alpha: 1)
+        onlineStatusView.layer.borderWidth = 1
+        onlineStatusView.layer.borderColor = Colors.themeColor.cgColor
+        onlineStatusView.layer.cornerRadius = 6
+        onlineStatusView.layer.masksToBounds = true
     }
     
     func setupNameLabelAppearance() {
@@ -144,15 +149,22 @@ private extension ChatCell {
     
     func setupMessageLabelAppearance() {
         messageLabel.font = .systemFont(ofSize: Metrics.messageLabelFontSize)
+        messageLabel.textColor = .darkGray
         messageLabel.numberOfLines = 1
     }
     
     func setupUnreadMessagesCountLabelAppearance() {
-        unreadMessagesCountLabel.textAlignment = .right
+        unreadMessagesCountLabel.textAlignment = .center
+        unreadMessagesCountLabel.textColor = .white
+        unreadMessagesCountLabel.font = .systemFont(ofSize: 12)
+        unreadMessagesCountLabel.layer.masksToBounds = true
+        unreadMessagesCountLabel.layer.cornerRadius = Metrics.unreadMessagesCountLabelSize / 2
+        unreadMessagesCountLabel.backgroundColor = UIColor(red: 0.7215, green: 0.1176, blue: 0.2431, alpha: 0.9)
     }
     
     func setupTimestampLabelAppearance() {
         timestampLabel.font = .systemFont(ofSize: Metrics.timestampLabelFontSize)
+        timestampLabel.textColor = .darkGray
         timestampLabel.textAlignment = .right
         timestampLabel.numberOfLines = 1
     }
@@ -173,6 +185,7 @@ private extension ChatCell {
         setupCellContentViewLayout()
         
         setupProfileImageImageViewLayout()
+        setupOnlineStatusViewLayout()
         setupNameLabelLayout()
         setupMessageLabelLayout()
         setupTimestampLabelLayout()
@@ -184,6 +197,7 @@ private extension ChatCell {
         contentView.addSubview(cellContentView)
         
         profileImageView.addSubview(profileImageImageView)
+        profileImageView.addSubview(onlineStatusView)
         
         cellContentView.addSubview(nameLabel)
         cellContentView.addSubview(messageLabel)
@@ -197,6 +211,19 @@ private extension ChatCell {
         NSLayoutConstraint.activate([
             profileImageView.centerYAnchor.constraint(equalTo: cellContentView.centerYAnchor),
             profileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+        ])
+    }
+    
+    func setupOnlineStatusViewLayout() {
+        onlineStatusView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            //onlineStatusView.trailingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: -Metrics.profileImageHorizontalSpace),
+            //onlineStatusView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: -10),
+            onlineStatusView.centerXAnchor.constraint(equalTo: profileImageImageView.trailingAnchor, constant: -Metrics.profileImageHorizontalSpace + 2),
+            onlineStatusView.centerYAnchor.constraint(equalTo: profileImageImageView.bottomAnchor, constant: -Metrics.profileImageHorizontalSpace + 1),
+            onlineStatusView.widthAnchor.constraint(equalToConstant: 12),
+            onlineStatusView.heightAnchor.constraint(equalToConstant: 12),
         ])
     }
     
@@ -261,6 +288,8 @@ private extension ChatCell {
             unreadMessagesCountLabel.centerYAnchor.constraint(equalTo: messageLabel.centerYAnchor),
             unreadMessagesCountLabel.leadingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 8),
             unreadMessagesCountLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor),
+            unreadMessagesCountLabel.widthAnchor.constraint(equalToConstant: Metrics.unreadMessagesCountLabelSize),
+            unreadMessagesCountLabel.heightAnchor.constraint(equalToConstant: Metrics.unreadMessagesCountLabelSize),
         ])
     }
     

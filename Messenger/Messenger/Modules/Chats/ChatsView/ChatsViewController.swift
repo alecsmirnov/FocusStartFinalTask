@@ -116,27 +116,12 @@ extension ChatsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier,
-                                                       for: indexPath) as? ChatCell else { return UITableViewCell() }
+                                                       for: indexPath) as? ChatCell else {
+            return UITableViewCell()
+        }
         
         if let chat = presenter?.chat(at: indexPath.row) {
-            var messageText = ""
-            
-            switch chat.latestMessage?.type {
-            case .text(let text):
-                messageText = text
-            case .none: break
-            }
-            
-            cell.configure(withFirstName: chat.companion.firstName, lastName: chat.companion.lastName)
-            cell.configure(withText: messageText)
-            
-            cell.setUnreadMessagesCount(chat.unreadMessagesCount ?? 0)
-            cell.setTimestamp(chat.latestMessage?.timestamp ?? 0)
-            cell.setOnlineStatus(isOnline: chat.isOnline)
-            
-//                if let urlString = companion.profilePhotoURL {
-//                    cell.setImage(urlString: urlString)
-//                }
+            cell.configure(with: chat)
         }
         
         return cell
@@ -156,7 +141,7 @@ extension ChatsViewController: UITableViewDelegate {
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
-        let clear = UIContextualAction(style: .normal, title: "Clear") { [weak self] _, _, completionHandler in
+        let clear = UIContextualAction(style: .normal, title: "Clear history") { [weak self] _, _, completionHandler in
             self?.presenter?.didClearChat(at: indexPath.row)
 
             completionHandler(true)

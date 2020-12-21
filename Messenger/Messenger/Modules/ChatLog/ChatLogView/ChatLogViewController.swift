@@ -13,7 +13,7 @@ protocol IChatLogViewController: AnyObject {
     func endRefreshing()
     
     func reloadData()
-    func updateRowAt(index: Int)
+    func updateMessageAt(section: Int, row: Int)
     func insertNewRow()
     func startFromRowAt(index: Int)
     func scrollToBottom()
@@ -46,16 +46,18 @@ final class ChatLogViewController: UIViewController {
         setupView()           
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        presenter?.viewWillAppear()
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        print("appear")
+        
         presenter?.viewDidAppear()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        print("diss")
     }
 }
 
@@ -74,8 +76,8 @@ extension ChatLogViewController: IChatLogViewController {
         chatLogView.reloadData()
     }
     
-    func updateRowAt(index: Int) {
-        chatLogView.updateRowAt(index: index)
+    func updateMessageAt(section: Int, row: Int) {
+        chatLogView.updateRowAt(row: row, section: section)
     }
     
     func insertNewRow() {
@@ -122,23 +124,26 @@ private extension ChatLogViewController {
 // MARK: - UITableViewDataSource
 
 extension ChatLogViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return ChatLogSectionView(dateString: presenter?.sectionDate(section: section))
+    }
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return presenter?.sectionsCount ?? 0
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter?.messagesCount ?? 0
+        return presenter?.messagesCount(section: section) ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageCell.reuseIdentifier,
-                                                       for: indexPath) as? MessageCell else { return UITableViewCell() }
+                                                       for: indexPath) as? MessageCell else {
+            return UITableViewCell()
+        }
         
-        
-        if let message = presenter?.messageAt(index: indexPath.row) {
-            var messageText = ""
-            switch message.type {
-            case .text(let text):
-                messageText = text
-            }
-            
-            cell.configure(firstName: "Empty", lastName: "", messageText: messageText, isRead: message.isRead)
+        if let message = presenter?.messageAt(section: indexPath.section, index: indexPath.row) {
+            cell.configure(with: message)
         }
         
         return cell
@@ -151,7 +156,7 @@ extension ChatLogViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             if tableView.visibleCells.contains(cell) {
-                self.presenter?.didReadMessageAt(index: indexPath.row)
+                self.presenter?.didReadMessageAt(section: indexPath.section, index: indexPath.row)
             }
         }
     }

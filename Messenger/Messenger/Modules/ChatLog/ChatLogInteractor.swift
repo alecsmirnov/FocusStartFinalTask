@@ -9,8 +9,10 @@ import Foundation
 
 protocol IChatLogInteractor: AnyObject {
     func fetchMessages()
+    func observeMessages()
+    func stopObservingMessages()
+    
     func fetchPreviousMessages()
-    func fetchChatTitleInfo()
     
     func sendMessage(_ messageType: ChatsMessagesType)
     func readMessage(_ message: MessageInfo)
@@ -23,14 +25,13 @@ protocol IChatLogInteractorOutput: AnyObject {
     func fetchMessagesSuccess(_ messages: [MessageInfo])
     func fetchPreviousMessagesSuccess(_ previousMessages: [MessageInfo])
     func fetchPreviousMessagesFail()
-    
-    func fetchChatTitleInfoSuccess(title: String)
 }
 
 final class ChatLogInteractor {
     weak var presenter: IChatLogInteractorOutput?
     
     private enum Constants {
+        static let previousMessagesLoadCount = 3
         static let storedMessagesCount = 3
     }
     
@@ -38,6 +39,7 @@ final class ChatLogInteractor {
     private var topMessageTimestamp: TimeInterval?
     
     private let coreDataChatLogManager = CoreDataChatLogManager(maxSize: Constants.storedMessagesCount)
+    private let firebaseChatLogManager = FirebaseChatLogManager()
 }
 
 // MARK: - Public Methods
@@ -61,13 +63,35 @@ extension ChatLogInteractor {
 extension ChatLogInteractor: IChatLogInteractor {
     func fetchMessages() {
         loadStoredMessages()
-        observeMessages()
         
         // Test
         
-        if let chatIdentifier = chat?.identifier {
-            //FirebaseMessageService.observeUpdatedMessages(chatIdentifier: chatIdentifier)
+//        if let chatIdentifier = chat?.identifier {
+//            //FirebaseMessageService.observeUpdatedMessages(chatIdentifier: chatIdentifier)
+//        }
+    }
+    
+    func observeMessages() {
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+              let chatIdentifier = chat?.identifier else { return }
+        
+        let latestUpdateTime = coreDataChatLogManager.getLatestUpdateTimestamp()
+        
+        let messagesLimit = Constants.storedMessagesCount + (chat?.unreadMessagesCount ?? 0)
+        
+        firebaseChatLogManager.observeAddedMessages(chatIdentifier: chatIdentifier,
+                                                    userIdentifier: userIdentifier,
+                                                    latestUpdateTime: latestUpdateTime,
+                                                    limit: messagesLimit) { [weak self] message in
+            let definedMessage = ChatLogInteractor.defineIncomingMessage(message)
+            
+            self?.coreDataChatLogManager.appendMessage(message)
+            self?.presenter?.addedMessage(definedMessage)
         }
+    }
+    
+    func stopObservingMessages() {
+        firebaseChatLogManager.removeAddedMessages()
     }
     
     func fetchPreviousMessages() {
@@ -79,35 +103,28 @@ extension ChatLogInteractor: IChatLogInteractor {
             return
         }
         
-        let messagesLimit = Constants.storedMessagesCount
+        let messagesLimit = Constants.previousMessagesLoadCount
         
         FirebaseMessageService.fetchPreviousMessages(chatIdentifier: chatIdentifier,
                                                      userIdentifier: userIdentifier,
                                                      endingAt: topMessageTimestamp,
                                                      limit: messagesLimit) { [weak self] previousMessages in
             if let previousMessages = previousMessages {
+                let definedPreviousMessages = previousMessages.map { ChatLogInteractor.defineIncomingMessage($0) }
+                
                 self?.topMessageTimestamp = previousMessages.first?.timestamp
-                self?.presenter?.fetchPreviousMessagesSuccess(previousMessages)
+                self?.presenter?.fetchPreviousMessagesSuccess(definedPreviousMessages)
             } else {
                 self?.presenter?.fetchPreviousMessagesFail()
             }
         }
     }
     
-    func fetchChatTitleInfo() {
-        guard let chat = chat else { return }
-        
-        let title = "\(chat.companion.firstName) \(chat.companion.lastName ?? "")"
-        
-        presenter?.fetchChatTitleInfoSuccess(title: title)
-    }
-    
     func sendMessage(_ messageType: ChatsMessagesType) {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
               let chat = chat else { return }
         
-        FirebaseChatsService.isChatExist(chatIdentifier: chat.identifier,
-                                           userIdentifier: userIdentifier) { isExist in
+        FirebaseChatsService.isChatExist(chatIdentifier: chat.identifier, userIdentifier: userIdentifier) { isExist in
             if !isExist {
                 FirebaseChatsService.createPairChat(chatIdentifier: chat.identifier,
                                                             userIdentifier1: userIdentifier,
@@ -139,25 +156,10 @@ private extension ChatLogInteractor {
         let messages = coreDataChatLogManager.getMessages()
         
         if !messages.isEmpty {
+            let definedLoadedMessages = messages.map { ChatLogInteractor.defineIncomingMessage($0) }
+            
             topMessageTimestamp = messages.first?.timestamp
-            presenter?.fetchMessagesSuccess(messages)
-        }
-    }
-    
-    func observeMessages() {
-        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
-              let chatIdentifier = chat?.identifier else { return }
-        
-        let latestUpdateTime = coreDataChatLogManager.getLatestUpdateTimestamp()
-        
-        let messagesLimit = Constants.storedMessagesCount + (chat?.unreadMessagesCount ?? 0)
-        
-        FirebaseMessageService.observeAddedMessages(chatIdentifier: chatIdentifier,
-                                                    userIdentifier: userIdentifier,
-                                                    latestUpdateTime: latestUpdateTime,
-                                                    limit: messagesLimit) { [weak self] message in
-            self?.coreDataChatLogManager.appendMessage(message)
-            self?.presenter?.addedMessage(message)
+            presenter?.fetchMessagesSuccess(definedLoadedMessages)
         }
     }
     
@@ -168,5 +170,19 @@ private extension ChatLogInteractor {
                                                                         userIdentifier2: companion.identifier)
         
         return ChatInfo(identifier: chatIdentifier, companion: companion)
+    }
+}
+
+// MARK: - Helper Methods
+
+private extension ChatLogInteractor {
+    static func defineIncomingMessage(_ message: MessageInfo) -> MessageInfo {
+        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return message }
+        
+        var message = message
+        
+        message.isIncoming = message.senderIdentifier != userIdentifier
+        
+        return message
     }
 }

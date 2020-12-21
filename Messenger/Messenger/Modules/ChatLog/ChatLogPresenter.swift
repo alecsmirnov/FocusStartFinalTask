@@ -5,20 +5,22 @@
 //  Created by Admin on 26.11.2020.
 //
 
-import Dispatch
+import Foundation
 
 protocol IChatLogPresenter: AnyObject {
     var sectionsCount: Int { get }
-    var messagesCount: Int { get }
     
     func viewDidLoad()
-    func viewWillAppear()
     func viewDidAppear()
+    func viewDidDisappear()
     
-    func messageAt(index: Int) -> MessageInfo
+    func sectionDate(section: Int) -> String
+    func messagesCount(section: Int) -> Int
+    
+    func messageAt(section: Int, index: Int) -> MessageInfo?
     
     func didPressSendButton(messageType: ChatsMessagesType)
-    func didReadMessageAt(index: Int)
+    func didReadMessageAt(section: Int, index: Int)
     func didPullToRefresh()
 }
 
@@ -27,31 +29,21 @@ final class ChatLogPresenter {
     var interactor: IChatLogInteractor?
     var router: IChatLogRouter?
     
-    private var messages = [MessageInfo]()
+    var chat: ChatInfo?
     
-    private var topInsertOffset = 0
-    private var isViewAppear = false
+    private let messagesService = MessagesGroupingService()
 }
 
 // MARK: - IChatLogPresenter
 
 extension ChatLogPresenter: IChatLogPresenter {
     var sectionsCount: Int {
-        return 1
+        return messagesService.sectionsCount
     }
-    
-    var messagesCount: Int {
-        return messages.count
-    }
-}
 
-extension ChatLogPresenter {
     func viewDidLoad() {
         interactor?.fetchMessages()
-    }
-    
-    func viewWillAppear() {
-        interactor?.fetchChatTitleInfo()
+        interactor?.observeMessages()
     }
     
     func viewDidAppear() {
@@ -60,11 +52,23 @@ extension ChatLogPresenter {
 //            unreadMessagesCount = chatUnreadMessagesCount
 //        }
 //
-        viewController?.startFromRowAt(index: messages.count - unreadMessagesCount)
+        //viewController?.startFromRowAt(index: messages.count - unreadMessagesCount)
     }
     
-    func messageAt(index: Int) -> MessageInfo {
-        return messages[index]
+    func viewDidDisappear() {
+        
+    }
+    
+    func sectionDate(section: Int) -> String {
+        return messagesService.dateAt(section: section)?.dateString() ?? ""
+    }
+    
+    func messagesCount(section: Int) -> Int {
+        return messagesService.messagesCountAt(section: section)
+    }
+    
+    func messageAt(section: Int, index: Int) -> MessageInfo? {
+        return messagesService.messageAt(section: section, row: index)
     }
     
     func didPressSendButton(messageType: ChatsMessagesType) {
@@ -72,8 +76,10 @@ extension ChatLogPresenter {
         viewController?.scrollToBottom()
     }
     
-    func didReadMessageAt(index: Int) {
-        interactor?.readMessage(messages[index])
+    func didReadMessageAt(section: Int, index: Int) {
+        if let message = messagesService.messageAt(section: section, row: index) {
+            interactor?.readMessage(message)
+        }
     }
     
     func didPullToRefresh() {
@@ -85,11 +91,11 @@ extension ChatLogPresenter {
 
 extension ChatLogPresenter: IChatLogInteractorOutput {
     func fetchMessagesSuccess(_ messages: [MessageInfo]) {
-        self.messages = messages
+        self.messagesService.appendMessages(messages)
     }
     
     func fetchPreviousMessagesSuccess(_ previousMessages: [MessageInfo]) {
-        messages.insert(contentsOf: previousMessages, at: 0)
+        messagesService.insertMessagesAtTop(previousMessages)
         
         viewController?.reloadData()
         viewController?.endRefreshing()
@@ -99,29 +105,35 @@ extension ChatLogPresenter: IChatLogInteractorOutput {
         viewController?.endRefreshing()
     }
     
-    func fetchChatTitleInfoSuccess(title: String) {
-        viewController?.setTitle(text: title)
-    }
-    
     func addedMessage(_ message: MessageInfo) {
-        messages.append(message)
+        messagesService.appendMessage(message)
         
         viewController?.reloadData()
         //viewController?.insertNewRow()
         //viewController?.scrollToBottom()
     }
-    
+
     func updateMessage(_ message: MessageInfo) {
-//        if let index = messages.firstIndex(where: { $0.identifier == message.identifier }) {
-//            messages[index] = message
+        if let section = messagesService.sectionAt(date: Date(timeIntervalSince1970: message.timestamp).sortDate()) {
+            let messages = messagesService.messagesAt(section: section)
+    
+            if let row = messages?.firstIndex(where: { $0.identifier == message.identifier }) {
+                if !(message.isIncoming ?? true) {
+                    viewController?.updateMessageAt(section: section, row: row)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Private Methods
+
+private extension ChatLogPresenter {
+    func setChatTitleInfo() {
+//        guard let chat = chat else { return }
 //
-//            // check if sender is not me and update
+//        let title = "\(chat.companion.firstName) \(chat.companion.lastName ?? "")"
 //
-//            guard let identifier = FirebaseAuthService.currentUser()?.uid else { return }
-//
-//            if isViewAppear, message.senderIdentifier == identifier {
-//                viewController?.updateRowAt(index: index)
-//            }
-//        }
+//        viewController?.setTitle(text: title)
     }
 }

@@ -17,7 +17,7 @@ protocol IChatLogView: AnyObject {
     
     func clearTextView()
     func reloadData()
-    func updateRowAt(index: Int)
+    func updateRowAt(row: Int, section: Int)
     func insertNewRow()
     func startFromRowAt(index: Int)
     func scrollToBottom()
@@ -111,8 +111,8 @@ extension ChatLogView: IChatLogView {
         tableView.reloadData()
     }
     
-    func updateRowAt(index: Int) {
-        let indexPath = IndexPath(row: index, section: 0)
+    func updateRowAt(row: Int, section: Int) {
+        let indexPath = IndexPath(row: row, section: section)
         
         tableView.reloadRows(at: [indexPath], with: .none)
     }
@@ -166,8 +166,6 @@ extension ChatLogView: IChatLogView {
 
 private extension ChatLogView {
     func setupAppearance() {
-        backgroundColor = .systemBackground
-        
         setupTableViewAppearance()
         
         setupTextContainerViewAppearance()
@@ -176,7 +174,7 @@ private extension ChatLogView {
     }
     
     func setupTableViewAppearance() {
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = UIColor(white: 0.98, alpha: 1)
         tableView.separatorStyle = .none
         
         tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)

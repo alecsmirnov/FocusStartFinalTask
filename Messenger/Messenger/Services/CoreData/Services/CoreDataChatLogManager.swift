@@ -91,8 +91,15 @@ extension CoreDataChatLogManager {
     func clear() {
         guard let chatLog = chatLog else { return }
         
+        let chatLogFetchRequest: NSFetchRequest<CoreDataChatLog> = CoreDataChatLog.fetchRequest()
+        chatLogFetchRequest.predicate = NSPredicate(format: Constants.fetchPredicate, chatLog.identifier)
+        
         do {
-            managedContext.delete(chatLog)
+            let objects = try managedContext.fetch(chatLogFetchRequest)
+            
+            objects.forEach { chatLog in
+                managedContext.delete(chatLog)
+            }
             
             try managedContext.save()
         } catch let error as NSError {

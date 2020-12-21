@@ -13,6 +13,8 @@ final class CoreDataChatsManager {
     
     private enum Constants {
         static let timestampInitialValue = 0.0
+        
+        static let fetchChatLogPredicate = "identifier == %@"
     }
     
     private lazy var managedContext: NSManagedObjectContext = {
@@ -126,10 +128,15 @@ extension CoreDataChatsManager {
     }
     
     func clearChatLog(at index: Int) {
-        guard let chatLog = chats[index].chatLog else { return }
+        let chatLogFetchRequest: NSFetchRequest<CoreDataChatLog> = CoreDataChatLog.fetchRequest()
+        chatLogFetchRequest.predicate = NSPredicate(format: Constants.fetchChatLogPredicate, chats[index].identifier)
         
         do {
-            managedContext.delete(chatLog)
+            let objects = try managedContext.fetch(chatLogFetchRequest)
+            
+            objects.forEach { chatLog in
+                managedContext.delete(chatLog)
+            }
             
             try managedContext.save()
         } catch let error as NSError {
@@ -137,6 +144,7 @@ extension CoreDataChatsManager {
         }
         
         chats[index].chatLog = initChatLog(chatIdentifier: chats[index].identifier)
+        chats[index].chatLog?.timestamp = currentTimestamp
     }
     
     func clear() {
