@@ -152,7 +152,9 @@ extension FirebaseChatsService {
                     return
                 }
                 
-                chat.isOnline = true
+                if chat.latestMessage?.senderIdentifier != userIdentifier {
+                    chat.isOnline = true
+                }
                 
                 completion(chat)
             }

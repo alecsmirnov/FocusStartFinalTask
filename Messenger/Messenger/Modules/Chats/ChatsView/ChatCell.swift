@@ -131,6 +131,8 @@ private extension ChatCell {
         } else {
             messageLabel.text = nil
             timestampLabel.text = nil
+            
+            hideOutgoingLabel()
         }
     }
     
