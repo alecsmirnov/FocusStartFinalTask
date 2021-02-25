@@ -160,11 +160,12 @@ private extension CoreDataChatLogManager {
             messageType = ChatsMessagesType.text("error")
         }
             
-        let message = MessageInfo(identifier: coreDataMessage.identifier,
-                                  senderIdentifier: coreDataMessage.senderIdentifier,
-                                  type: messageType,
-                                  isRead: coreDataMessage.isRead,
-                                  timestamp: coreDataMessage.timestamp)
+        let message = MessageInfo(
+            identifier: coreDataMessage.identifier,
+            senderIdentifier: coreDataMessage.senderIdentifier,
+            type: messageType,
+            isRead: coreDataMessage.isRead,
+            timestamp: coreDataMessage.timestamp)
         
         return message
     }

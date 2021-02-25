@@ -10,13 +10,29 @@ import Foundation
 struct UsersValue: Codable {
     // MARK: Properties
 
-    var firstName: String { info.firstName }
-    var lastName: String? { info.lastName }
-    var userName: String? { info.userName }
-    var email: String { info.email }
-    var profilePhotoURL: String? { info.profilePhotoURL }
+    var firstName: String {
+        return info.firstName
+    }
+    
+    var lastName: String? {
+        return info.lastName
+    }
+    
+    var userName: String? {
+        return info.userName
+    }
+    
+    var email: String {
+        return info.email
+    }
+    
+    var profilePhotoURL: String? {
+        return info.profilePhotoURL
+    }
 
-    var timestamp: TimeInterval { info.timestamp }
+    var timestamp: TimeInterval {
+        return info.timestamp
+    }
 
     // MARK: Additional Node
     
@@ -24,18 +40,21 @@ struct UsersValue: Codable {
 
     // MARK: Initialization
 
-    init(firstName: String,
-         lastName: String?,
-         userName: String?,
-         email: String,
-         profilePhotoURL: String?,
-         timestamp: TimeInterval) {
-        info = Info(firstName: firstName,
-                    lastName: lastName,
-                    userName: userName,
-                    email: email,
-                    profilePhotoURL: profilePhotoURL,
-                    timestamp: timestamp)
+    init(
+        firstName: String,
+        lastName: String?,
+        userName: String?,
+        email: String,
+        profilePhotoURL: String?,
+        timestamp: TimeInterval
+    ) {
+        info = Info(
+            firstName: firstName,
+            lastName: lastName,
+            userName: userName,
+            email: email,
+            profilePhotoURL: profilePhotoURL,
+            timestamp: timestamp)
     }
 }
 
@@ -54,12 +73,14 @@ fileprivate struct Info {
 
     // MARK: Initialization
 
-    init(firstName: String,
-         lastName: String?,
-         userName: String?,
-         email: String,
-         profilePhotoURL: String?,
-         timestamp: TimeInterval) {
+    init(
+        firstName: String,
+        lastName: String?,
+        userName: String?,
+        email: String,
+        profilePhotoURL: String?,
+        timestamp: TimeInterval
+    ) {
         self.firstName = firstName
         self.lastName = lastName
         self.userName = userName

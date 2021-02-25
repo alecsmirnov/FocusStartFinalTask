@@ -28,20 +28,24 @@ extension FirebaseChatLogManager {
 
 extension FirebaseChatLogManager {
     func observeCompanion(userIdentifier: String, completion: @escaping (UserInfo) -> Void) {
-        observedCompanion = FirebaseUserService.observeUserChanged(userIdentifier: userIdentifier,
-                                                                   completion: completion)
+        observedCompanion = FirebaseUserService.observeUserChanged(
+            userIdentifier: userIdentifier,
+            completion: completion)
     }
     
-    func observeAddedMessages(chatIdentifier: String,
-                              userIdentifier: String,
-                              latestUpdateTime: TimeInterval,
-                              limit: Int,
-                              completion: @escaping (MessageInfo) -> Void) {
-        observedAddedMessages = FirebaseMessageService.observeAddedMessages(chatIdentifier: chatIdentifier,
-                                                                            userIdentifier: userIdentifier,
-                                                                            latestUpdateTime: latestUpdateTime,
-                                                                            limit: limit,
-                                                                            completion: completion)
+    func observeAddedMessages(
+        chatIdentifier: String,
+        userIdentifier: String,
+        latestUpdateTime: TimeInterval,
+        limit: Int,
+        completion: @escaping (MessageInfo) -> Void
+    ) {
+        observedAddedMessages = FirebaseMessageService.observeAddedMessages(
+            chatIdentifier: chatIdentifier,
+            userIdentifier: userIdentifier,
+            latestUpdateTime: latestUpdateTime,
+            limit: limit,
+            completion: completion)
     }
 }
 

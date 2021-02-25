@@ -98,23 +98,39 @@ extension ProfileView {
     }
     
     var profileImage: UIImage? {
-        get { profileImageImageView.image }
-        set { profileImageImageView.image = newValue }
+        get {
+            return profileImageImageView.image
+        }
+        set {
+            profileImageImageView.image = newValue
+        }
     }
     
     var firstNameText: String? {
-        get { firstNameTextField.text }
-        set { firstNameTextField.text = newValue }
+        get {
+            return firstNameTextField.text
+        }
+        set {
+            firstNameTextField.text = newValue
+        }
     }
     
     var lastNameText: String? {
-        get { lastNameTextField.text }
-        set { lastNameTextField.text = newValue }
+        get {
+            return lastNameTextField.text
+        }
+        set {
+            lastNameTextField.text = newValue
+        }
     }
     
     var emailText: String? {
-        get { emailTextField.text }
-        set { emailTextField.text = newValue }
+        get {
+            return emailTextField.text
+        }
+        set {
+            emailTextField.text = newValue
+        }
     }
     
     func showSpinnerView() {
@@ -266,10 +282,12 @@ private extension ProfileView{
         profileImageButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            profileImageButton.topAnchor.constraint(equalTo: profileImageImageView.bottomAnchor,
-                                                    constant: Metrics.verticalSpace),
-            profileImageButton.bottomAnchor.constraint(equalTo: headerView.bottomAnchor,
-                                                       constant: -Metrics.verticalSpace),
+            profileImageButton.topAnchor.constraint(
+                equalTo: profileImageImageView.bottomAnchor,
+                constant: Metrics.verticalSpace),
+            profileImageButton.bottomAnchor.constraint(
+                equalTo: headerView.bottomAnchor,
+                constant: -Metrics.verticalSpace),
             profileImageButton.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
         ])
     }
@@ -278,13 +296,16 @@ private extension ProfileView{
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: headerView.bottomAnchor,
-                                               constant: Metrics.containerViewTopSpace),
+            containerView.topAnchor.constraint(
+                equalTo: headerView.bottomAnchor,
+                constant: Metrics.containerViewTopSpace),
             containerView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-            containerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor,
-                                                   constant: LoginRegistrationMetrics.horizontalSpace),
-            containerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
-                                                    constant: -LoginRegistrationMetrics.horizontalSpace),
+            containerView.leadingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.leadingAnchor,
+                constant: LoginRegistrationMetrics.horizontalSpace),
+            containerView.trailingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.trailingAnchor,
+                constant: -LoginRegistrationMetrics.horizontalSpace),
         ])
     }
     
@@ -302,8 +323,9 @@ private extension ProfileView{
         lastNameTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            lastNameTextField.topAnchor.constraint(equalTo: firstNameTextField.bottomAnchor,
-                                                   constant: LoginRegistrationMetrics.verticalSpace),
+            lastNameTextField.topAnchor.constraint(
+                equalTo: firstNameTextField.bottomAnchor,
+                constant: LoginRegistrationMetrics.verticalSpace),
             lastNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             lastNameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
         ])
@@ -313,8 +335,9 @@ private extension ProfileView{
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            emailTextField.topAnchor.constraint(equalTo: lastNameTextField.bottomAnchor,
-                                                constant: LoginRegistrationMetrics.verticalSpace),
+            emailTextField.topAnchor.constraint(
+                equalTo: lastNameTextField.bottomAnchor,
+                constant: LoginRegistrationMetrics.verticalSpace),
             emailTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             emailTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
         ])
@@ -324,8 +347,9 @@ private extension ProfileView{
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            closeButton.topAnchor.constraint(equalTo: saveButton.bottomAnchor,
-                                             constant: LoginRegistrationMetrics.verticalSpace),
+            closeButton.topAnchor.constraint(
+                equalTo: saveButton.bottomAnchor,
+                constant: LoginRegistrationMetrics.verticalSpace),
             closeButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             closeButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             closeButton.heightAnchor.constraint(equalToConstant: LoginRegistrationMetrics.buttonHeight),
@@ -336,8 +360,9 @@ private extension ProfileView{
         saveButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            saveButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor,
-                                            constant: Metrics.headerTopSpace),
+            saveButton.topAnchor.constraint(
+                equalTo: emailTextField.bottomAnchor,
+                constant: Metrics.headerTopSpace),
             saveButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             saveButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             saveButton.heightAnchor.constraint(equalToConstant: LoginRegistrationMetrics.buttonHeight),
@@ -403,10 +428,14 @@ private extension ProfileView {
 extension ProfileView: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         switch textField {
-        case firstNameTextField: lastNameTextField.becomeFirstResponder()
-        case lastNameTextField: emailTextField.becomeFirstResponder()
-        case emailTextField: emailTextField.resignFirstResponder()
-        default: break
+        case firstNameTextField:
+            lastNameTextField.becomeFirstResponder()
+        case lastNameTextField:
+            emailTextField.becomeFirstResponder()
+        case emailTextField:
+            emailTextField.resignFirstResponder()
+        default:
+            break
         }
         
         return true

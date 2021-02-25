@@ -33,19 +33,21 @@ extension ProfileInteractor: IProfileInteractor {
                 guard error == nil else { return }
                 
                 FirebaseStorageService.downloadProfileImageDataURL(userIdentifier: userIdentifier) { urlString, error in
-                    self.updateUser(userIdentifier: userIdentifier,
-                                    firstName: profile.firstName,
-                                    lastName: profile.lastName,
-                                    email: profile.email,
-                                    profileImageURL: urlString)
+                    self.updateUser(
+                        userIdentifier: userIdentifier,
+                        firstName: profile.firstName,
+                        lastName: profile.lastName,
+                        email: profile.email,
+                        profileImageURL: urlString)
                 }
             }
         } else {
-            updateUser(userIdentifier: userIdentifier,
-                       firstName: profile.firstName,
-                       lastName: profile.lastName,
-                       email: profile.email,
-                       profileImageURL: nil)
+            updateUser(
+                userIdentifier: userIdentifier,
+                firstName: profile.firstName,
+                lastName: profile.lastName,
+                email: profile.email,
+                profileImageURL: nil)
         }
     }
     
@@ -54,9 +56,12 @@ extension ProfileInteractor: IProfileInteractor {
             guard error == nil else {
                 if let error = error {
                     switch error {
-                    case .emailAlreadyInUse: self?.presenter?.updateProfileFail()
-                    case .wrongPassword: self?.presenter?.updateProfilePasswordFail()
-                    default: break
+                    case .emailAlreadyInUse:
+                        self?.presenter?.updateProfileFail()
+                    case .wrongPassword:
+                        self?.presenter?.updateProfilePasswordFail()
+                    default:
+                        break
                     }
                 }
                 
@@ -73,16 +78,19 @@ extension ProfileInteractor: IProfileInteractor {
 // MARK: - Private Methods
 
 private extension ProfileInteractor {
-    func updateUser(userIdentifier: String,
-                    firstName: String,
-                    lastName: String?,
-                    email: String,
-                    profileImageURL: String?) {
-        let user = UserInfo(identifier: userIdentifier,
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            profileImageURL: profileImageURL)
+    func updateUser(
+        userIdentifier: String,
+        firstName: String,
+        lastName: String?,
+        email: String,
+        profileImageURL: String?
+    ) {
+        let user = UserInfo(
+            identifier: userIdentifier,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            profileImageURL: profileImageURL)
         
         FirebaseUserService.updateUser(user)
     }

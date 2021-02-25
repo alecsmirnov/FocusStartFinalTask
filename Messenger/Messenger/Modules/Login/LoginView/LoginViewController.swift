@@ -65,8 +65,9 @@ extension LoginViewController: ILoginViewController {
     }
     
     func showUserNotExistAlert() {
-        simpleAlertController?.showAlert(title: "User does not exist",
-                                         message: "Please register or try another address")
+        simpleAlertController?.showAlert(
+            title: "User does not exist",
+            message: "Please register or try another address")
     }
     
     func showWrongPasswordAlert() {

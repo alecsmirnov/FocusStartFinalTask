@@ -55,9 +55,9 @@ extension SearchPresenter: ISearchPresenter {
     func viewDidLoad() {
         interactor?.fetchUsers()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.searchIndicationDelay) {
-            if !self.isSearchExecuted {
-                self.viewController?.showSpinnerView()
+        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.searchIndicationDelay) { [self] in
+            if !isSearchExecuted {
+                viewController?.showSpinnerView()
             }
         }
     }

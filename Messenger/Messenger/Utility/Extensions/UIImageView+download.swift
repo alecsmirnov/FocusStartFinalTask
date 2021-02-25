@@ -19,8 +19,12 @@ extension UIImageView {
             guard let url = URL(string: urlString) else { return }
             
             let dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
-                guard let data = data, response != nil, error == nil,
-                      let image = UIImage(data: data) else { return }
+                guard
+                    let data = data, response != nil, error == nil,
+                    let image = UIImage(data: data)
+                else {
+                    return
+                }
                 
                 imageCache.setObject(image, forKey: urlString as NSString)
                  

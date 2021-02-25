@@ -49,22 +49,27 @@ final class RegistrationViewController: UIViewController {
 
 extension RegistrationViewController: IRegistrationViewController {
     func showEmptyFieldsAlert() {
-        simpleAlertController?.showAlert(title: "Required fields are empty",
-                                         message: "Please enter First name, Email and Password")
+        simpleAlertController?.showAlert(
+            title: "Required fields are empty",
+            message: "Please enter First name, Email and Password")
     }
     
     func showInvalidEmailAlert() {
-        simpleAlertController?.showAlert(title: "Invalid email address", message: "Please try again")
+        simpleAlertController?.showAlert(
+            title: "Invalid email address",
+            message: "Please try again")
     }
     
     func showUserAlreadyExistAlert() {
-        simpleAlertController?.showAlert(title: "User with this email exists",
-                                         message: "Please login or try another address")
+        simpleAlertController?.showAlert(
+            title: "User with this email exists",
+            message: "Please login or try another address")
     }
     
     func showShortPasswordAlert(passwordLength: Int) {
-        simpleAlertController?.showAlert(title: "Password is too short",
-                                         message: "Minimum length: \(passwordLength). Please try again")
+        simpleAlertController?.showAlert(
+            title: "Password is too short",
+            message: "Minimum length: \(passwordLength). Please try again")
     }
     
     func showSpinnerView() {
@@ -94,10 +99,11 @@ private extension RegistrationViewController {
 
 extension RegistrationViewController: RegistrationViewDelegate {
     func registrationViewSignUp(_ loginView: RegistrationView) {
-        presenter?.didPressSignUpButton(firstName: registrationView.firstNameText,
-                                        lastName: registrationView.lastNameText,
-                                        email: registrationView.emailText,
-                                        password: registrationView.passwordText)
+        presenter?.didPressSignUpButton(
+            firstName: registrationView.firstNameText,
+            lastName: registrationView.lastNameText,
+            email: registrationView.emailText,
+            password: registrationView.passwordText)
     }
     
     func registrationViewSignIn(_ loginView: RegistrationView) {

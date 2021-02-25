@@ -32,12 +32,15 @@ enum FirebaseStorageService {
 // MARK: - Methods
 
 extension FirebaseStorageService {
-    static func uploadProfileImageData(_ data: Data,
-                                       userIdentifier: String,
-                                       completion: @escaping StorageUploadCompletion) {
-        storageReference.child(Folders.profileImages)
-                        .child("\(userIdentifier).png")
-                        .putData(data, metadata: nil) { _, error in
+    static func uploadProfileImageData(
+        _ data: Data,
+        userIdentifier: String,
+        completion: @escaping StorageUploadCompletion
+    ) {
+        storageReference
+            .child(Folders.profileImages)
+            .child("\(userIdentifier).png")
+            .putData(data, metadata: nil) { _, error in
             guard error == nil else {
                 completion(.failedToUpload)
                 
@@ -49,9 +52,7 @@ extension FirebaseStorageService {
     }
     
     static func downloadProfileImageDataURL(userIdentifier: String, completion: @escaping StorageDownloadCompletion) {
-        storageReference.child(Folders.profileImages)
-                        .child("\(userIdentifier).png")
-                        .downloadURL { url, error in
+        storageReference.child(Folders.profileImages).child("\(userIdentifier).png").downloadURL { url, error in
             guard let urlString = url?.absoluteString, error == nil else {
                 completion(nil, .failedToDownload)
                 
@@ -64,8 +65,10 @@ extension FirebaseStorageService {
     
     static func downloadProfileImageData(identifier: String, completion: @escaping DataDownloadCompletion) {
         downloadProfileImageDataURL(userIdentifier: identifier) { urlString, error in
-            guard let urlString = urlString,
-                  let url = URL(string: urlString), error == nil else {
+            guard
+                let urlString = urlString,
+                let url = URL(string: urlString), error == nil
+            else {
                 completion(nil)
                 
                 return

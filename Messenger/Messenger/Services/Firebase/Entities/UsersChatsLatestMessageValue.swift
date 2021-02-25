@@ -10,8 +10,13 @@ import Foundation
 struct UsersChatsLatestMessageValue: Codable {
     // MARK: Properties
     
-    var identifier: String? { info.identifier }
-    var timestamp: TimeInterval { info.timestamp }
+    var identifier: String? {
+        return info.identifier
+    }
+    
+    var timestamp: TimeInterval {
+        return info.timestamp        
+    }
     
     // MARK: Additional Node
     

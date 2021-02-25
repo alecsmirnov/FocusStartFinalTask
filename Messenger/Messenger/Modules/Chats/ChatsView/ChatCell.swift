@@ -266,10 +266,12 @@ private extension ChatCell {
         onlineStatusView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            onlineStatusView.centerXAnchor.constraint(equalTo: profileImageImageView.trailingAnchor,
-                                                      constant: -Metrics.onlineStatusViewCenterX),
-            onlineStatusView.centerYAnchor.constraint(equalTo: profileImageImageView.bottomAnchor,
-                                                      constant: -Metrics.onlineStatusViewCenterX),
+            onlineStatusView.centerXAnchor.constraint(
+                equalTo: profileImageImageView.trailingAnchor,
+                constant: -Metrics.onlineStatusViewCenterX),
+            onlineStatusView.centerYAnchor.constraint(
+                equalTo: profileImageImageView.bottomAnchor,
+                constant: -Metrics.onlineStatusViewCenterX),
             onlineStatusView.widthAnchor.constraint(equalToConstant: Metrics.onlineStatusViewSize),
             onlineStatusView.heightAnchor.constraint(equalToConstant: Metrics.onlineStatusViewSize),
         ])
@@ -281,15 +283,16 @@ private extension ChatCell {
         NSLayoutConstraint.activate([
             cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Metrics.cellContentTopSpace),
             cellContentView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor),
-            cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
-                                                      constant: -Metrics.cellContentRightSpace),
+            cellContentView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -Metrics.cellContentRightSpace),
             cellContentView.heightAnchor.constraint(equalToConstant: Metrics.cellContentHeight),
         ])
         
         let cellContentViewBottomConstraint = cellContentView.bottomAnchor.constraint(
             equalTo: contentView.bottomAnchor,
-            constant: -Metrics.cellContentBottomSpace
-        )
+            constant: -Metrics.cellContentBottomSpace)
+        
         cellContentViewBottomConstraint.priority = UILayoutPriority(LayoutPriority.bottom)
         cellContentViewBottomConstraint.isActive = true
     }
@@ -300,10 +303,12 @@ private extension ChatCell {
         NSLayoutConstraint.activate([
             profileImageImageView.topAnchor.constraint(equalTo: profileImageView.topAnchor),
             profileImageImageView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor),
-            profileImageImageView.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor,
-                                                           constant: Metrics.profileImageHorizontalSpace),
-            profileImageImageView.trailingAnchor.constraint(equalTo: profileImageView.trailingAnchor,
-                                                            constant: -Metrics.profileImageHorizontalSpace),
+            profileImageImageView.leadingAnchor.constraint(
+                equalTo: profileImageView.leadingAnchor,
+                constant: Metrics.profileImageHorizontalSpace),
+            profileImageImageView.trailingAnchor.constraint(
+                equalTo: profileImageView.trailingAnchor,
+                constant: -Metrics.profileImageHorizontalSpace),
             profileImageImageView.heightAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
             profileImageImageView.widthAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
         ])
@@ -336,8 +341,9 @@ private extension ChatCell {
         
         NSLayoutConstraint.activate([
             unreadMessagesCountLabel.centerYAnchor.constraint(equalTo: messageLabel.centerYAnchor),
-            unreadMessagesCountLabel.leadingAnchor.constraint(equalTo: messageLabel.trailingAnchor,
-                                                              constant: Metrics.unreadMessagesCountLabelLeftSpace),
+            unreadMessagesCountLabel.leadingAnchor.constraint(
+                equalTo: messageLabel.trailingAnchor,
+                constant: Metrics.unreadMessagesCountLabelLeftSpace),
             unreadMessagesCountLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor),
             unreadMessagesCountLabel.widthAnchor.constraint(equalToConstant: Metrics.unreadMessagesCountLabelSize),
             unreadMessagesCountLabel.heightAnchor.constraint(equalToConstant: Metrics.unreadMessagesCountLabelSize),
@@ -363,8 +369,9 @@ private extension ChatCell {
             outgoingLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Metrics.nameMessageSpace),
             outgoingLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor),
             outgoingLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor),
-            outgoingLabel.trailingAnchor.constraint(equalTo: messageLabel.leadingAnchor,
-                                                    constant: -Metrics.outgoingLabelMessageSpace),
+            outgoingLabel.trailingAnchor.constraint(
+                equalTo: messageLabel.leadingAnchor,
+                constant: -Metrics.outgoingLabelMessageSpace),
         ])
     }
     

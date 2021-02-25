@@ -84,19 +84,21 @@ private extension ChatsViewController {
     }
     
     func setupSearchButton() {
-        let searchBarButtonItem = UIBarButtonItem(image: Constants.searchButtonImage,
-                                                  style: .plain,
-                                                  target: self,
-                                                  action: #selector(didPressSearchButton))
+        let searchBarButtonItem = UIBarButtonItem(
+            image: Constants.searchButtonImage,
+            style: .plain,
+            target: self,
+            action: #selector(didPressSearchButton))
         
         navigationItem.rightBarButtonItem = searchBarButtonItem
     }
     
     func setupMenuButton() {
-        let menuBarButtonItem = UIBarButtonItem(image: Constants.menuButtonImage,
-                                                style: .plain,
-                                                target: self,
-                                                action: #selector(didPressMenuButton))
+        let menuBarButtonItem = UIBarButtonItem(
+            image: Constants.menuButtonImage,
+            style: .plain,
+            target: self,
+            action: #selector(didPressMenuButton))
         
         navigationItem.leftBarButtonItem = menuBarButtonItem
     }
@@ -122,8 +124,10 @@ extension ChatsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier,
-                                                       for: indexPath) as? ChatCell else {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ChatCell.reuseIdentifier,
+            for: indexPath) as? ChatCell
+        else {
             return UITableViewCell()
         }
         
@@ -148,15 +152,17 @@ extension ChatsViewController: UITableViewDelegate {
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
-        let clear = UIContextualAction(style: .normal,
-                                       title: Constants.clearMenuTitle) { [weak self] _, _, completionHandler in
+        let clear = UIContextualAction(
+            style: .normal,
+            title: Constants.clearMenuTitle) { [weak self] _, _, completionHandler in
             self?.presenter?.didClearChat(at: indexPath.row)
             
             completionHandler(true)
         }
         
-        let remove = UIContextualAction(style: .destructive,
-                                        title: Constants.removeMenuTitle) { [weak self] _, _, completionHandler in
+        let remove = UIContextualAction(
+            style: .destructive,
+            title: Constants.removeMenuTitle) { [weak self] _, _, completionHandler in
             self?.presenter?.didRemoveChat(at: indexPath.row)
             
             completionHandler(true)

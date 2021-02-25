@@ -20,8 +20,10 @@ final class LoginPresenter {
 
 extension LoginPresenter: ILoginPresenter {
     func didPressSignInButton(email: String?, password: String?) {
-        guard let email = email,       !email.isEmpty,
-              let password = password, !password.isEmpty else {
+        guard
+            let email = email, !email.isEmpty,
+            let password = password, !password.isEmpty
+        else {
             LoggingService.log(category: .login, layer: .view, type: .alert, with: "empty login fields")
             
             viewController?.showEmptyFieldsAlert()

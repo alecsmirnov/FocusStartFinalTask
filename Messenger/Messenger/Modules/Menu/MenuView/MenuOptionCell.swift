@@ -96,8 +96,9 @@ private extension MenuOptionCell {
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            iconImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor,
-                                                   constant: Metrics.iconImageLeadingSpace),
+            iconImageView.leadingAnchor.constraint(
+                equalTo: containerView.leadingAnchor,
+                constant: Metrics.iconImageLeadingSpace),
             iconImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             iconImageView.widthAnchor.constraint(equalToConstant: Metrics.iconImageViewSize),
             iconImageView.heightAnchor.constraint(equalToConstant: Metrics.iconImageViewSize),
@@ -109,10 +110,12 @@ private extension MenuOptionCell {
         
         NSLayoutConstraint.activate([
             descriptionLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            descriptionLabel.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor,
-                                                      constant: Metrics.horizontalSpace),
-            descriptionLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor,
-                                                       constant: -Metrics.horizontalSpace),
+            descriptionLabel.leadingAnchor.constraint(
+                equalTo: iconImageView.trailingAnchor,
+                constant: Metrics.horizontalSpace),
+            descriptionLabel.trailingAnchor.constraint(
+                equalTo: containerView.trailingAnchor,
+                constant: -Metrics.horizontalSpace),
         ])
     }
 }

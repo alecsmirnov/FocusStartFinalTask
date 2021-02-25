@@ -12,8 +12,7 @@ enum MenuChatsAssembly {
         let menuChatsViewController = MenuChatsViewController()
         
         let chatsViewController = ChatsAssembly.createChatsViewController(
-            menuChatsViewController: menuChatsViewController
-        )
+            menuChatsViewController: menuChatsViewController)
         let menuViewController = MenuAssembly.createMenuViewController(menuChatsViewController: menuChatsViewController)
         let chatsNavigationController = UINavigationController(rootViewController: chatsViewController)
         

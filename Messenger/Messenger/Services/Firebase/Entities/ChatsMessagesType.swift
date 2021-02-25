@@ -27,8 +27,7 @@ extension ChatsMessagesType: Codable {
             self = .text(text)
         default:
             throw DecodingError.dataCorrupted(
-                DecodingError.Context(codingPath: container.codingPath, debugDescription: "unable to decode enum")
-            )
+                DecodingError.Context(codingPath: container.codingPath, debugDescription: "unable to decode enum"))
         }
     }
     

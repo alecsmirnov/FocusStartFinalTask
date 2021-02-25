@@ -54,17 +54,22 @@ extension MenuChatsViewController {
 
 private extension MenuChatsViewController {
     func showMenu(completion: (() -> Void)?) {
-        guard let chatsNavigationController = chatsNavigationController,
-              let menuViewController = menuViewController else { return }
+        guard
+            let chatsNavigationController = chatsNavigationController,
+            let menuViewController = menuViewController
+        else {
+            return
+        }
         
         menuViewController.view.isHidden = false
         
         menuViewController.view.frame.origin.x = -menuWidth
         chatsNavigationController.view.isUserInteractionEnabled = false
         
-        UIView.animate(withDuration: Constants.showAnimationDuration,
-                       delay: 0,
-                       options: [.curveEaseOut]) {
+        UIView.animate(
+            withDuration: Constants.showAnimationDuration,
+            delay: 0,
+            options: [.curveEaseOut]) {
             menuViewController.view.frame.origin.x = 0
             
             chatsNavigationController.view.frame.origin.x = self.menuWidth
@@ -77,14 +82,19 @@ private extension MenuChatsViewController {
     }
     
     func hideMenu(completion: (() -> Void)?) {
-        guard let chatsNavigationController = chatsNavigationController,
-              let menuViewController = menuViewController else { return }
+        guard
+            let chatsNavigationController = chatsNavigationController,
+            let menuViewController = menuViewController
+        else {
+            return
+        }
         
         chatsNavigationController.view.isUserInteractionEnabled = true
         
-        UIView.animate(withDuration: Constants.hideAnimationDuration,
-                       delay: 0,
-                       options: [.curveEaseOut]) {
+        UIView.animate(
+            withDuration: Constants.hideAnimationDuration,
+            delay: 0,
+            options: [.curveEaseOut]) {
             menuViewController.view.frame.origin.x = -self.menuWidth
             
             chatsNavigationController.view.frame.origin.x = 0
@@ -134,8 +144,12 @@ private extension MenuChatsViewController {
     }
     
     func setupMenuViewControllerLayout() {
-        guard let menuViewController = menuViewController,
-              let menuView = menuViewController.view else { return }
+        guard
+            let menuViewController = menuViewController,
+            let menuView = menuViewController.view
+        else {
+            return
+        }
         
         menuView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -155,9 +169,13 @@ extension MenuChatsViewController {
         super.touchesBegan(touches, with: event)
 
         if isExtend {
-            guard let menuViewController = menuViewController,
-                  let menuView = menuViewController.view,
-                  let touchView = touches.first?.view else { return }
+            guard
+                let menuViewController = menuViewController,
+                let menuView = menuViewController.view,
+                let touchView = touches.first?.view
+            else {
+                return
+            }
 
             if menuView != touchView && !menuView.subviews.contains(touchView) {
                 extendMenu()

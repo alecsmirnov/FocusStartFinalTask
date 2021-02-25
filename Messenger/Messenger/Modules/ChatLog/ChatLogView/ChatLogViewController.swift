@@ -123,8 +123,10 @@ extension ChatLogViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageCell.reuseIdentifier,
-                                                       for: indexPath) as? MessageCell else {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: MessageCell.reuseIdentifier,
+            for: indexPath) as? MessageCell
+        else {
             return UITableViewCell()
         }
         

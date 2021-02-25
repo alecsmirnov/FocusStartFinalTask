@@ -18,13 +18,21 @@ final class ChatLogView: UIView {
     weak var delegate: ChatLogViewDelegate?
     
     var tableViewDataSource: UITableViewDataSource? {
-        get { tableView.dataSource }
-        set { tableView.dataSource = newValue }
+        get {
+            return tableView.dataSource
+        }
+        set {
+            tableView.dataSource = newValue
+        }
     }
     
     var tableViewDelegate: UITableViewDelegate? {
-        get { tableView.delegate }
-        set { tableView.delegate = newValue }
+        get {
+            return tableView.delegate
+        }
+        set {
+            tableView.delegate = newValue
+        }
     }
     
     private enum Constants {
@@ -197,10 +205,11 @@ private extension ChatLogView {
         tableView.backgroundColor = Constants.tableViewBackgroundColor
         tableView.separatorStyle = .none
         
-        tableView.contentInset = UIEdgeInsets(top: Constants.tableViewVerticalInset,
-                                              left: 0,
-                                              bottom: Constants.tableViewVerticalInset,
-                                              right: 0)
+        tableView.contentInset = UIEdgeInsets(
+            top: Constants.tableViewVerticalInset,
+            left: 0,
+            bottom: Constants.tableViewVerticalInset,
+            right: 0)
         
         tableView.register(MessageCell.self, forCellReuseIdentifier: MessageCell.reuseIdentifier)
         
@@ -278,8 +287,8 @@ private extension ChatLogView {
         ])
         
         textContainerViewBottomConstraint = textContainerView.bottomAnchor.constraint(
-            equalTo: safeAreaLayoutGuide.bottomAnchor
-        )
+            equalTo: safeAreaLayoutGuide.bottomAnchor)
+        
         textContainerViewBottomConstraint?.isActive = true
     }
     
@@ -289,10 +298,12 @@ private extension ChatLogView {
         NSLayoutConstraint.activate([
             textView.topAnchor.constraint(equalTo: textContainerView.topAnchor, constant: Metrics.verticalSpace),
             textView.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor, constant: -Metrics.verticalSpace),
-            textView.leadingAnchor.constraint(equalTo: textContainerView.leadingAnchor,
-                                              constant: Metrics.horizontalSpace),
-            textView.trailingAnchor.constraint(equalTo: textContainerView.trailingAnchor,
-                                               constant: -Metrics.horizontalSpace),
+            textView.leadingAnchor.constraint(
+                equalTo: textContainerView.leadingAnchor,
+                constant: Metrics.horizontalSpace),
+            textView.trailingAnchor.constraint(
+                equalTo: textContainerView.trailingAnchor,
+                constant: -Metrics.horizontalSpace),
         ])
     }
 }
@@ -301,12 +312,15 @@ private extension ChatLogView {
 
 private extension ChatLogView {
     func setupKeyboardObservers() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillShow),
-                                               name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillHide),
-                                               name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func removeKeyboardObservers() {
@@ -314,8 +328,12 @@ private extension ChatLogView {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        guard let userInfo = notification.userInfo,
-              let keyboardSize = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        guard
+            let userInfo = notification.userInfo,
+            let keyboardSize = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        else {
+            return
+        }
         
         let keyboardTop = safeAreaInsets.bottom - keyboardSize.cgRectValue.height
         textContainerViewBottomConstraint?.constant = keyboardTop

@@ -86,8 +86,10 @@ private extension ImagePicker {
 // MARK: - UIImagePickerControllerDelegate
 
 extension ImagePicker: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController,
-                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
+    ) {
         guard let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else {
             picker.dismiss(animated: true)
             

@@ -98,10 +98,11 @@ private extension SearchViewController {
     }
     
     func setupCloseButton() {
-        let closeBarButtonItem = UIBarButtonItem(image: Constants.closeButtonImage,
-                                                 style: .plain,
-                                                 target: self,
-                                                 action: #selector(didPressCloseButton))
+        let closeBarButtonItem = UIBarButtonItem(
+            image: Constants.closeButtonImage,
+            style: .plain,
+            target: self,
+            action: #selector(didPressCloseButton))
         
         navigationItem.leftBarButtonItem = closeBarButtonItem
     }
@@ -133,8 +134,12 @@ extension SearchViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.reuseIdentifier,
-                                                       for: indexPath) as? UserCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: UserCell.reuseIdentifier,
+            for: indexPath) as? UserCell
+        else {
+            return UITableViewCell()
+        }
         
         if let user = presenter?.user(forRowAt: indexPath.row) {
             cell.configure(with: user)

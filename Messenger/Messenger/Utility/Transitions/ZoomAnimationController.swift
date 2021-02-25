@@ -25,10 +25,14 @@ final class ZoomAnimationController: BaseAnimationController {
     // MARK: Methods
     
     override func startPresentAnimation(transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromViewController = transitionContext.viewController(forKey: .from),
-              let toViewController = transitionContext.viewController(forKey: .to),
-              let fromView = fromViewController.view,
-              let toView = toViewController.view else { return }
+        guard
+            let fromViewController = transitionContext.viewController(forKey: .from),
+            let toViewController = transitionContext.viewController(forKey: .to),
+            let fromView = fromViewController.view,
+            let toView = toViewController.view
+        else {
+            return
+        }
         
         let containerView = transitionContext.containerView
         containerView.window?.backgroundColor = .systemBackground
@@ -41,8 +45,7 @@ final class ZoomAnimationController: BaseAnimationController {
         UIView.animateKeyframes(
             withDuration: transitionDuration(using: transitionContext),
             delay: 0,
-            options: .calculationModeCubic
-        ) {
+            options: .calculationModeCubic) {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.4) {
                 fromView.transform = CGAffineTransform(scaleX: Scales.min.x, y: Scales.min.x)
                 fromView.alpha = Opacities.min
@@ -61,10 +64,14 @@ final class ZoomAnimationController: BaseAnimationController {
     }
     
     override func startDismissAnimation(transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromViewController = transitionContext.viewController(forKey: .from),
-              let toViewController = transitionContext.viewController(forKey: .to),
-              let fromView = fromViewController.view,
-              let toView = toViewController.view else { return }
+        guard
+            let fromViewController = transitionContext.viewController(forKey: .from),
+            let toViewController = transitionContext.viewController(forKey: .to),
+            let fromView = fromViewController.view,
+            let toView = toViewController.view
+        else {
+            return
+        }
         
         toView.transform = CGAffineTransform(scaleX: Scales.min.x, y: Scales.min.y)
         toView.alpha = Opacities.max
@@ -72,8 +79,7 @@ final class ZoomAnimationController: BaseAnimationController {
         UIView.animateKeyframes(
             withDuration: transitionDuration(using: transitionContext),
             delay: 0,
-            options: .calculationModeCubic
-        ) {
+            options: .calculationModeCubic) {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.4) {
                 fromView.transform = CGAffineTransform(scaleX: Scales.min.x, y: Scales.min.x)
                 fromView.alpha = Opacities.min

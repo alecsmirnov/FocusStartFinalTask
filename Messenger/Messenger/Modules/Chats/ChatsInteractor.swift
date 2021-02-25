@@ -52,8 +52,12 @@ extension ChatsInteractor: IChatsInteractor {
     }
     
     func clearChat(at index: Int) {
-        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
-              let chatIdentifier = coreDataChatsManager.getChatIdentifier(by: index) else { return }
+        guard
+            let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+            let chatIdentifier = coreDataChatsManager.getChatIdentifier(by: index)
+        else {
+            return
+        }
         
         coreDataChatsManager.clearChatLog(at: index)
         coreDataChatsManager.updateChatLatestMessage(at: index, message: nil)
@@ -61,8 +65,12 @@ extension ChatsInteractor: IChatsInteractor {
     }
     
     func removeChat(at index: Int) {
-        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
-              let chatIdentifier = coreDataChatsManager.getChatIdentifier(by: index) else { return }
+        guard
+            let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+            let chatIdentifier = coreDataChatsManager.getChatIdentifier(by: index)
+        else {
+            return
+        }
         
         coreDataChatsManager.removeChat(at: index)
         firebaseChatsManager.removeChat(chatIdentifier: chatIdentifier, userIdentifier: userIdentifier)
@@ -95,9 +103,10 @@ private extension ChatsInteractor {
     func observeLoadedChats(userIdentifier: String, latestUpdateTime: TimeInterval) {
         let chats = coreDataChatsManager.getChats()
         
-        firebaseChatsManager.observeLoadedChats(userIdentifier: userIdentifier,
-                                                latestUpdateTime: latestUpdateTime,
-                                                chats: chats) { [weak self] chatIdentifier, companion in
+        firebaseChatsManager.observeLoadedChats(
+            userIdentifier: userIdentifier,
+            latestUpdateTime: latestUpdateTime,
+            chats: chats) { [weak self] chatIdentifier, companion in
             self?.pairChatUpdated(chatIdentifier: chatIdentifier, companion: companion)
         } chatLatestMessageUpdated: { [weak self] chatIdentifier, message in
             self?.chatLatestMessageUpdated(chatIdentifier: chatIdentifier, message: message)
@@ -109,8 +118,9 @@ private extension ChatsInteractor {
     }
     
     func observeAddedChats(userIdentifier: String, latestUpdateTime: TimeInterval) {
-        firebaseChatsManager.observeChats(userIdentifier: userIdentifier,
-                                          latestUpdateTime: latestUpdateTime) { [weak self] chat in
+        firebaseChatsManager.observeChats(
+            userIdentifier: userIdentifier,
+            latestUpdateTime: latestUpdateTime) { [weak self] chat in
             self?.chatAdded(chat: chat)
         } pairChatUpdated: { [weak self] chatIdentifier, companion in
             self?.pairChatUpdated(chatIdentifier: chatIdentifier, companion: companion)

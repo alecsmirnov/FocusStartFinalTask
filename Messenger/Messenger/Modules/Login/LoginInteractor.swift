@@ -42,10 +42,11 @@ extension LoginInteractor: ILoginInteractor {
                 return
             }
             
-            LoggingService.log(category: .login,
-                               layer: .interactor,
-                               type: .info,
-                               with: "user \(authResult.user.uid) is logged in")
+            LoggingService.log(
+                category: .login,
+                layer: .interactor,
+                type: .info,
+                with: "user \(authResult.user.uid) is logged in")
             
             self?.presenter?.signInSuccess()
         }

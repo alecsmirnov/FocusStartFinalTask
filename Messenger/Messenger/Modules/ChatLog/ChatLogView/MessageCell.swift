@@ -205,8 +205,9 @@ private extension MessageCell {
         NSLayoutConstraint.activate([
             cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor),
             cellContentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            cellContentView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor,
-                                                   multiplier: Metrics.cellContentViewMultiplier),
+            cellContentView.widthAnchor.constraint(
+                lessThanOrEqualTo: contentView.widthAnchor,
+                multiplier: Metrics.cellContentViewMultiplier),
         ])
         
         prepareCellContentViewLeadingLayout()
@@ -243,10 +244,12 @@ private extension MessageCell {
         profileImageImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            profileImageImageView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor,
-                                                          constant: -Metrics.verticalSpace),
-            profileImageImageView.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor,
-                                                           constant: Metrics.profileImageLeftSpace),
+            profileImageImageView.bottomAnchor.constraint(
+                equalTo: profileImageView.bottomAnchor,
+                constant: -Metrics.verticalSpace),
+            profileImageImageView.leadingAnchor.constraint(
+                equalTo: profileImageView.leadingAnchor,
+                constant: Metrics.profileImageLeftSpace),
             profileImageImageView.heightAnchor.constraint(equalToConstant: Metrics.profileImageSize),
             profileImageImageView.widthAnchor.constraint(equalToConstant: Metrics.profileImageSize),
         ])
@@ -258,10 +261,12 @@ private extension MessageCell {
         NSLayoutConstraint.activate([
             bubbleView.topAnchor.constraint(equalTo: cellContentView.topAnchor, constant: Metrics.verticalSpace),
             bubbleView.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor, constant: -Metrics.verticalSpace),
-            bubbleView.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor,
-                                                constant: Metrics.bubbleViewHorizontalSpace),
-            bubbleView.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor,
-                                                 constant: -Metrics.bubbleViewHorizontalSpace),
+            bubbleView.leadingAnchor.constraint(
+                equalTo: cellContentView.leadingAnchor,
+                constant: Metrics.bubbleViewHorizontalSpace),
+            bubbleView.trailingAnchor.constraint(
+                equalTo: cellContentView.trailingAnchor,
+                constant: -Metrics.bubbleViewHorizontalSpace),
         ])
     }
     
@@ -271,8 +276,9 @@ private extension MessageCell {
         NSLayoutConstraint.activate([
             messageLabel.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: Metrics.verticalSpace),
             messageLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: Metrics.horizontalSpace),
-            messageLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
-                                                   constant: -Metrics.horizontalSpace),
+            messageLabel.trailingAnchor.constraint(
+                equalTo: bubbleView.trailingAnchor,
+                constant: -Metrics.horizontalSpace),
         ])
     }
     
@@ -282,10 +288,12 @@ private extension MessageCell {
         NSLayoutConstraint.activate([
             timestampLabel.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: Metrics.verticalSpace),
             timestampLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -Metrics.verticalSpace),
-            timestampLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor,
-                                                    constant: Metrics.horizontalSpace),
-            timestampLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor,
-                                                     constant: -Metrics.timestampLabelRightSpace),
+            timestampLabel.leadingAnchor.constraint(
+                equalTo: bubbleView.leadingAnchor,
+                constant: Metrics.horizontalSpace),
+            timestampLabel.trailingAnchor.constraint(
+                equalTo: bubbleView.trailingAnchor,
+                constant: -Metrics.timestampLabelRightSpace),
         ])
     }
 }

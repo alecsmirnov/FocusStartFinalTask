@@ -36,19 +36,21 @@ extension RegistrationInteractor: IRegistrationInteractor {
                 
                 self.presenter?.signInSuccess()
                 
-                let userValue = UsersValue(firstName: user.firstName,
-                                           lastName: user.lastName,
-                                           userName: nil,
-                                           email: user.email,
-                                           profilePhotoURL: nil,
-                                           timestamp: Timestamp.current)
+                let userValue = UsersValue(
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    userName: nil,
+                    email: user.email,
+                    profilePhotoURL: nil,
+                    timestamp: Timestamp.current)
                 
                 FirebaseUserService.addUser(userValue, identifier: userIdentifier)
                 
-                LoggingService.log(category: .registration,
-                                   layer: .interactor,
-                                   type: .info,
-                                   with: "create firebase user \(userIdentifier)")
+                LoggingService.log(
+                    category: .registration,
+                    layer: .interactor,
+                    type: .info,
+                    with: "create firebase user \(userIdentifier)")
             }
         }
     }
@@ -58,8 +60,7 @@ extension RegistrationInteractor: IRegistrationInteractor {
 
 extension RegistrationInteractor {
     func signUp(withEmail email: String, password: String, completion: @escaping (String?) -> Void) {
-        FirebaseAuthService.createUser(withEmail: email,
-                                       password: password) { authResult, error in
+        FirebaseAuthService.createUser(withEmail: email, password: password) { authResult, error in
             guard let authResult = authResult else {
                 if let error = error {
                     LoggingService.log(category: .registration, layer: .interactor, type: .error, with: "\(error)")
@@ -72,10 +73,11 @@ extension RegistrationInteractor {
                 return
             }
             
-            LoggingService.log(category: .login,
-                               layer: .interactor,
-                               type: .info,
-                               with: "user \(authResult.user.uid) is logged in")
+            LoggingService.log(
+                category: .login,
+                layer: .interactor,
+                type: .info,
+                with: "user \(authResult.user.uid) is logged in")
             
             completion(authResult.user.uid)
         }
@@ -93,10 +95,11 @@ extension RegistrationInteractor {
                 return
             }
             
-            LoggingService.log(category: .login,
-                               layer: .interactor,
-                               type: .info,
-                               with: "user \(authResult.user.uid) is signed in")
+            LoggingService.log(
+                category: .login,
+                layer: .interactor,
+                type: .info,
+                with: "user \(authResult.user.uid) is signed in")
             
             completion(true)
         }

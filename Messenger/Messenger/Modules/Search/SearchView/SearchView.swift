@@ -11,18 +11,30 @@ final class SearchView: UIView {
     // MARK: Properties
     
     var searchBarDelegate: UISearchBarDelegate? {
-        get { searchBar.delegate }
-        set { searchBar.delegate = newValue }
+        get {
+            return searchBar.delegate
+        }
+        set {
+            searchBar.delegate = newValue
+        }
     }
     
     var tableViewDataSource: UITableViewDataSource? {
-        get { tableView.dataSource }
-        set { tableView.dataSource = newValue }
+        get {
+            return tableView.dataSource
+        }
+        set {
+            tableView.dataSource = newValue
+        }
     }
     
     var tableViewDelegate: UITableViewDelegate? {
-        get { tableView.delegate }
-        set { tableView.delegate = newValue }
+        get {
+            return tableView.delegate
+        }
+        set {
+            tableView.delegate = newValue
+        }
     }
     
     private enum Constants {
@@ -62,9 +74,10 @@ extension SearchView {
     }
     
     func reloadData() {
-        UIView.transition(with: tableView,
-                          duration: Constants.tableViewReloadAnimationDuration,
-                          options: [.transitionCrossDissolve]) {
+        UIView.transition(
+            with: tableView,
+            duration: Constants.tableViewReloadAnimationDuration,
+            options: [.transitionCrossDissolve]) {
             self.tableView.reloadData()
         }
     }

@@ -11,13 +11,21 @@ final class ChatsView: UIView {
     // MARK: Properties
     
     var tableViewDataSource: UITableViewDataSource? {
-        get { tableView.dataSource }
-        set { tableView.dataSource = newValue }
+        get {
+            return tableView.dataSource
+        }
+        set {
+            tableView.dataSource = newValue
+        }
     }
     
     var tableViewDelegate: UITableViewDelegate? {
-        get { tableView.delegate }
-        set { tableView.delegate = newValue }
+        get {
+            return tableView.delegate
+        }
+        set {
+            tableView.delegate = newValue
+        }
     }
     
     private enum Constants {
@@ -65,17 +73,19 @@ extension ChatsView {
         let section = 0
         let indexPath = IndexPath(row: index, section: section)
         
-        UIView.transition(with: tableView,
-                          duration: Constants.tableViewReloadAnimationDuration,
-                          options: [.transitionCrossDissolve]) {
+        UIView.transition(
+            with: tableView,
+            duration: Constants.tableViewReloadAnimationDuration,
+            options: [.transitionCrossDissolve]) {
             self.tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     
     func reloadData() {
-        UIView.transition(with: tableView,
-                          duration: Constants.tableViewReloadAnimationDuration,
-                          options: [.transitionCrossDissolve]) {
+        UIView.transition(
+            with: tableView,
+            duration: Constants.tableViewReloadAnimationDuration,
+            options: [.transitionCrossDissolve]) {
             self.tableView.reloadData()
         }
     }

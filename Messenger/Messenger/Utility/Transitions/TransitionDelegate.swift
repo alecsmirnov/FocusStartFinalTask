@@ -15,8 +15,9 @@ final class TransitionDelegate: NSObject {
     
     // MARK: Initialization
     
-    init(presentAnimationController: UIViewControllerAnimatedTransitioning?,
-         dismissAnimationController: UIViewControllerAnimatedTransitioning?
+    init(
+        presentAnimationController: UIViewControllerAnimatedTransitioning?,
+        dismissAnimationController: UIViewControllerAnimatedTransitioning?
     ) {
         self.presentAnimationController = presentAnimationController
         self.dismissAnimationController = dismissAnimationController

@@ -10,8 +10,13 @@ import Foundation
 struct UsersStatusValue: Codable {
     // MARK: Properties
     
-    var isOnline: Bool { info.isOnline }
-    var timestamp: TimeInterval { info.timestamp }
+    var isOnline: Bool {
+        return info.isOnline
+    }
+    
+    var timestamp: TimeInterval {
+        return  info.timestamp
+    }
     
     // MARK: Additional Node
     

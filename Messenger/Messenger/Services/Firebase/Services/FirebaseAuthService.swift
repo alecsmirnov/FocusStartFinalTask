@@ -35,7 +35,7 @@ extension FirebaseAuthService {
                 if let error = error as NSError? {
                     switch error.code {
                     case AuthErrorCode.emailAlreadyInUse.rawValue: completion?(nil, AuthError.emailAlreadyInUse)
-                    default:                                       completion?(nil, AuthError.undefined)
+                    default: completion?(nil, AuthError.undefined)
                     }
                 }
                 
@@ -51,10 +51,10 @@ extension FirebaseAuthService {
             guard authResult != nil else {
                 if let error = error as NSError? {
                     switch error.code {
-                    case AuthErrorCode.userNotFound.rawValue:    completion?(nil, AuthError.userNotFound)
-                    case AuthErrorCode.wrongPassword.rawValue:   completion?(nil, AuthError.wrongPassword)
+                    case AuthErrorCode.userNotFound.rawValue: completion?(nil, AuthError.userNotFound)
+                    case AuthErrorCode.wrongPassword.rawValue: completion?(nil, AuthError.wrongPassword)
                     case AuthErrorCode.tooManyRequests.rawValue: completion?(nil, AuthError.tooManyRequests)
-                    default:                                     completion?(nil, AuthError.undefined)
+                    default: completion?(nil, AuthError.undefined)
                     }
                 }
                 

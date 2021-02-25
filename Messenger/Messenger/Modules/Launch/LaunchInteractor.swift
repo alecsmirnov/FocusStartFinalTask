@@ -37,24 +37,27 @@ extension LaunchInteractor: ILaunchInteractor {
 
 extension LaunchInteractor {
     func observeAppBecomeActiveNotification() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(appBecomeActive),
-                                               name: UIApplication.didBecomeActiveNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil)
     }
     
     func observeAppMovedToBackgroundNotification() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(appMovedToBackground),
-                                               name: UIApplication.willResignActiveNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appMovedToBackground),
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
     }
     
     func observeAppWillTerminateNotification() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(appWillTerminate),
-                                               name: UIApplication.willTerminateNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appWillTerminate),
+            name: UIApplication.willTerminateNotification,
+            object: nil)
     }
 }
 

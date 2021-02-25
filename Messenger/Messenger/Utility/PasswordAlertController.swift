@@ -18,9 +18,10 @@ final class PasswordAlertController: NSObject {
     private weak var delegate: PasswordAlertControllerDelegate?
     
     private lazy var alertController: UIAlertController = {
-        let alertController = UIAlertController(title: "Security",
-                                                message: "Please enter password",
-                                                preferredStyle: .alert)
+        let alertController = UIAlertController(
+            title: "Security",
+            message: "Please enter password",
+            preferredStyle: .alert)
         
         alertController.addTextField()
         alertController.textFields?.first?.isSecureTextEntry = true

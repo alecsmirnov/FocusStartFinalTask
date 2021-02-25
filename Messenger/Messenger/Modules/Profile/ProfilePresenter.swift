@@ -36,8 +36,10 @@ extension ProfilePresenter: IProfilePresenter {
     }
     
     func didPressSaveButton(firstName: String?, lastName: String?, email: String?, profileImageData: Data?) {
-        guard let firstName = firstName, !firstName.isEmpty,
-              let email = email, !email.isEmpty else {
+        guard
+            let firstName = firstName, !firstName.isEmpty,
+            let email = email, !email.isEmpty
+        else {
             viewController?.showEmptyFieldsAlert()
             
             return
@@ -49,10 +51,11 @@ extension ProfilePresenter: IProfilePresenter {
             return
         }
         
-        let profileUpdate = ProfileInfo(firstName: firstName,
-                                        lastName: lastName,
-                                        email: email,
-                                        profileImageData: profileImageData)
+        let profileUpdate = ProfileInfo(
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            profileImageData: profileImageData)
         
         if user?.email == email {
             interactor?.updateProfile(profileUpdate)

@@ -34,8 +34,9 @@ final class ChatsRouter {
         let presentAnimation = SlideAnimationController(duration: Constants.presentDuration, animationType: .present)
         let dismissAnimation = SlideAnimationController(duration: Constants.dismissDuration, animationType: .dismiss)
         
-        let transitionDelegate = TransitionDelegate(presentAnimationController: presentAnimation,
-                                                    dismissAnimationController: dismissAnimation)
+        let transitionDelegate = TransitionDelegate(
+            presentAnimationController: presentAnimation,
+            dismissAnimationController: dismissAnimation)
         
         return transitionDelegate
     }()

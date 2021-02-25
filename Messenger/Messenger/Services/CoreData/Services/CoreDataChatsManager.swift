@@ -224,11 +224,14 @@ private extension CoreDataChatsManager {
     }
     
     static func coreDataUserToUser(coreDataUser: CoreDataUser) -> UserInfo {
-        return UserInfo(identifier: coreDataUser.identifier,
-                        firstName: coreDataUser.firstName,
-                        lastName: coreDataUser.lastName,
-                        email: coreDataUser.email,
-                        profileImageURL: coreDataUser.profileImageURL)
+        let user = UserInfo(
+            identifier: coreDataUser.identifier,
+            firstName: coreDataUser.firstName,
+            lastName: coreDataUser.lastName,
+            email: coreDataUser.email,
+            profileImageURL: coreDataUser.profileImageURL)
+        
+        return user
     }
     
     static func messageToCoreDataMessage(_ message: MessageInfo, coreDataMessage: CoreDataMessage?) {
@@ -297,19 +300,21 @@ private extension CoreDataChatsManager {
                 messageType = ChatsMessagesType.text("error")
             }
             
-            latestMessage = MessageInfo(identifier: coreDataLatestMessage.identifier,
-                                        senderIdentifier: coreDataLatestMessage.senderIdentifier,
-                                        type: messageType,
-                                        isRead: coreDataLatestMessage.isRead,
-                                        timestamp: coreDataLatestMessage.timestamp)
+            latestMessage = MessageInfo(
+                identifier: coreDataLatestMessage.identifier,
+                senderIdentifier: coreDataLatestMessage.senderIdentifier,
+                type: messageType,
+                isRead: coreDataLatestMessage.isRead,
+                timestamp: coreDataLatestMessage.timestamp)
         }
         
         let unreadMessagesCount = Int(coreDataChat.unreadMessagesCount)
         
-        let chat = ChatInfo(identifier: coreDataChat.identifier,
-                            companion: companion,
-                            latestMessage: latestMessage,
-                            unreadMessagesCount: unreadMessagesCount)
+        let chat = ChatInfo(
+            identifier: coreDataChat.identifier,
+            companion: companion,
+            latestMessage: latestMessage,
+            unreadMessagesCount: unreadMessagesCount)
         return chat
     }
     

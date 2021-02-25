@@ -207,10 +207,12 @@ private extension RegistrationView{
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            containerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor,
-                                                   constant: LoginRegistrationMetrics.horizontalSpace),
-            containerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
-                                                    constant: -LoginRegistrationMetrics.horizontalSpace),
+            containerView.leadingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.leadingAnchor,
+                constant: LoginRegistrationMetrics.horizontalSpace),
+            containerView.trailingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.trailingAnchor,
+                constant: -LoginRegistrationMetrics.horizontalSpace),
             containerView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
         ])
     }
@@ -229,8 +231,9 @@ private extension RegistrationView{
         lastNameTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            lastNameTextField.topAnchor.constraint(equalTo: firstNameTextField.bottomAnchor,
-                                                   constant: LoginRegistrationMetrics.verticalSpace),
+            lastNameTextField.topAnchor.constraint(
+                equalTo: firstNameTextField.bottomAnchor,
+                constant: LoginRegistrationMetrics.verticalSpace),
             lastNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             lastNameTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
         ])
@@ -240,8 +243,9 @@ private extension RegistrationView{
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            emailTextField.topAnchor.constraint(equalTo: lastNameTextField.bottomAnchor,
-                                                constant: LoginRegistrationMetrics.verticalSpace),
+            emailTextField.topAnchor.constraint(
+                equalTo: lastNameTextField.bottomAnchor,
+                constant: LoginRegistrationMetrics.verticalSpace),
             emailTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             emailTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
         ])
@@ -251,8 +255,9 @@ private extension RegistrationView{
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor,
-                                                   constant: LoginRegistrationMetrics.verticalSpace),
+            passwordTextField.topAnchor.constraint(
+                equalTo: emailTextField.bottomAnchor,
+                constant: LoginRegistrationMetrics.verticalSpace),
             passwordTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             passwordTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
         ])
@@ -262,8 +267,9 @@ private extension RegistrationView{
         signUpButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            signUpButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor,
-                                              constant: LoginRegistrationMetrics.verticalSpace),
+            signUpButton.topAnchor.constraint(
+                equalTo: passwordTextField.bottomAnchor,
+                constant: LoginRegistrationMetrics.verticalSpace),
             signUpButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             signUpButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             signUpButton.heightAnchor.constraint(equalToConstant: LoginRegistrationMetrics.buttonHeight),
@@ -274,8 +280,9 @@ private extension RegistrationView{
         signInView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            signInView.topAnchor.constraint(equalTo: signUpButton.bottomAnchor,
-                                            constant: LoginRegistrationMetrics.signInVerticalSpace),
+            signInView.topAnchor.constraint(
+                equalTo: signUpButton.bottomAnchor,
+                constant: LoginRegistrationMetrics.signInVerticalSpace),
             signInView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
             signInView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
         ])
@@ -288,8 +295,9 @@ private extension RegistrationView{
             promptLabel.topAnchor.constraint(equalTo: signInView.topAnchor),
             promptLabel.bottomAnchor.constraint(equalTo: signInView.bottomAnchor),
             promptLabel.leadingAnchor.constraint(equalTo: signInView.leadingAnchor),
-            promptLabel.trailingAnchor.constraint(equalTo: signInButton.leadingAnchor,
-                                                  constant: -LoginRegistrationMetrics.signInHorizontalSpace),
+            promptLabel.trailingAnchor.constraint(
+                equalTo: signInButton.leadingAnchor,
+                constant: -LoginRegistrationMetrics.signInHorizontalSpace),
         ])
     }
     
@@ -299,8 +307,9 @@ private extension RegistrationView{
         NSLayoutConstraint.activate([
             signInButton.topAnchor.constraint(equalTo: signInView.topAnchor),
             signInButton.bottomAnchor.constraint(equalTo: signInView.bottomAnchor),
-            signInButton.leadingAnchor.constraint(equalTo: promptLabel.trailingAnchor,
-                                                  constant: LoginRegistrationMetrics.signInHorizontalSpace),
+            signInButton.leadingAnchor.constraint(
+                equalTo: promptLabel.trailingAnchor,
+                constant: LoginRegistrationMetrics.signInHorizontalSpace),
             signInButton.trailingAnchor.constraint(equalTo: signInView.trailingAnchor),
         ])
     }
@@ -354,9 +363,11 @@ extension RegistrationView: UITextFieldDelegate {
         return true
     }
     
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn range: NSRange,
-                   replacementString string: String) -> Bool {
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
         if textField == passwordTextField && !passwordTextField.isSecureTextEntry {
             passwordTextField.isSecureTextEntry = true
         }

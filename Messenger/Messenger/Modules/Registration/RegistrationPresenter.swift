@@ -24,10 +24,12 @@ final class RegistrationPresenter {
 
 extension RegistrationPresenter: IRegistrationPresenter {
     func didPressSignUpButton(firstName: String?, lastName: String?, email: String?, password: String?) {
-        guard let firstName = firstName, !firstName.isEmpty,
-              let lastName = lastName,
-              let email = email,         !email.isEmpty,
-              let password = password,   !password.isEmpty else {
+        guard
+            let firstName = firstName, !firstName.isEmpty,
+            let lastName = lastName,
+            let email = email, !email.isEmpty,
+            let password = password, !password.isEmpty
+        else {
             LoggingService.log(category: .registration, layer: .view, type: .alert, with: "empty registration fields")
             
             viewController?.showEmptyFieldsAlert()

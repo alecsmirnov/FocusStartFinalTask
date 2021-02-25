@@ -61,8 +61,9 @@ extension ProfileViewController: IProfileViewController {
     }
     
     func showEmptyFieldsAlert() {
-        simpleAlertController?.showAlert(title: "Required fields are empty",
-                                         message: "Please enter First name and Email")
+        simpleAlertController?.showAlert(
+            title: "Required fields are empty",
+            message: "Please enter First name and Email")
     }
     
     func showInvalidEmailAlert() {
@@ -113,10 +114,11 @@ private extension ProfileViewController {
 
 extension ProfileViewController: ProfileViewDelegate {
     func profileViewDidPressSaveButton(_ profileView: ProfileView) {
-        presenter?.didPressSaveButton(firstName: profileView.firstNameText,
-                                      lastName: profileView.lastNameText,
-                                      email: profileView.emailText,
-                                      profileImageData: compressImage(profileView.profileImage))
+        presenter?.didPressSaveButton(
+            firstName: profileView.firstNameText,
+            lastName: profileView.lastNameText,
+            email: profileView.emailText,
+            profileImageData: compressImage(profileView.profileImage))
     }
     
     func profileViewDidPressCloseButton(_ profileView: ProfileView) {

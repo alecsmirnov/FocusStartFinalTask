@@ -54,8 +54,12 @@ final class InputTextView: UITextView {
 
 extension InputTextView {
     var placeholderText: String? {
-        get { placeholderLabel.text }
-        set { placeholderLabel.text = newValue }
+        get {
+            return placeholderLabel.text
+        }
+        set {
+            placeholderLabel.text = newValue
+        }
     }
     
     func showPlaceholder() {
@@ -131,14 +135,18 @@ private extension InputTextView {
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            placeholderLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor,
-                                                  constant: Metrics.verticalSpace),
-            placeholderLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor,
-                                                     constant: -Metrics.verticalSpace),
-            placeholderLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor,
-                                                      constant: Metrics.horizontalSpace),
-            placeholderLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
-                                                       constant: -Metrics.horizontalSpace),
+            placeholderLabel.topAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.topAnchor,
+                constant: Metrics.verticalSpace),
+            placeholderLabel.bottomAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.bottomAnchor,
+                constant: -Metrics.verticalSpace),
+            placeholderLabel.leadingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.leadingAnchor,
+                constant: Metrics.horizontalSpace),
+            placeholderLabel.trailingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.trailingAnchor,
+                constant: -Metrics.horizontalSpace),
         ])
     }
     
@@ -146,10 +154,12 @@ private extension InputTextView {
         sendButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            sendButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor,
-                                               constant: -Metrics.sendButtonBottomSpace),
-            sendButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
-                                                 constant: -Metrics.horizontalSpace),
+            sendButton.bottomAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.bottomAnchor,
+                constant: -Metrics.sendButtonBottomSpace),
+            sendButton.trailingAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.trailingAnchor,
+                constant: -Metrics.horizontalSpace),
         ])
     }
 }

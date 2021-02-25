@@ -206,8 +206,9 @@ private extension MenuView {
         profileImageImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            profileImageImageView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor,
-                                                           constant: Metrics.horizontalSpace),
+            profileImageImageView.leadingAnchor.constraint(
+                equalTo: headerView.leadingAnchor,
+                constant: Metrics.horizontalSpace),
             profileImageImageView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
             profileImageImageView.heightAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
             profileImageImageView.widthAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
@@ -218,10 +219,12 @@ private extension MenuView {
         infoView.translatesAutoresizingMaskIntoConstraints = false
  
         NSLayoutConstraint.activate([
-            infoView.leadingAnchor.constraint(equalTo: profileImageImageView.trailingAnchor,
-                                              constant: Metrics.horizontalSpace),
-            infoView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor,
-                                               constant: -Metrics.horizontalSpace),
+            infoView.leadingAnchor.constraint(
+                equalTo: profileImageImageView.trailingAnchor,
+                constant: Metrics.horizontalSpace),
+            infoView.trailingAnchor.constraint(
+                equalTo: headerView.trailingAnchor,
+                constant: -Metrics.horizontalSpace),
             infoView.centerYAnchor.constraint(equalTo: profileImageImageView.centerYAnchor),
         ])
     }
@@ -273,8 +276,10 @@ extension MenuView: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuOptionCell.reuseIdentifier,
-                                                       for: indexPath) as? MenuOptionCell else {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: MenuOptionCell.reuseIdentifier,
+            for: indexPath) as? MenuOptionCell
+        else {
             return UITableViewCell()
         }
         

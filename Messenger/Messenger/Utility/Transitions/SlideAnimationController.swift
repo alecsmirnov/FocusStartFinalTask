@@ -9,10 +9,14 @@ import UIKit
 
 final class SlideAnimationController: BaseAnimationController {
     override func startPresentAnimation(transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromViewController = transitionContext.viewController(forKey: .from),
-              let toViewController = transitionContext.viewController(forKey: .to),
-              let fromView = fromViewController.view,
-              let toView = toViewController.view else { return }
+        guard
+            let fromViewController = transitionContext.viewController(forKey: .from),
+            let toViewController = transitionContext.viewController(forKey: .to),
+            let fromView = fromViewController.view,
+            let toView = toViewController.view
+        else {
+            return
+        }
         
         let containerView = transitionContext.containerView
         let containerViewHeight = containerView.bounds.size.height
@@ -25,8 +29,7 @@ final class SlideAnimationController: BaseAnimationController {
         UIView.animate(
             withDuration: transitionDuration(using: transitionContext),
             delay: 0,
-            options: [.curveEaseInOut]
-        ) {
+            options: [.curveEaseInOut]) {
             fromView.center.y -= containerViewHeight
             toView.center.y -= containerViewHeight
         } completion: { finished in
@@ -35,10 +38,14 @@ final class SlideAnimationController: BaseAnimationController {
     }
     
     override func startDismissAnimation(transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromViewController = transitionContext.viewController(forKey: .from),
-              let toViewController = transitionContext.viewController(forKey: .to),
-              let fromView = fromViewController.view,
-              let toView = toViewController.view else { return }
+        guard
+            let fromViewController = transitionContext.viewController(forKey: .from),
+            let toViewController = transitionContext.viewController(forKey: .to),
+            let fromView = fromViewController.view,
+            let toView = toViewController.view
+        else {
+            return
+        }
         
         let containerView = transitionContext.containerView
         let containerViewHeight = containerView.bounds.size.height
@@ -47,8 +54,7 @@ final class SlideAnimationController: BaseAnimationController {
         UIView.animate(
             withDuration: transitionDuration(using: transitionContext),
             delay: 0,
-            options: [.curveEaseInOut]
-        ) {
+            options: [.curveEaseInOut]) {
             fromView.center.y += containerViewHeight
             toView.center.y += containerViewHeight
         } completion: { finished in

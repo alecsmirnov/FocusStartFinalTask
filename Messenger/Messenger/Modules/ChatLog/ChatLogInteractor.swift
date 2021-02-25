@@ -74,9 +74,11 @@ extension ChatLogInteractor: IChatLogInteractor {
     }
     
     func fetchPreviousMessages() {
-        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
-              let chatIdentifier = chat?.identifier,
-              let topMessageTimestamp = topMessageTimestamp else {
+        guard
+            let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+            let chatIdentifier = chat?.identifier,
+            let topMessageTimestamp = topMessageTimestamp
+        else {
             presenter?.fetchPreviousMessagesFail()
             
             return
@@ -84,10 +86,11 @@ extension ChatLogInteractor: IChatLogInteractor {
         
         let messagesLimit = Constants.previousMessagesLoadCount
         
-        FirebaseMessageService.fetchPreviousMessages(chatIdentifier: chatIdentifier,
-                                                     userIdentifier: userIdentifier,
-                                                     endingAt: topMessageTimestamp,
-                                                     limit: messagesLimit) { [weak self] previousMessages in
+        FirebaseMessageService.fetchPreviousMessages(
+            chatIdentifier: chatIdentifier,
+            userIdentifier: userIdentifier,
+            endingAt: topMessageTimestamp,
+            limit: messagesLimit) { [weak self] previousMessages in
             if let previousMessages = previousMessages {
                 let definedPreviousMessages = previousMessages.map { ChatLogInteractor.defineIncomingMessage($0) }
                 
@@ -100,17 +103,22 @@ extension ChatLogInteractor: IChatLogInteractor {
     }
     
     func observeMessages() {
-        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
-              let chatIdentifier = chat?.identifier else { return }
+        guard
+            let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+            let chatIdentifier = chat?.identifier
+        else {
+            return
+        }
         
         let latestUpdateTime = coreDataChatLogManager.getLatestUpdateTimestamp()
         
         let messagesLimit = Constants.storedMessagesCount + (chat?.unreadMessagesCount ?? 0)
         
-        firebaseChatLogManager.observeAddedMessages(chatIdentifier: chatIdentifier,
-                                                    userIdentifier: userIdentifier,
-                                                    latestUpdateTime: latestUpdateTime,
-                                                    limit: messagesLimit) { [weak self] message in
+        firebaseChatLogManager.observeAddedMessages(
+            chatIdentifier: chatIdentifier,
+            userIdentifier: userIdentifier,
+            latestUpdateTime: latestUpdateTime,
+            limit: messagesLimit) { [weak self] message in
             let definedMessage = ChatLogInteractor.defineIncomingMessage(message)
             
             self?.coreDataChatLogManager.appendMessage(message)
@@ -123,30 +131,41 @@ extension ChatLogInteractor: IChatLogInteractor {
     }
     
     func sendMessage(_ messageType: ChatsMessagesType) {
-        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
-              let chat = chat else { return }
+        guard
+            let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+            let chat = chat
+        else {
+            return
+        }
         
         FirebaseChatsService.isChatExist(chatIdentifier: chat.identifier, userIdentifier: userIdentifier) { isExist in
             if !isExist {
-                FirebaseChatsService.createPairChat(chatIdentifier: chat.identifier,
-                                                            userIdentifier1: userIdentifier,
-                                                            userIdentifier2: chat.companion.identifier)
+                FirebaseChatsService.createPairChat(
+                    chatIdentifier: chat.identifier,
+                    userIdentifier1: userIdentifier,
+                    userIdentifier2: chat.companion.identifier)
             }
         }
         
-        FirebaseMessageService.sendMessage(messageType,
-                                           chatIdentifier: chat.identifier,
-                                           senderIdentifier: userIdentifier)
+        FirebaseMessageService.sendMessage(
+            messageType,
+            chatIdentifier: chat.identifier,
+            senderIdentifier: userIdentifier)
     }
     
     func readMessage(_ message: MessageInfo) {
-        guard let userIdentifier = FirebaseAuthService.currentUser()?.uid,
-              let chatIdentifier = chat?.identifier else { return }
+        guard
+            let userIdentifier = FirebaseAuthService.currentUser()?.uid,
+            let chatIdentifier = chat?.identifier
+        else {
+            return
+        }
 
         if message.isIncoming ?? false {
-            FirebaseMessageService.readMessage(chatIdentifier: chatIdentifier,
-                                               userIdentifier: userIdentifier,
-                                               messageIdentifier: message.identifier)
+            FirebaseMessageService.readMessage(
+                chatIdentifier: chatIdentifier,
+                userIdentifier: userIdentifier,
+                messageIdentifier: message.identifier)
         }
     }
 }
@@ -168,8 +187,9 @@ private extension ChatLogInteractor {
     func registerPairChat(with companion: UserInfo) -> ChatInfo? {
         guard let userIdentifier = FirebaseAuthService.currentUser()?.uid else { return nil }
         
-        let chatIdentifier = FirebaseChatsService.getPairChatIdentifier(userIdentifier1: userIdentifier,
-                                                                        userIdentifier2: companion.identifier)
+        let chatIdentifier = FirebaseChatsService.getPairChatIdentifier(
+            userIdentifier1: userIdentifier,
+            userIdentifier2: companion.identifier)
         
         return ChatInfo(identifier: chatIdentifier, companion: companion)
     }

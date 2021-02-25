@@ -155,14 +155,15 @@ private extension UserCell {
         NSLayoutConstraint.activate([
             cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Metrics.cellContentTopSpace),
             cellContentView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor),
-            cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
-                                                      constant: -Metrics.cellContentRightSpace),
+            cellContentView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -Metrics.cellContentRightSpace),
         ])
         
         let cellContentViewBottomConstraint = cellContentView.bottomAnchor.constraint(
             equalTo: contentView.bottomAnchor,
-            constant: -Metrics.cellContentBottomSpace
-        )
+            constant: -Metrics.cellContentBottomSpace)
+        
         cellContentViewBottomConstraint.priority = UILayoutPriority(LayoutPriority.bottom)
         cellContentViewBottomConstraint.isActive = true
     }
@@ -173,10 +174,12 @@ private extension UserCell {
         NSLayoutConstraint.activate([
             profileImageImageView.topAnchor.constraint(equalTo: profileImageView.topAnchor),
             profileImageImageView.bottomAnchor.constraint(equalTo: profileImageView.bottomAnchor),
-            profileImageImageView.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor,
-                                                           constant: Metrics.profileImageHorizontalSpace),
-            profileImageImageView.trailingAnchor.constraint(equalTo: profileImageView.trailingAnchor,
-                                                            constant: -Metrics.profileImageHorizontalSpace),
+            profileImageImageView.leadingAnchor.constraint(
+                equalTo: profileImageView.leadingAnchor,
+                constant: Metrics.profileImageHorizontalSpace),
+            profileImageImageView.trailingAnchor.constraint(
+                equalTo: profileImageView.trailingAnchor,
+                constant: -Metrics.profileImageHorizontalSpace),
             profileImageImageView.heightAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
             profileImageImageView.widthAnchor.constraint(equalToConstant: SharedMetrics.profileImageSize),
         ])

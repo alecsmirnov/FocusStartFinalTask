@@ -10,8 +10,13 @@ import Foundation
 struct UsersChatsUnreadMessagesCountValue: Codable {
     // MARK: Properties
     
-    var count: Int { info.count ?? 0 }
-    var timestamp: TimeInterval { info.timestamp }
+    var count: Int {
+        return info.count ?? 0
+    }
+    
+    var timestamp: TimeInterval {
+        return info.timestamp
+    }
     
     // MARK: Additional Node
     
