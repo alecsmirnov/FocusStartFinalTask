@@ -31,9 +31,12 @@ extension LoginInteractor: ILoginInteractor {
             guard let authResult = authResult else {
                 if let error = error {
                     switch error {
-                    case .userNotFound: self?.presenter?.signInFail(.userNotFound)
-                    case .wrongPassword: self?.presenter?.signInFail(.wrongPassword)
-                    default: break
+                    case .userNotFound:
+                        self?.presenter?.signInFail(.userNotFound)
+                    case .wrongPassword:
+                        self?.presenter?.signInFail(.wrongPassword)
+                    default:
+                        break
                     }
                     
                     LoggingService.log(category: .login, layer: .interactor, type: .error, with: "\(error)")
